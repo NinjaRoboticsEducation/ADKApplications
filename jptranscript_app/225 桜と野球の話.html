@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>225 桜と野球の話</title>
+  <style>
+    /* =========================================================================
+       Luxury/Refined Editorial Aesthetic 
+       For high readability and optimal printing
+       ========================================================================= */
+    
+    :root {
+      --bg-color: #faf9f7;
+      --text-main: #2b2b2b;
+      --text-muted: #595959;
+      --accent: #b44c4c;
+      --accent-muted: #e6d3d3;
+      --border-color: #e0ddd7;
+      --font-body: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", "MS PMincho", serif;
+      --font-sans: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+    }
+
+    /* Reset and Base */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      line-height: 1.8;
+      font-size: 17px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 0 1rem;
+    }
+
+    /* Layout */
+    .container {
+      max-width: 720px;
+      margin: 3rem auto 5rem;
+      background: #ffffff;
+      padding: 4rem 4rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0,0,0,0.02);
+      border-radius: 4px;
+    }
+
+    /* Typography */
+    h1 {
+      font-family: var(--font-sans);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.05em;
+      text-align: center;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-family: var(--font-sans);
+      color: var(--text-muted);
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 3rem;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+      margin: 2.5rem 0;
+    }
+
+    h2 {
+      font-family: var(--font-sans);
+      font-size: 1.4rem;
+      color: var(--accent);
+      margin-top: 3.5rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--accent-muted);
+      position: relative;
+    }
+
+    h3 {
+      font-family: var(--font-sans);
+      font-size: 1.25rem;
+      color: var(--text-main);
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin-bottom: 1.5rem;
+      text-align: justify;
+      text-justify: inter-ideograph;
+      letter-spacing: 0.02em;
+    }
+
+    /* Ruby / Furigana */
+    ruby {
+      ruby-align: center;
+    }
+    rt {
+      font-size: 0.55em;
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      letter-spacing: 0;
+      transform: translateY(1px);
+    }
+
+    /* Glossary Markers */
+    .footnote {
+      font-family: var(--font-sans);
+      font-size: 0.75em;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      vertical-align: super;
+      margin-left: 2px;
+      padding: 0 3px;
+      border-radius: 2px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .footnote:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* Table of Contents */
+    .toc {
+      background: #fcfbfa;
+      border: 1px solid var(--border-color);
+      padding: 2rem;
+      margin-bottom: 3rem;
+      border-radius: 4px;
+    }
+    .toc strong {
+      display: block;
+      font-family: var(--font-sans);
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+    .toc ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+    .toc li {
+      margin-bottom: 0.5rem;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+    .toc a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .toc a:hover {
+      color: var(--accent);
+    }
+
+    /* Glossary Section */
+    .glossary-section {
+      background: #fbfaf8;
+      border: 1px solid var(--border-color);
+      padding: 2.5rem;
+      margin-top: 4rem;
+      border-top: 3px solid var(--accent);
+      border-radius: 4px;
+    }
+    .glossary-section h3 {
+      margin-top: 0;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1rem;
+      color: var(--accent);
+    }
+    .glossary-list {
+      padding-left: 1.5rem;
+    }
+    .glossary-list li {
+      margin-bottom: 2rem;
+    }
+    .glossary-list li:last-child {
+      margin-bottom: 0;
+    }
+    .glossary-term {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--text-main);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .glossary-desc strong {
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      color: var(--accent);
+    }
+    .backlink {
+      display: inline-block;
+      margin-top: 0.8rem;
+      font-size: 0.85rem;
+      font-family: var(--font-sans);
+      color: #888;
+      text-decoration: none;
+      border-bottom: 1px solid #ddd;
+      transition: all 0.2s;
+    }
+    .backlink:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    /* Print Optimization */
+    @media print {
+      body {
+        background: none;
+        padding: 0;
+        font-size: 12pt;
+      }
+      .container {
+        box-shadow: none;
+        margin: 0;
+        padding: 0;
+        max-width: 100%;
+      }
+      .toc, .glossary-section {
+        background: none;
+        border: 1px solid #ccc;
+      }
+      .footnote {
+        color: #000;
+        text-decoration: none;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 2rem 1.5rem;
+        margin-top: 1rem;
+      }
+      h1 { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>225 桜と野球の話</h1>
+      <div class="subtitle">日本語聞き始め</div>
+    </header>
+
+    <div class="divider"></div>
+
+    <nav class="toc" aria-label="目次">
+      <strong>目次</strong>
+      <ul>
+        <li><a href="#sec-1">オープニング</a></li>
+        <li><a href="#sec-2">神戸の桜のトンネルと街の変化</a></li>
+        <li><a href="#sec-3">日本の春と高校野球</a></li>
+        <li><a href="#sec-4">明治維新と野球の伝来</a></li>
+        <li><a href="#sec-5">外国人教師が襲われた「インブリー事件」</a></li>
+        <li><a href="#sec-6">東大野球部の敗北と猛練習</a></li>
+        <li><a href="#sec-7">野球害毒論とその反発</a></li>
+        <li><a href="#sec-8">戦時中の野球とアメリカ用語の排除</a></li>
+        <li><a href="#sec-9">戦後の野球と「軍隊起源説」の実態</a></li>
+        <li><a href="#sec-10">ブラックな部活動とこれからの変化</a></li>
+        <li><a href="#sec-11">エンディング</a></li>
+      </ul>
+    </nav>
+
+    <article>
+      <section>
+        <h2 id="sec-1">オープニング</h2>
+        <p>皆さんこんにちは。日本語聞き始めです。このプログラムでは、日本語学習中の皆さんにいろいろなテーマについて、自然なスピードでほんの少しだけ言葉や文法を簡単にしてお話ししています。皆さん、こんにちは。</p>
+      </section>
+
+      <section>
+        <h2 id="sec-2">神戸の桜のトンネルと街の変化</h2>
+        <p>日本ではちょうど今、<ruby>桜<rt>さくら</rt></ruby>のお花見のシーズンです。私も昨日<ruby>神戸<rt>こうべ</rt></ruby>で桜のトンネルとして<ruby>有名<rt>ゆうめい</rt></ruby>な、桜<ruby>並木<rt>なみき</rt></ruby>の道に行ってきたんですけど、道の<ruby>両側<rt>りょうがわ</rt></ruby>にずっと桜が<ruby>咲<rt>さ</rt></ruby>いていて。そして<ruby>坂<rt>さか</rt></ruby>のところに咲いているんですけど、坂の上から見ると、本当に桜のトンネルみたいになっていて、とても<ruby>美<rt>うつく</rt></ruby>しかったんですが、この桜も<ruby>樹齢<rt>じゅれい</rt></ruby>がどんどん高くなってきて。つまり木の<ruby>年齢<rt>ねんれい</rt></ruby>ですね。</p>
+        <p>どんどん桜が年をとってきて、だんだん木も<ruby>腐<rt>くさ</rt></ruby>ってきたということで、<ruby>安全<rt>あんぜん</rt></ruby>のために、すべて<ruby>切<rt>き</rt></ruby>り<ruby>落<rt>お</rt></ruby>とされるそうです。また、この桜のトンネルのあるところというのは、<ruby>住宅街<rt>じゅうたくがい</rt></ruby>で、<ruby>山<rt>やま</rt></ruby>の<ruby>斜面<rt>しゃめん</rt></ruby>のところ、<ruby>家<rt>いえ</rt></ruby>が<ruby>建<rt>た</rt></ruby>っていて、とても<ruby>海<rt>うみ</rt></ruby>が<ruby>眺<rt>なが</rt></ruby>められて、山の上の方から海が眺められて、すごく美しい<ruby>土地<rt>とち</rt></ruby>なんですけれども、だんだん<ruby>人口<rt>じんこう</rt></ruby>が<ruby>減<rt>へ</rt></ruby>ってきて、<ruby>空<rt>あ</rt></ruby>き<ruby>家<rt>や</rt></ruby>も多くなってきているんですね。</p>
+        <p><ruby>昔<rt>むかし</rt></ruby>はある<ruby>意味<rt>いみ</rt></ruby>でこのあたりに<ruby>住<rt>す</rt></ruby>むことというのは<ruby>社会的<rt>しゃかいてき</rt></ruby>なステータスが非常に高かったんですけど、最近は少しずつ人が減ってきて、<ruby>不便<rt>ふべん</rt></ruby>な<ruby>面<rt>めん</rt></ruby>も出てきた。また最近では大<ruby>雨<rt>あめ</rt></ruby>などが<ruby>降<rt>ふ</rt></ruby>って、やはり山の斜面というのは<ruby>危険<rt>きけん</rt></ruby>ですよね。<ruby>地滑<rt>じすべ</rt></ruby>りが<ruby>起<rt>お</rt></ruby>こったりとか、私の知り合いもちょうどこのあたりに住んでいて、買い物がすごく不便とか。</p>
+        <p>何かどこか出かけようと思うと、山の<ruby>下<rt>した</rt></ruby>まで降りていかないといけないので、すごく生活が不便だなどと、<ruby>不満<rt>ふまん</rt></ruby>を言っていましたけれど、もちろん今でもとても良い場所なんですけど、やはり時代が変わって、<ruby>少子<rt>しょうし</rt></ruby><ruby>高齢化<rt>こうれいか</rt></ruby>していって人口が<ruby>減少<rt>げんしょう</rt></ruby>していくと、やはりその<ruby>街<rt>まち</rt></ruby>のステータスというのも変わっていくなと感じたんですが。</p>
+      </section>
+
+      <section>
+        <h2 id="sec-3">日本の春と高校野球</h2>
+        <p>ところで<ruby>全然<rt>ぜんぜん</rt></ruby>話は<ruby>変<rt>か</rt></ruby>わりますが、今は日本では<ruby>春<rt>はる</rt></ruby>の<ruby>高校<rt>こうこう</rt></ruby><ruby>野球<rt>やきゅう</rt></ruby>というのが行われているんですね。<ruby>正確<rt>せいかく</rt></ruby>には行われていたんです。<ruby>先週<rt>せんしゅう</rt></ruby>まで日本でスポーツといえば、やはり野球です。最近はすごくサッカーも人気出てきましたけれども、やはり野球がすごく有名です。</p>
+        <p>そして野球といえばやはり高校野球です。<ruby>夏<rt>なつ</rt></ruby>の方がより大きな<ruby>大会<rt>たいかい</rt></ruby>と言えるんですけれども、日本ではこの高校野球、<ruby>高校生<rt>こうこうせい</rt></ruby>たちが野球で<ruby>競<rt>きそ</rt></ruby>い<ruby>合<rt>あ</rt></ruby>うこの大会が春と夏にあるんですね。</p>
+      </section>
+
+      <section>
+        <h2 id="sec-4">明治維新と野球の伝来</h2>
+        <p>この野球というのも、日本での<ruby>位置<rt>いち</rt></ruby>づけというのは昔から大きく変わってきたんですよね。野球が日本に入ってきたのは<ruby>明治<rt>めいじ</rt></ruby><ruby>維新<rt>いしん</rt></ruby>の後です。<ruby>欧米<rt>おうべい</rt></ruby>からこのスポーツが入ってきたんですけど、このスポーツは最初は、そんなに<ruby>競技<rt>きょうぎ</rt></ruby><ruby>志向<rt>しこう</rt></ruby>、つまり勝つことを<ruby>目的<rt>もくてき</rt></ruby>とする、そんなスポーツというよりは、もう少し楽しむためのスポーツ、おしゃれでハイカラなスポーツだと。ハイカラなという言葉も古いですけれども、ハイソサエティなというか、<ruby>洗練<rt>せんれん</rt></ruby>されたスポーツ、そんなイメージだったそうです。</p>
+        <p><ruby>現代<rt>げんだい</rt></ruby>の野球はだいぶ今は変わってきましたけれども、やはりまだまだ。例えば高校野球だと<ruby>全員<rt>ぜんいん</rt></ruby>が<ruby>髪<rt>かみ</rt></ruby>の<ruby>毛<rt>け</rt></ruby>を<ruby>短<rt>みじか</rt></ruby>く、<ruby>坊主<rt>ぼうず</rt></ruby><ruby>頭<rt>あたま</rt></ruby>にして、<ruby>厳<rt>きび</rt></ruby>しい夏の<ruby>練習<rt>れんしゅう</rt></ruby>に<ruby>耐<rt>た</rt></ruby>えてという、そういう感じの厳しいスポーツ<ruby>選手<rt>せんしゅ</rt></ruby>というイメージがあるんですけど、昔はそんな感じではなくて、どちらかというとレクリエーション的な。ヨガとかピラティスとか、そこまでは言わないですけれども、ちょっとおしゃれで、楽しさを目的にやるようなスポーツ、そんなイメージだったそうです。</p>
+        <p>当時のスポーツとして、<ruby>男<rt>おとこ</rt></ruby>らしさというか、勝つことを<ruby>求<rt>もと</rt></ruby>めるような、こういう<ruby>無骨<rt>ぶこつ</rt></ruby>な<ruby>強<rt>つよ</rt></ruby>いスポーツというのは、やはり<ruby>柔術<rt>じゅうじゅつ</rt></ruby>とか<ruby>剣術<rt>けんじゅつ</rt></ruby>です。<ruby>剣道<rt>けんどう</rt></ruby>、<ruby>柔道<rt>じゅうどう</rt></ruby>です。こうしたスポーツが男らしい<ruby>硬派<rt>こうは</rt></ruby>なスポーツとして、一方で欧米から入ってきたテニスとか野球というのは、どちらかというと<ruby>軟弱<rt>なんじゃく</rt></ruby>で、<ruby>女性<rt>じょせい</rt></ruby>っぽいというか、<ruby>軟派<rt>なんぱ</rt></ruby>なスポーツというイメージだったそうです。</p>
+        <p>当時のスポーツの<ruby>中心<rt>ちゅうしん</rt></ruby>というのはやはり柔道とか剣道だったわけです。ボールを追いかけ回すような、いわゆる<ruby>球技<rt>きゅうぎ</rt></ruby>というのは、子どもの遊びの<ruby>延長<rt>えんちょう</rt></ruby>のように、ネガティブに<ruby>捉<rt>とら</rt></ruby>えられるようなこともあったそうです。その<ruby>背景<rt>はいけい</rt></ruby>には、当時、明治維新があって、日本は欧米<ruby>諸国<rt>しょこく</rt></ruby>に国を<ruby>開<rt>ひら</rt></ruby>いたわけですけれども、<ruby>急激<rt>きゅうげき</rt></ruby>に日本が<ruby>西洋化<rt>せいようか</rt></ruby>していった、そのことに対する<ruby>反発<rt>はんぱつ</rt></ruby>もあったのかもしれないですね。急激に<ruby>世<rt>よ</rt></ruby>の<ruby>中<rt>なか</rt></ruby>がどんどんウエスタナイゼーションされていって、日本の良さがどんどん<ruby>失<rt>うしな</rt></ruby>われていってしまうんじゃないか。そんな風に考える人もいたと思います。ただ、そうは言っても、どんどん日本では西洋化が<ruby>進<rt>すす</rt></ruby>んでいきますので、この最初は少しネガティブに捉えられていた野球やテニスなども、どんどん人気が上がっていくんですね。</p>
+      </section>
+
+      <section>
+        <h2 id="sec-5">外国人教師が襲われた「インブリー事件」</h2>
+        <p>この欧米から入ってきた楽しむためのスポーツであった野球が、野球道と言えるような<ruby>精神性<rt>せいしんせい</rt></ruby>を<ruby>帯<rt>お</rt></ruby>びるようになったきっかけとなった<ruby>事件<rt>じけん</rt></ruby>があります。これはインブリー事件と<ruby>呼<rt>よ</rt></ruby>ばれたりするんですが、日本にいたアメリカ人の<ruby>先生<rt>せんせい</rt></ruby>のウィリアム・インブリーという人が、当時の<ruby>第一<rt>だいいち</rt></ruby><ruby>高等<rt>こうとう</rt></ruby><ruby>学校<rt>がっこう</rt></ruby>、今で言う東大の元になった学校ですが、ここで行われていた野球の試合を見るために。本当はきちんと大学の<ruby>門<rt>もん</rt></ruby>から入らなければいけないところをうまく入れなかったので、グラウンドを囲む<ruby>垣根<rt>かきね</rt></ruby>を<ruby>越<rt>こ</rt></ruby>えて入ってきたんですね。</p>
+        <p>それを見た第一高等学校の<ruby>学生<rt>がくせい</rt></ruby>たちが、この第一高等学校っていうのは今でいう<ruby>東大<rt>とうだい</rt></ruby>ですから、非常にエリートたちが<ruby>集<rt>あつ</rt></ruby>まっている学校ですけれど、この<ruby>彼<rt>かれ</rt></ruby>らの<ruby>神聖<rt>しんせい</rt></ruby>なグラウンドに<ruby>許可<rt>きょか</rt></ruby>なく、しかも<ruby>正<rt>ただ</rt></ruby>しくない<ruby>方法<rt>ほうほう</rt></ruby>で<ruby>外国人<rt>がいこくじん</rt></ruby><ruby>教師<rt>きょうし</rt></ruby>が入ってきたということで。野球部の<ruby>応援団<rt>おうえんだん</rt></ruby>が、このインブリーを取り<ruby>囲<rt>かこ</rt></ruby>んで<ruby>傷<rt>きず</rt></ruby>つけてしまったんですね。ナイフで<ruby>刺<rt>さ</rt></ruby>したとか、<ruby>石<rt>いし</rt></ruby>をぶつけたとか、いろいろな<ruby>説<rt>せつ</rt></ruby>がありますが、いずれにせよインブリーさんはこれで大きな傷を<ruby>負<rt>お</rt></ruby>ってしまったんですね。</p>
+        <p>この事件は当時、<ruby>外交<rt>がいこう</rt></ruby>問題にもなりかねない大きな問題だったんですが、なんとか事件は<ruby>収<rt>おさ</rt></ruby>まりました。</p>
+      </section>
+
+      <section>
+        <h2 id="sec-6">東大野球部の敗北と猛練習</h2>
+        <p>この事件の背後には、やはり<ruby>急速<rt>きゅうそく</rt></ruby>な西洋化に対する反発というのがあって。しかもこの試合は第一高等学校、つまり今の東大が負けそうになっていたんですね。インブリー先生は<ruby>相手<rt>あいて</rt></ruby>の<ruby>チーム<rt>ちーむ</rt></ruby>の学校の先生だったので、そういったこともあって、第一高等学校の学生たち、野球部の選手たちは、自分たちが<ruby>弱<rt>よわ</rt></ruby>いからこのような事件が起こってしまったんだと考えて、そこからさらに厳しい練習を<ruby>積<rt>つ</rt></ruby>むようになるんですね。</p>
+        <p>この事件の後から野球というのは楽しむためのリクリエーション的な、おしゃれなスポーツから精神的な<ruby>鍛錬<rt>たんれん</rt></ruby>、精神的なトレーニングを含む厳しいスポーツへと<ruby>姿<rt>すがた</rt></ruby>を<ruby>変<rt>か</rt></ruby>えていったんですね。</p>
+      </section>
+
+      <section>
+        <h2 id="sec-7">野球害毒論とその反発</h2>
+        <p>こうして学生たちは厳しい練習に<ruby>取<rt>と</rt></ruby>り<ruby>組<rt>く</rt></ruby>むようになったんですけど、<ruby>面白<rt>おもしろ</rt></ruby>いことに、この後の20年後ぐらいには、東京朝日新聞が「<ruby>野球害毒論<rt>やきゅうがいどくろん</rt></ruby>」<a href="#glossary-1" id="ref-1" class="footnote">*1</a>というのを出すんですね。これは野球が学生たちの<ruby>学業<rt>がくぎょう</rt></ruby>、<ruby>勉強<rt>べんきょう</rt></ruby>を<ruby>妨<rt>さまた</rt></ruby>げて、しかも練習しすぎだから<ruby>健康<rt>けんこう</rt></ruby>も<ruby>損<rt>そこ</rt></ruby>なってしまうだろうと。</p>
+        <p>そのような野球は<ruby>有害<rt>ゆうがい</rt></ruby>であると、いうような<ruby>記事<rt>きじ</rt></ruby>を出したんですね。これは1回だけの記事ではなくて、なんと20回以上にも東京朝日新聞に<ruby>連載<rt>れんさい</rt></ruby>された「野球とその害毒」という、そういうキャンペーンだったんですね。これもやはり急速にどんどん西洋化していくことに、反発している人々がやはり<ruby>一定数<rt>いっていすう</rt></ruby>いたので、こうした人々の<ruby>意見<rt>いけん</rt></ruby>が<ruby>現<rt>あらわ</rt></ruby>れた記事だと思います。</p>
+        <p>野球はたくさんの時間を<ruby>必要<rt>ひつよう</rt></ruby>とする。野球に<ruby>熱中<rt>ねっちゅう</rt></ruby>するあまりに学業<ruby>成績<rt>せいせき</rt></ruby>が<ruby>悪<rt>わる</rt></ruby>くなること。選手は<ruby>粗暴<rt>そぼう</rt></ruby>で<ruby>乱暴<rt>らんぼう</rt></ruby>である、<ruby>品性<rt>ひんせい</rt></ruby>が良くない。野球の応援団みたいなものを<ruby>不良<rt>ふりょう</rt></ruby>である。こういった<ruby>論調<rt>ろんちょう</rt></ruby>ですね。</p>
+        <p>一方で、この東京朝日新聞のこの「野球害毒論」に対して、他の新聞社、例えば<ruby>読売<rt>よみうり</rt></ruby>新聞とか<ruby>国民<rt>こくみん</rt></ruby>新聞といった新聞社たちはこの<ruby>逆<rt>ぎゃく</rt></ruby>の意見。野球<ruby>擁護<rt>ようご</rt></ruby><a href="#glossary-2" id="ref-2" class="footnote">*2</a>をするわけですね。いやいや、野球は<ruby>素晴<rt>すば</rt></ruby>らしいスポーツですよという、そういったことを<ruby>主張<rt>しゅちょう</rt></ruby>して、野球害毒論と野球擁護論が<ruby>激<rt>はげ</rt></ruby>しい言い<ruby>争<rt>あらそ</rt></ruby>いになったんですね。これは新聞社にとっては美味しい<ruby>状況<rt>じょうきょう</rt></ruby>で、どちらであっても新聞がどんどん<ruby>売<rt>う</rt></ruby>れますよね。人々がこの論争に熱中すればするほど新聞は売れますから、<ruby>反対派<rt>はんたいは</rt></ruby>も<ruby>賛成派<rt>さんせいは</rt></ruby>もどちらの意見も聞きたいですからね。</p>
+        <p>ただ、こうした論争があったことで、野球は不良のやるスポーツではないということを示す必要がありましたので、どんどんさらに野球というのは<ruby>清廉<rt>せいれん</rt></ruby>で真面目なスポーツになっていくわけですね。欧米から入ってきた野球というスポーツが、世間の反発も<ruby>浴<rt>あ</rt></ruby>びながら、日本の<ruby>真面目<rt>まじめ</rt></ruby>さ、精神性を盛り<ruby>込<rt>こ</rt></ruby>まざるを<ruby>得<rt>え</rt></ruby>なかった。振り込む必要があったんですね。軟派な、チャラチャラしたスポーツじゃないですよ。<ruby>武道<rt>ぶどう</rt></ruby>と<ruby>匹敵<rt>ひってき</rt></ruby>するぐらい、<ruby>同<rt>おな</rt></ruby>じぐらいの真面目な鍛錬のスポーツですよということを示す<ruby>方向<rt>ほうこう</rt></ruby>に、どんどん野球が<ruby>動<rt>うご</rt></ruby>いていったんですね。</p>
+      </section>
+
+      <section>
+        <h2 id="sec-8">戦時中の野球とアメリカ要素の排除</h2>
+        <p>こうしてようやく日本にカスタマイズした形で、日本のスポーツとして<ruby>定着<rt>ていちゃく</rt></ruby>していった野球ですが、ここから時代は明治から<ruby>大正<rt>たいしょう</rt></ruby>、<ruby>昭和<rt>しょうわ</rt></ruby>に入ることで徐々に<ruby>戦争<rt>せんそう</rt></ruby>が激しくなっていくんですね。その中でスポーツの位置づけというのは、<ruby>心<rt>こころ</rt></ruby>と<ruby>体<rt>からだ</rt></ruby>を鍛えて、国のために<ruby>奉仕<rt>ほうし</rt></ruby>する、サービスするため、その心と体を鍛えるためのものという位置づけに変わってきたんですね。</p>
+        <p>野球の練習。それ以外のスポーツも同じですけれども、こうした野球の練習というのは、<ruby>戦場<rt>せんじょう</rt></ruby>、<ruby>戦<rt>たたか</rt></ruby>う場所における<ruby>兵士<rt>へいし</rt></ruby>としての<ruby>素質<rt>そしつ</rt></ruby>、クオリティを鍛えるための場所となってしまったんですね。さらに野球というのは、特に<ruby>敵<rt>てき</rt></ruby>の国であるアメリカの<ruby>事実上<rt>じじつじょう</rt></ruby>の<ruby>国技<rt>こくぎ</rt></ruby>ですね。国のスポーツですから。<ruby>禁止<rt>きんし</rt></ruby>される<ruby>可能性<rt>かのうせい</rt></ruby>があったんですね。ですので、野球をやっている<ruby>団体<rt>だんたい</rt></ruby>というのは、自分たちで野球、ベースボールからアメリカのイメージを<ruby>取<rt>と</rt></ruby>り<ruby>除<rt>のぞ</rt></ruby>く必要があったんです。</p>
+        <p>野球チームの<ruby>名<rt>な</rt></ruby><ruby>前<rt>まえ</rt></ruby>はすべて日本語の名前に変わって、ユニフォームにも<ruby>漢字<rt>かんじ</rt></ruby>で名前が<ruby>書<rt>か</rt></ruby>かれて、試合の時に使ういろんな<ruby>用語<rt>ようご</rt></ruby>がありますね。プレイボールとかストライクとか、こうしたのもプレイボールは「<ruby>始<rt>はじ</rt></ruby>め」とか。ストライクは「よし」とか、アウトは「それまで」とか、ボールは「ダメ」とか、ファールも「ダメ」。こんな形で戦時中は野球そのものが禁止される<ruby>危険性<rt>きけんせい</rt></ruby>もあったんですが、なんとか野球はサバイブしたんですね。</p>
+      </section>
+
+      <section>
+        <h2 id="sec-9">戦後の野球と「軍隊起源説」の実態</h2>
+        <p>さて、戦争が終わって日本はボロボロになったわけですが、この野球というスポーツは戦争には<ruby>負<rt>ま</rt></ruby>けたが、スポーツでは欧米に<ruby>勝<rt>か</rt></ruby>てるかもしれないと。そういう国民の精神的な<ruby>柱<rt>はしら</rt></ruby>になっていったんですね。また、戦争が終わって、たくさんの<ruby>退役<rt>たいえき</rt></ruby><ruby>軍人<rt>ぐんじん</rt></ruby>、つまり戦争中に軍人として戦場で戦ってきた人たちが、日本に帰ってくるわけですね。こうした人たちの就職先として、学校<ruby>教育<rt>きょういく</rt></ruby>の場、特に<ruby>運動部<rt>うんどうぶ</rt></ruby>の活動の場に入ってきたんですね。</p>
+        <p>こうした人たちは元軍人ですから、非常に厳しい<ruby>指導<rt>しどう</rt></ruby>をしたと言われています。ただし、こうした、もともと軍人だった退役軍人が教育の場に戻ってきたから、その野球とか、あるいは他のスポーツクラブでどんどん、<ruby>しごき的<rt>しごきてき</rt></ruby>な<a href="#glossary-3" id="ref-3" class="footnote">*3</a>非常に厳しい指導が行われて、そして軍隊のような部活動というのが<ruby>一般的<rt>いっぱんてき</rt></ruby>になったのだというのは、軍隊<ruby>起源<rt>きげん</rt></ruby><ruby>説<rt>せつ</rt></ruby>と呼ばれたりするんですが、確かにそういう<ruby>側面<rt>そくめん</rt></ruby>も<ruby>一部<rt>いちぶ</rt></ruby>あったはずですが。これはあくまで<ruby>俗説<rt>ぞくせつ</rt></ruby>ですね。</p>
+        <p>一般に言われているけれど、そこまで<ruby>確<rt>たし</rt></ruby>かなものではないという説ですが、この軍隊起源説は一部には正しい部分もあるかもしれませんが、実際には軍人たちというのは戦争に負けた後ですから、どちらかというとあまり強い主張はしなかったという人も多かったそうです。むしろ社会の側が運動部には多少の<ruby>暴力<rt>ぼうりょく</rt></ruby>はあって<ruby>当然<rt>とうぜん</rt></ruby>だと考えるとかですね。あるいは、戦争中に<ruby>過酷<rt>かこく</rt></ruby>な<ruby>経験<rt>けいけん</rt></ruby>をした<ruby>世代<rt>せだい</rt></ruby>の人たちが、<ruby>軍隊<rt>ぐんたい</rt></ruby>生活の中で鍛えられたことが自分たちにとっては良かったと考えて、スポーツの世界でも当然そのような指導がされるべきだと考える人が多かったり。</p>
+        <p>あるいはテレビや漫画などのメディアでも、それまでずっと国のために<ruby>頑張<rt>がんば</rt></ruby>って戦うという論調だったわけですから、スポーツの漫画やテレビなどでも、どうしてもそういった形、非常に厳しい訓練をして、そして相手に勝つんだ、そんなストーリーが人気が出るんですね。というわけですので、確かに軍隊から帰ってきた厳しい体育の先生というのはいたかもしれませんが、むしろ社会の側がそのような部活動、クラブの活動というのを、擁護した、サポートしたという面が大きかったと思います。</p>
+        <p>こうした歴史があって、今でも日本の野球部というのは、髪の毛が短くて、坊主頭で、大きな声で<ruby>挨拶<rt>あいさつ</rt></ruby>をして、真面目に毎日毎日練習に<ruby>励<rt>はげ</rt></ruby>む。こうしたイメージが今でも強いんですね。皆さんも日本のテレビなどで高校野球を見てみると、やはり坊主頭の学生たちが、あぁ、高校生ですから<ruby>生徒<rt>せいと</rt></ruby>を、毎日厳しい練習に耐えて試合に<ruby>臨<rt>のぞ</rt></ruby>んでいるといった、そういった<ruby>映像<rt>えいぞう</rt></ruby>をよく見ると思います。</p>
+      </section>
+
+      <section>
+        <h2 id="sec-10">ブラックな部活動とこれからの変化</h2>
+        <p>ただし、このイメージもどんどん最近は変わりつつあります。どんどん少子化が進んできて、また<ruby>小学校<rt>しょうがっこう</rt></ruby>、<ruby>中学校<rt>ちゅうがっこう</rt></ruby>、高校で部活動をすることが大変になってきました。これは学生、生徒にとって大変というよりは、その部活動を<ruby>支<rt>ささ</rt></ruby>える先生にとって大変ということです。最近は学校の先生というのは、ブラックな働く場所であると言われたりして、先生の人気も下がってきているんですね。その上、部活動の指導もしなければいけないということになると、もうとてもじゃないですけど、先生になりたい人など出てこないんですよね。</p>
+        <p>こうした事情もあって、<ruby>地方<rt>ちほう</rt></ruby><ruby>自治体<rt>じちたい</rt></ruby>では学校での部活動、クラブ活動を禁止するところも出てきています。禁止というよりは、他のスポーツ<ruby>経験者<rt>けいけんしゃ</rt></ruby>に<ruby>任<rt>まか</rt></ruby>せる。学校の先生ではなくて、地域のスポーツ経験者にお任せをする。こういう形ですね。考えてみれば、スポーツは勝つためにやる。これも一つのイデオロギー、考え方ですよね。例えばですけど、<ruby>美術部<rt>びじゅつぶ</rt></ruby>とか<ruby>音楽<rt>おんがく</rt></ruby>のクラブに入ってしっかり練習しなければコンクールで勝てないぞとか。そんなペンの使い方では<ruby>賞<rt>しょう</rt></ruby>が<ruby>取<rt>と</rt></ruby>れないぞ。こんな指導は<ruby>普通<rt>ふつう</rt></ruby>ないわけですよね。</p>
+        <p>でも、野球やサッカーだとしっかり練習しないと相手に勝てないぞ。勝つためには<ruby>血<rt>ち</rt></ruby>の<ruby>滲<rt>にじ</rt></ruby>むような<a href="#glossary-4" id="ref-4" class="footnote">*4</a><ruby>努力<rt>どりょく</rt></ruby>をしなければならない。こんな形の<ruby>風潮<rt>ふうちょう</rt></ruby>が今でもあるんですよね。でも、このイメージもやはり少子高齢化とともにどんどん変わっていくと思います。</p>
+      </section>
+
+      <section>
+        <h2 id="sec-11">エンディング</h2>
+        <p>とまあ、こんなことを、桜のトンネルを見に行って、昔は非常に洗練されたお金持ちの、みんなが<ruby>羨<rt>うらや</rt></ruby>むような場所だったものが、最近は桜がどんどん高齢化して弱ってきて、そしてその地域の人々も高齢化して人口が減ってきていて。そんな社会的な変化で桜のトンネルも位置づけが変わっていくなと思いながら、春の高校野球の<ruby>ニュース<rt>にゅーす</rt></ruby>を見て思ったという、そんなお話でした。</p>
+        <p>皆さんの国ではどんなスポーツが有名ですか？多分その形とか位置づけも歴史によって大きく変わっていると思うので、またコメントなどで教えてくれると嬉しいです。ということで、今日は桜と野球の話でした。また来週も聞いてくれると嬉しいです。</p>
+      </section>
+
+      <section class="glossary-section" aria-labelledby="glossary-title">
+        <h3 id="glossary-title">言葉の解説 (Glossary)</h3>
+        <ol class="glossary-list">
+          <li id="glossary-1">
+            <span class="glossary-term">野球害毒論 (やきゅうがいどくろん)</span>
+            <div class="glossary-desc">
+              <p><strong>意味 (Meaning):</strong> 野球が学生の勉強を邪魔し、体を壊し、精神的に悪影響（害毒）を与えるという批判的な考え方のこと。</p>
+              <p><strong>例文 (Examples):</strong></p>
+              <ul>
+                <li>昔の新聞で、野球害毒論というキャンペーンが張られた時代があった。</li>
+              </ul>
+              <p><strong>比較 (Comparison):</strong></p>
+              <ul>
+                <li><strong>「野球擁護論」との違い:</strong> 害毒論が「野球は有害だ」と主張するのに対し、擁護論は「野球は素晴らしい」と守る立場の意見です。</li>
+              </ul>
+            </div>
+            <a href="#ref-1" class="backlink">本文へ戻る</a>
+          </li>
+          
+          <li id="glossary-2">
+            <span class="glossary-term">擁護 (ようご)</span>
+            <div class="glossary-desc">
+              <p><strong>意味 (Meaning):</strong> 批判や攻撃から、ある人や考え方を守ること、かばうこと。</p>
+              <p><strong>例文 (Examples):</strong></p>
+              <ul>
+                <li>他の新聞社は、野球を拥護する記事を書いた。</li>
+                <li>彼は友達を擁護するために立ち上がった。</li>
+              </ul>
+              <p><strong>比較 (Comparison):</strong></p>
+              <ul>
+                <li><strong>「保護」との違い:</strong> 「保護」は弱いものや自然などを安全に守ることですが、「擁護」は批判されている立場や権利を言葉でサポートするニュアンスが強いです。</li>
+              </ul>
+            </div>
+            <a href="#ref-2" class="backlink">本文へ戻る</a>
+          </li>
+
+          <li id="glossary-3">
+            <span class="glossary-term">しごき的な (しごきてきな) / しごき</span>
+            <div class="glossary-desc">
+              <p><strong>意味 (Meaning):</strong> 肉体的・精神的に極めて限界まで追い込むような、激しくて時に理不尽な厳しい訓練のこと。</p>
+              <p><strong>例文 (Examples):</strong></p>
+              <ul>
+                <li>昔の部活動では、しごき的な理不尽な練習が当たり前だった。</li>
+                <li>もうこれ以上のしごきには耐えられない。</li>
+              </ul>
+              <p><strong>比較 (Comparison):</strong></p>
+              <ul>
+                <li><strong>「厳しい練習」との違い:</strong> 「厳しい練習」は合理的なトレーニングを含むことが多いですが、「しごき」は罰として走らせたり、根性を試すために理不尽に行う苦痛を伴うものです。</li>
+              </ul>
+            </div>
+            <a href="#ref-3" class="backlink">本文へ戻る</a>
+          </li>
+
+          <li id="glossary-4">
+            <span class="glossary-term">血の滲むような (ちのにじむような)</span>
+            <div class="glossary-desc">
+              <p><strong>意味 (Meaning):</strong> 血がにじんで出てくるほど、大変で苦しい、並大抵ではない努力や苦労のこと。</p>
+              <p><strong>例文 (Examples):</strong></p>
+              <ul>
+                <li>彼はオリンピックに出るために、血の滲むような努力をした。</li>
+                <li>血の滲むような練習の成果が、この試合で出た。</li>
+              </ul>
+              <p><strong>比較 (Comparison):</strong></p>
+              <ul>
+                <li><strong>「一生懸命な」との違い:</strong> 「一生懸命」よりも遥かに度合いが強く、限界を超えた過酷さと苦痛を乗り越える強い意志を表現する比喩です。</li>
+              </ul>
+            </div>
+            <a href="#ref-4" class="backlink">本文へ戻る</a>
+          </li>
+        </ol>
+      </section>
+
+    </article>
+  </main>
+</body>
+</html>

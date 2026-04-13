@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>たこ焼きの話</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #fbf6ee;
+      --paper-deep: #efe4d3;
+      --sheet: rgba(255, 252, 248, 0.94);
+      --ink: #201a18;
+      --muted: #61564f;
+      --line: rgba(90, 62, 42, 0.16);
+      --line-strong: rgba(90, 62, 42, 0.28);
+      --accent: #c24c2f;
+      --accent-deep: #7f2f1f;
+      --accent-soft: rgba(194, 76, 47, 0.12);
+      --shadow: 0 22px 56px rgba(63, 35, 20, 0.11);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --max: 1180px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(194, 76, 47, 0.11), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(138, 93, 62, 0.10), transparent 24%),
+        linear-gradient(180deg, #f4ebdf 0%, #fbf8f3 48%, #f3ede4 100%);
+      font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans CJK JP", sans-serif;
+      line-height: 1.78;
+      min-height: 100vh;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(120, 77, 47, 0.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(120, 77, 47, 0.022) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.4), transparent 84%);
+    }
+    main {
+      position: relative;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 34px 18px 72px;
+    }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 24px;
+      padding: 32px 30px 28px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(250, 243, 235, 0.95)),
+        linear-gradient(180deg, rgba(194, 76, 47, 0.06), transparent 58%);
+      box-shadow: var(--shadow);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      right: -72px;
+      top: -96px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(194, 76, 47, 0.18), transparent 68%);
+    }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--accent-deep);
+      font-size: 0.8rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      margin: 0;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
+      font-size: clamp(2.2rem, 4.8vw, 3.55rem);
+      line-height: 1.05;
+      letter-spacing: 0.01em;
+    }
+    .lede {
+      max-width: 64ch;
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 0.82rem;
+      border-radius: 999px;
+      border: 1px solid rgba(127, 47, 31, 0.14);
+      background: rgba(255, 250, 245, 0.78);
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 285px) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    .toc {
+      position: sticky;
+      top: 18px;
+      background: rgba(255, 252, 248, 0.88);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 20px 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .toc h2 {
+      margin: 0 0 14px;
+      color: var(--accent-deep);
+      font-size: 0.96rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .toc ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 10px;
+    }
+    .toc a {
+      display: block;
+      padding: 0.75rem 0.88rem;
+      border-radius: 14px;
+      color: inherit;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid transparent;
+      transition: transform 150ms ease, border-color 150ms ease, background 150ms ease, color 150ms ease;
+    }
+    .toc a:hover {
+      transform: translateX(3px);
+      border-color: rgba(194, 76, 47, 0.24);
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--accent-deep);
+    }
+    article {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 251, 246, 0.94));
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .content-section {
+      padding: 28px 30px;
+      scroll-margin-top: 24px;
+    }
+    .content-section + .content-section {
+      border-top: 1px solid var(--line);
+    }
+    h2 {
+      margin: 0 0 16px;
+      display: inline-block;
+      padding-bottom: 0.36rem;
+      border-bottom: 2px solid rgba(194, 76, 47, 0.18);
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
+      font-size: 1.58rem;
+      line-height: 1.3;
+    }
+    h4 {
+      margin: 0;
+      font-size: 1.08rem;
+      line-height: 1.35;
+    }
+    p {
+      margin: 0;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
+      font-size: 1.12rem;
+      line-height: 1.96;
+      text-wrap: pretty;
+    }
+    p + p { margin-top: 1.04em; }
+    ruby { ruby-position: over; }
+    rt {
+      font-size: 0.5em;
+      color: rgba(78, 59, 49, 0.72);
+      letter-spacing: 0.02em;
+    }
+    .footnote {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.55em;
+      padding: 0 0.38em;
+      margin-left: 0.18em;
+      border-radius: 999px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.72em;
+      line-height: 1.6;
+      vertical-align: super;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      box-shadow: 0 8px 18px rgba(127, 47, 31, 0.2);
+    }
+    .glossary-section {
+      background: linear-gradient(180deg, rgba(239, 228, 211, 0.28), rgba(255, 252, 248, 0.92));
+    }
+    .glossary-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 18px;
+    }
+    .glossary-entry {
+      padding: 18px 18px 16px;
+      border: 1px solid rgba(127, 47, 31, 0.12);
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.78);
+    }
+    .glossary-entry h4 {
+      margin-bottom: 10px;
+      font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans CJK JP", sans-serif;
+    }
+    .glossary-entry p {
+      font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans CJK JP", sans-serif;
+      font-size: 0.98rem;
+      line-height: 1.78;
+    }
+    .glossary-block + .glossary-block {
+      margin-top: 12px;
+    }
+    .note-backref {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--accent-deep);
+      font-size: 0.88rem;
+      text-decoration: none;
+    }
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .toc {
+        position: relative;
+        top: auto;
+      }
+    }
+    @media (max-width: 720px) {
+      main { padding: 18px 12px 52px; }
+      .hero { padding: 24px 20px 22px; }
+      .content-section { padding: 22px 20px; }
+      p { font-size: 1.02rem; line-height: 1.88; }
+    }
+    @page {
+      size: A4;
+      margin: 14mm;
+    }
+    @media print {
+      body {
+        background: #fff;
+      }
+      body::before,
+      .toc {
+        display: none;
+      }
+      main {
+        max-width: none;
+        padding: 0;
+      }
+      .hero,
+      article {
+        border: none;
+        box-shadow: none;
+        background: #fff;
+      }
+      .hero,
+      .glossary-entry,
+      h2,
+      h4 {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      h2,
+      h4 {
+        break-after: avoid;
+        page-break-after: avoid;
+      }
+      p {
+        orphans: 3;
+        widows: 3;
+      }
+      .content-section {
+        padding: 0 0 18px;
+      }
+      .content-section + .content-section {
+        border-top: none;
+        padding-top: 18px;
+      }
+      .footnote {
+        color: var(--accent-deep);
+        background: transparent;
+        box-shadow: none;
+        border: 1px solid rgba(127, 47, 31, 0.24);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">Learner-Friendly Transcript</p>
+      <h1><ruby>たこ焼き<rt>たこやき</rt></ruby>の話</h1>
+      <p class="lede">たこ焼きの魅力、歴史、地域差、そして「あるある」までを、やさしい注つきで読める学習用ドキュメントです。</p>
+      <div class="meta-row">
+        <span class="meta-chip">ふりがな付き</span>
+        <span class="meta-chip">語句メモ 10件</span>
+        <span class="meta-chip">日本文化</span>
+        <span class="meta-chip">中級以上</span>
+      </div>
+    </section>
+    <div class="layout">
+      <aside class="toc" aria-label="目次">
+        <h2><ruby>目次<rt>もくじ</rt></ruby></h2>
+        <ul>
+          <li><a href="#section-1">はじめに</a></li>
+          <li><a href="#section-2">日本で食べたいもの</a></li>
+          <li><a href="#section-3"><ruby>たこ焼き器<rt>たこやきき</rt></ruby>は<ruby>必需品<rt>ひつじゅひん</rt></ruby></a></li>
+          <li><a href="#section-4"><ruby>たこ焼き<rt>たこやき</rt></ruby>の<ruby>魅力<rt>みりょく</rt></ruby></a></li>
+          <li><a href="#section-5">たこ焼きの<ruby>始まり<rt>はじまり</rt></ruby></a></li>
+          <li><a href="#section-6"><ruby>明石焼き<rt>あかしやき</rt></ruby>との<ruby>違い<rt>ちがい</rt></ruby></a></li>
+          <li><a href="#section-7">東京スタイルと<ruby>大阪<rt>おおさか</rt></ruby>スタイル</a></li>
+          <li><a href="#section-8">ソースだけじゃない<ruby>楽しみ方<rt>たのしみかた</rt></ruby></a></li>
+          <li><a href="#section-9"><ruby>銀だこ<rt>ぎんだこ</rt></ruby>の<ruby>てり玉<rt>てりたま</rt></ruby></a></li>
+          <li><a href="#section-10">たこ焼きあるある</a></li>
+          <li><a href="#section-11">おわりに</a></li>
+          <li><a href="#glossary"><ruby>語句<rt>ごく</rt></ruby>メモ</a></li>
+        </ul>
+      </aside>
+      <article>
+      <section class="content-section" id="section-1">
+        <h2>はじめに</h2>
+        <p>まいの<ruby>日本語<rt>にほんご</rt></ruby>ポッドキャスト、こんにちは。まいの<ruby>日本語<rt>にほんご</rt></ruby>ポッドキャストへようこそ。まいです。<ruby>皆さん<rt>みなさん</rt></ruby>、<ruby>お元気<rt>おげんき</rt></ruby>で<ruby>お過ごし<rt>おすごし</rt></ruby>でしょうか。<ruby>私<rt>わたし</rt></ruby>は元気です。</p>
+        <p>はい、<ruby>皆さん<rt>みなさん</rt></ruby>、<ruby>先週<rt>せんしゅう</rt></ruby><ruby>1週間<rt>しゅうかん</rt></ruby><ruby>投稿<rt>とうこう</rt></ruby>をお<ruby>休み<rt>やすみ</rt></ruby>しちゃってすみませんでした。ありがとうございました。おかげで<ruby>本当に<rt>ほんとうに</rt></ruby>ゆっくりと<ruby>実家<rt>じっか</rt></ruby>で<ruby>過ごす<rt>すごす</rt></ruby>ことができました。</p>
+        <p>知ってる方も多いかなって<ruby>思う<rt>おもう</rt></ruby>んですけど、<ruby>私<rt>わたし</rt></ruby>は今、<ruby>日本<rt>にほん</rt></ruby>に<ruby>帰ってきています<rt>かえってきています</rt></ruby>。<ruby>今回<rt>こんかい</rt></ruby>は<ruby>六ヶ月ぶり<rt>ろくかげつぶり</rt></ruby>かな。<ruby>六ヶ月ぶり<rt>ろくかげつぶり</rt></ruby>の<ruby>一時帰国<rt>いちじきこく</rt></ruby><a href="#glossary-1" id="ref-1" class="footnote">*1</a>です。</p>
+        <p>やっぱり<ruby>久しぶり<rt>ひさしぶり</rt></ruby>の日本はいいですね。<ruby>東京<rt>とうきょう</rt></ruby>は<ruby>桜<rt>さくら</rt></ruby>が<ruby>咲き<rt>さき</rt></ruby><ruby>始めていて<rt>はじめていて</rt></ruby>、もうすぐ<ruby>満開<rt>まんかい</rt></ruby>を<ruby>迎える<rt>むかえる</rt></ruby>かなっていう<ruby>感じ<rt>かんじ</rt></ruby>ですね。<ruby>今年<rt>ことし</rt></ruby>はもう<ruby>日本<rt>にほん</rt></ruby>の<ruby>桜<rt>さくら</rt></ruby>を見ようって決めているのでね、<ruby>今<rt>いま</rt></ruby>からすごく<ruby>楽しみ<rt>たのしみ</rt></ruby>です。</p>
+      </section>
+      <section class="content-section" id="section-2">
+        <h2>日本で食べたいもの</h2>
+        <p>あとは、<ruby>帰国<rt>きこく</rt></ruby>したら<ruby>絶対<rt>ぜったい</rt></ruby>に食べるって決めていたものを、<ruby>今<rt>いま</rt></ruby>はすっごい<ruby>食べています<rt>たべています</rt></ruby>。もう<ruby>食べまくってます<rt>たべまくってます</rt></ruby>ね。<ruby>韓国<rt>かんこく</rt></ruby>にいる<ruby>時<rt>とき</rt></ruby>に、<ruby>事前<rt>じぜん</rt></ruby>に食べたいものリストを<ruby>書いておいた<rt>かいておいた</rt></ruby>んですよ。こうやって<ruby>久しぶり<rt>ひさしぶり</rt></ruby>に日本に<ruby>帰る<rt>かえる</rt></ruby>ってなると、ああ、あれ<ruby>食べたい<rt>たべたい</rt></ruby>な、これ<ruby>食べたい<rt>たべたい</rt></ruby>なって、<ruby>本当に<rt>ほんとうに</rt></ruby><ruby>色々<rt>いろいろ</rt></ruby>と出てくるんですよね。<ruby>食べたい<rt>たべたい</rt></ruby>食べ物が。</p>
+        <p>例えば、おにぎりとかラーメンとかね。あとは<ruby>焼肉<rt>やきにく</rt></ruby>、<ruby>お寿司<rt>おすし</rt></ruby>とか、<ruby>本当に<rt>ほんとうに</rt></ruby>いろいろあるんですけど、その<ruby>中<rt>なか</rt></ruby>でも今回は<ruby>特に<rt>とくに</rt></ruby>食べたいって思ってたものがあります。</p>
+        <p>それはですね、<ruby>外<rt>そと</rt></ruby>はカリッとしていて、<ruby>中<rt>なか</rt></ruby>はとろーっと、そしてソースの<ruby>香り<rt>かおり</rt></ruby>がして、<ruby>青海苔<rt>あおのり</rt></ruby>とおかかとマヨネーズのハーモニー。これ、<ruby>何だか<rt>なんだか</rt></ruby><ruby>分かります<rt>わかります</rt></ruby>か。</p>
+        <p>そう、<ruby>たこ焼き<rt>たこやき</rt></ruby>です。<ruby>皆さん<rt>みなさん</rt></ruby>、<ruby>たこ焼き<rt>たこやき</rt></ruby>食べたことありますかね。<ruby>お好き<rt>おすき</rt></ruby>ですか。</p>
+      </section>
+      <section class="content-section" id="section-3">
+        <h2><ruby>たこ焼き器<rt>たこやきき</rt></ruby>は<ruby>必需品<rt>ひつじゅひん</rt></ruby><a href="#glossary-2" id="ref-2" class="footnote">*2</a></h2>
+        <p>ちなみに<ruby>前<rt>まえ</rt></ruby>にメンバー<ruby>限定<rt>げんてい</rt></ruby>ライブ<ruby>配信<rt>はいしん</rt></ruby>をした<ruby>時<rt>とき</rt></ruby>に、「<ruby>日本<rt>にほん</rt></ruby>から<ruby>韓国<rt>かんこく</rt></ruby>に行く時に<ruby>絶対<rt>ぜったい</rt></ruby>に<ruby>必要<rt>ひつよう</rt></ruby>って思って<ruby>持って<rt>もって</rt></ruby>行ったものはありますか」っていう<ruby>質問<rt>しつもん</rt></ruby>をいただいたんですよ。で、その<ruby>時<rt>とき</rt></ruby>に私がパッて<ruby>出てきた<rt>でてきた</rt></ruby>ものが、<ruby>たこ焼き器<rt>たこやきき</rt></ruby>でした。<ruby>たこ焼き器<rt>たこやきき</rt></ruby>って<ruby>分かります<rt>わかります</rt></ruby>。<ruby>たこ焼き<rt>たこやき</rt></ruby>を<ruby>焼く<rt>やく</rt></ruby><ruby>機械<rt>きかい</rt></ruby>ですね。</p>
+        <p>それを<ruby>持って<rt>もって</rt></ruby>行ったなと思って。<ruby>本当に<rt>ほんとうに</rt></ruby>私は<ruby>全く<rt>まったく</rt></ruby><ruby>迷わず<rt>まよわず</rt></ruby>、<ruby>当然<rt>とうぜん</rt></ruby>のように<ruby>持って<rt>もって</rt></ruby>行ったんですけど、それを<ruby>友達<rt>ともだち</rt></ruby>に<ruby>話したら<rt>はなしたら</rt></ruby>、「え、そこまでする？ <ruby>たこ焼き<rt>たこやき</rt></ruby>にめっちゃ<ruby>本気<rt>ほんき</rt></ruby>じゃん」って<ruby>言わ<rt>いわ</rt></ruby>れましたね。</p>
+        <p>でも私にとったら、それは<ruby>必需品<rt>ひつじゅひん</rt></ruby>だったので、<ruby>持っていかない<rt>もっていかない</rt></ruby>っていう<ruby>選択肢<rt>せんたくし</rt></ruby>はありませんでしたね。<ruby>必需品<rt>ひつじゅひん</rt></ruby>っていうのは、<ruby>絶対<rt>ぜったい</rt></ruby>に<ruby>必要<rt>ひつよう</rt></ruby>なもの、なくてはならないものっていう<ruby>意味<rt>いみ</rt></ruby>です。</p>
+        <p>でもね、そのおかげでたまに<ruby>旦那さん<rt>だんなさん</rt></ruby>と<ruby>一緒<rt>いっしょ</rt></ruby>にお<ruby>家<rt>おうち</rt></ruby>でタコパ<a href="#glossary-3" id="ref-3" class="footnote">*3</a>、<ruby>たこ焼き<rt>たこやき</rt></ruby>パーティーのことですね、タコパをすることができるので、<ruby>本当に<rt>ほんとうに</rt></ruby><ruby>持って<rt>もって</rt></ruby>行って良かったなって<ruby>思っています<rt>おもっています</rt></ruby>ね。</p>
+      </section>
+      <section class="content-section" id="section-4">
+        <h2><ruby>たこ焼き<rt>たこやき</rt></ruby>の<ruby>魅力<rt>みりょく</rt></ruby></h2>
+        <p>たこ焼きって結構<ruby>不思議<rt>ふしぎ</rt></ruby>な食べ物だなって<ruby>私<rt>わたし</rt></ruby>思うんですよね。<ruby>例えば<rt>たとえば</rt></ruby>、<ruby>屋台<rt>やたい</rt></ruby><a href="#glossary-4" id="ref-4" class="footnote">*4</a>の食べ物っていうイメージもあるし、おやつみたいに<ruby>軽く<rt>かるく</rt></ruby>食べるっていう<ruby>感じ<rt>かんじ</rt></ruby>もありますよね。</p>
+        <p>あとは<ruby>家<rt>いえ</rt></ruby>でみんなで<ruby>作る<rt>つくる</rt></ruby>と、タコパとかした<ruby>時<rt>とき</rt></ruby>にすごく<ruby>盛り上がる<rt>もりあがる</rt></ruby>食べ物でもあるんですよね。だから、ただ<ruby>食べて<rt>たべて</rt></ruby><ruby>終わり<rt>おわり</rt></ruby>っていう<ruby>食べ物<rt>たべもの</rt></ruby>じゃなくって、<ruby>一緒<rt>いっしょ</rt></ruby>にみんなで<ruby>焼い<rt>やい</rt></ruby>たり、<ruby>誰<rt>だれ</rt></ruby>が一番うまく<ruby>作れる<rt>つくれる</rt></ruby>かみたいな<ruby>話<rt>はなし</rt></ruby>になったりね。それからタコだけじゃなくって、<ruby>他<rt>た</rt></ruby>の<ruby>材料<rt>ざいりょう</rt></ruby>、いろんな<ruby>具材<rt>ぐざい</rt></ruby>を入れて<ruby>焼い<rt>やい</rt></ruby>たりすることもできるので、そういうふうに<ruby>自然<rt>しぜん</rt></ruby>と<ruby>会話<rt>かいわ</rt></ruby>が<ruby>生まれる<rt>うまれる</rt></ruby>と言いますか、<ruby>人<rt>ひと</rt></ruby>と<ruby>一緒<rt>いっしょ</rt></ruby>に<ruby>楽しむ<rt>たのしむ</rt></ruby><ruby>前提<rt>ぜんてい</rt></ruby>の食べ物っていう<ruby>感じ<rt>かんじ</rt></ruby>がするんですよね。</p>
+        <p>ということで、<ruby>今日<rt>きょう</rt></ruby>は<ruby>たこ焼き<rt>たこやき</rt></ruby>について<ruby>お話し<rt>おはなし</rt></ruby>してみようと<ruby>思います<rt>おもいます</rt></ruby>。<ruby>何で<rt>なんで</rt></ruby>こんなに<ruby>たこ焼き<rt>たこやき</rt></ruby>が<ruby>愛さ<rt>あいさ</rt></ruby>れているのか、あとは<ruby>日本人<rt>にほんじん</rt></ruby>なら何となく<ruby>共感<rt>きょうかん</rt></ruby>できる<ruby>たこ焼き<rt>たこやき</rt></ruby>あるあるについても<ruby>ご紹介<rt>ごしょうかい</rt></ruby>していきたいなと<ruby>思います<rt>おもいます</rt></ruby>ので、ぜひ<ruby>最後<rt>さいご</rt></ruby>まで<ruby>聴いて<rt>きいて</rt></ruby>いただけると<ruby>嬉しいです<rt>うれしいです</rt></ruby>。</p>
+        <p>そして、このまいの<ruby>日本語<rt>にほんご</rt></ruby>ポッドキャストではメンバーシップもやっています。<ruby>興味<rt>きょうみ</rt></ruby>がある<ruby>方<rt>ほう</rt></ruby>はぜひ<ruby>概要欄<rt>がいようらん</rt></ruby>を<ruby>ご覧<rt>ごらん</rt></ruby>ください。</p>
+      </section>
+      <section class="content-section" id="section-5">
+        <h2>たこ焼きの<ruby>始まり<rt>はじまり</rt></ruby></h2>
+        <p>たこ焼きといえば、やっぱり<ruby>大阪<rt>おおさか</rt></ruby>のイメージが<ruby>強いです<rt>つよいです</rt></ruby>よね。<ruby>実際<rt>じっさい</rt></ruby>にこの<ruby>たこ焼き<rt>たこやき</rt></ruby>は大阪で<ruby>生まれて<rt>うまれて</rt></ruby>、<ruby>全国<rt>ぜんこく</rt></ruby>に<ruby>広まった<rt>ひろまった</rt></ruby>食べ物だと言われています。</p>
+        <p><ruby>昔<rt>むかし</rt></ruby>は<ruby>ラジオ焼き<rt>らじおやき</rt></ruby><a href="#glossary-5" id="ref-5" class="footnote">*5</a>っていう<ruby>食べ物<rt>たべもの</rt></ruby>があって、それが<ruby>元<rt>もと</rt></ruby>になって<ruby>今<rt>いま</rt></ruby>の<ruby>たこ焼き<rt>たこやき</rt></ruby>の<ruby>形<rt>かたち</rt></ruby>になったそうです。この<ruby>ラジオ焼き<rt>らじおやき</rt></ruby>なんですけど、<ruby>大阪<rt>おおさか</rt></ruby>に会津屋っていう<ruby>有名<rt>ゆうめい</rt></ruby>な<ruby>たこ焼き<rt>たこやき</rt></ruby>の<ruby>お店<rt>おみせ</rt></ruby>があるんですけど、<ruby>1935年<rt>ねん</rt></ruby>にその<ruby>会津屋<rt>あいづや</rt></ruby>の<ruby>初代<rt>しょだい</rt></ruby>、<ruby>遠藤<rt>えんどう</rt></ruby><ruby>留吉<rt>とめきち</rt></ruby>という<ruby>人<rt>ひと</rt></ruby>が、<ruby>大人<rt>おとな</rt></ruby>がビールを<ruby>飲み<rt>のみ</rt></ruby>ながら<ruby>食べ<rt>たべ</rt></ruby>られて、しかも<ruby>冷めて<rt>さめて</rt></ruby>も<ruby>美味しい<rt>おいしい</rt></ruby>食べ物を作りたいっていうふうに<ruby>考えて<rt>かんがえて</rt></ruby>、<ruby>小麦粉<rt>こむぎこ</rt></ruby>の<ruby>生地<rt>きじ</rt></ruby>の中に<ruby>牛肉<rt>ぎゅうにく</rt></ruby>やこんにゃく、<ruby>豆<rt>まめ</rt></ruby>などを<ruby>入れた<rt>いれた</rt></ruby><ruby>ラジオ焼き<rt>らじおやき</rt></ruby>っていう<ruby>食べ物<rt>たべもの</rt></ruby>を作ったんですね。</p>
+        <p>私、この<ruby>ラジオ焼き<rt>らじおやき</rt></ruby>って知らなくって、<ruby>今回<rt>こんかい</rt></ruby><ruby>初めて<rt>はじめて</rt></ruby>知ったんですよ。それで、<ruby>何で<rt>なんで</rt></ruby><ruby>ラジオ焼き<rt>らじおやき</rt></ruby>っていう<ruby>名前<rt>なまえ</rt></ruby>なのか<ruby>気<rt>き</rt></ruby>になったので<ruby>調べてみた<rt>しらべてみた</rt></ruby>んですけど、<ruby>当時<rt>とうじ</rt></ruby>の日本って、<ruby>家電<rt>かでん</rt></ruby><ruby>製品<rt>せいひん</rt></ruby>のラジオがすごく<ruby>高価<rt>こうか</rt></ruby>なもので、<ruby>流行<rt>りゅうこう</rt></ruby>の<ruby>最先端<rt>さいせんたん</rt></ruby>っていうイメージだったんですね。なので、<ruby>遠藤<rt>えんどう</rt></ruby><ruby>留吉さん<rt>とめきちさん</rt></ruby>が<ruby>牛肉<rt>ぎゅうにく</rt></ruby>とかを<ruby>入れた<rt>いれた</rt></ruby>この食べ物にハイセンスなネーミングをつけたいっていうことで、<ruby>ラジオ焼き<rt>らじおやき</rt></ruby>という<ruby>名前<rt>なまえ</rt></ruby>にしたと<ruby>言わ<rt>いわ</rt></ruby>れています。</p>
+        <p>ただ、この<ruby>ラジオ焼き<rt>らじおやき</rt></ruby>、<ruby>実は<rt>じつは</rt></ruby>あんまり<ruby>人気<rt>にんき</rt></ruby>が出なかったそうなんですね。それで、<ruby>ラジオ焼き<rt>らじおやき</rt></ruby>を食べていた<ruby>お客さん<rt>おきゃくさん</rt></ruby>から「<ruby>明石<rt>あかし</rt></ruby>ではタコを<ruby>入れて<rt>いれて</rt></ruby>食べているよ」って<ruby>言わ<rt>いわ</rt></ruby>れたそうで、それを<ruby>聞いて<rt>きいて</rt></ruby>、<ruby>ラジオ焼き<rt>らじおやき</rt></ruby>の<ruby>生地<rt>きじ</rt></ruby>の中にタコを<ruby>入れて<rt>いれて</rt></ruby><ruby>焼いた<rt>やいた</rt></ruby>そうなんです。こうして<ruby>誕生<rt>たんじょう</rt></ruby>したのが、<ruby>たこ焼き<rt>たこやき</rt></ruby>なんですね。</p>
+      </section>
+      <section class="content-section" id="section-6">
+        <h2><ruby>明石焼き<rt>あかしやき</rt></ruby><a href="#glossary-6" id="ref-6" class="footnote">*6</a>との<ruby>違い<rt>ちがい</rt></ruby></h2>
+        <p>ちなみに<ruby>明石<rt>あかし</rt></ruby>っていうのは<ruby>兵庫県<rt>ひょうごけん</rt></ruby>の<ruby>明石市<rt>あかしし</rt></ruby>のことで、タコの<ruby>名産地<rt>めいさんち</rt></ruby>です。<ruby>実は<rt>じつは</rt></ruby>その<ruby>明石<rt>あかし</rt></ruby>には、<ruby>たこ焼き<rt>たこやき</rt></ruby>に<ruby>少し<rt>すこし</rt></ruby><ruby>似た<rt>にた</rt></ruby><ruby>明石焼き<rt>あかしやき</rt></ruby>っていうタコを<ruby>使った<rt>つかった</rt></ruby><ruby>有名<rt>ゆうめい</rt></ruby>な<ruby>料理<rt>りょうり</rt></ruby>があるんですよ。</p>
+        <p>見た目は<ruby>たこ焼き<rt>たこやき</rt></ruby>にちょっと<ruby>似ている<rt>にている</rt></ruby>んですけど、<ruby>食べ<rt>たべ</rt></ruby>方とか<ruby>味<rt>あじ</rt></ruby>が結構<ruby>違います<rt>ちがいます</rt></ruby>。まず<ruby>一番<rt>いちばん</rt></ruby>大きな<ruby>違い<rt>ちがい</rt></ruby>は食べ方です。<ruby>たこ焼き<rt>たこやき</rt></ruby>はソースやマヨネーズをかけて<ruby>食べる<rt>たべる</rt></ruby>ことが<ruby>多い<rt>おおい</rt></ruby>んですけど、<ruby>明石焼き<rt>あかしやき</rt></ruby>は<ruby>出汁<rt>だし</rt></ruby>につけて<ruby>食べる<rt>たべる</rt></ruby>のが<ruby>特徴<rt>とくちょう</rt></ruby>です。なので、<ruby>味<rt>あじ</rt></ruby>も<ruby>たこ焼き<rt>たこやき</rt></ruby>よりあっさりとしています。</p>
+        <p>あとは<ruby>少し<rt>すこし</rt></ruby><ruby>生地<rt>きじ</rt></ruby>も<ruby>違っていて<rt>ちがっていて</rt></ruby>、<ruby>たこ焼き<rt>たこやき</rt></ruby>は<ruby>小麦粉<rt>こむぎこ</rt></ruby>ベースでしっかりとした<ruby>生地<rt>きじ</rt></ruby>なんですけど、<ruby>明石焼き<rt>あかしやき</rt></ruby>は<ruby>卵<rt>たまご</rt></ruby>が多くて、もっとふわふわで<ruby>柔らかい<rt>やわらかい</rt></ruby>んですよ。</p>
+        <p>だから、<ruby>同じ<rt>おなじ</rt></ruby><ruby>丸くて<rt>まるくて</rt></ruby>中にタコが<ruby>入っている<rt>はいっている</rt></ruby>食べ物でも、<ruby>実は<rt>じつは</rt></ruby>結構<ruby>違う<rt>ちがう</rt></ruby>食べ物なんですね。こうやって<ruby>見る<rt>みる</rt></ruby>と、<ruby>同じ<rt>おなじ</rt></ruby>タコを<ruby>使った<rt>つかった</rt></ruby><ruby>料理<rt>りょうり</rt></ruby>でも<ruby>地域<rt>ちいき</rt></ruby>によって<ruby>全然<rt>ぜんぜん</rt></ruby><ruby>違う<rt>ちがう</rt></ruby><ruby>形<rt>かたち</rt></ruby>になるので、こういうところもすごい<ruby>面白いです<rt>おもしろいです</rt></ruby>よね。</p>
+      </section>
+      <section class="content-section" id="section-7">
+        <h2>東京スタイルと<ruby>大阪<rt>おおさか</rt></ruby>スタイル</h2>
+        <p>あともう<ruby>一つ<rt>ひとつ</rt></ruby><ruby>面白い<rt>おもしろい</rt></ruby>のが、<ruby>たこ焼き<rt>たこやき</rt></ruby>の話をすると<ruby>日本<rt>にほん</rt></ruby>の中でよく<ruby>出てくる<rt>でてくる</rt></ruby>話があります。それが、<ruby>東京<rt>とうきょう</rt></ruby>スタイルか<ruby>大阪<rt>おおさか</rt></ruby>スタイルかっていう<ruby>話<rt>はなし</rt></ruby>です。</p>
+        <p>最近は<ruby>地域<rt>ちいき</rt></ruby>の<ruby>違い<rt>ちがい</rt></ruby>もそこまではっきりしていないですし、あとは<ruby>お店ごと<rt>おみせごと</rt></ruby>にスタイルもバラバラなので、こう<ruby>分かれる<rt>わかれる</rt></ruby>っていうふうにはっきり<ruby>言う<rt>いう</rt></ruby>のは<ruby>難しい<rt>むずかしい</rt></ruby>んですけど、イメージで<ruby>言ったら<rt>いったら</rt></ruby>、<ruby>大阪<rt>おおさか</rt></ruby>の方は<ruby>外<rt>そと</rt></ruby>がふわふわで<ruby>中<rt>なか</rt></ruby>がとろとろした<ruby>たこ焼き<rt>たこやき</rt></ruby>、そして<ruby>東京<rt>とうきょう</rt></ruby>の方は<ruby>油<rt>あぶら</rt></ruby>を<ruby>少し<rt>すこし</rt></ruby>多めに使って、<ruby>外<rt>そと</rt></ruby>がカリカリの<ruby>たこ焼き<rt>たこやき</rt></ruby>っていう<ruby>感じ<rt>かんじ</rt></ruby>ですかね。<ruby>私<rt>わたし</rt></ruby>はこういう<ruby>違い<rt>ちがい</rt></ruby>が<ruby>面白い<rt>おもしろい</rt></ruby>なって<ruby>思います<rt>おもいます</rt></ruby>ね。</p>
+        <p><ruby>同じ<rt>おなじ</rt></ruby>たこ焼きでも、ふわふわで<ruby>柔らかい<rt>やわらかい</rt></ruby>ものが<ruby>本物<rt>ほんもの</rt></ruby>だよっていう<ruby>人<rt>ひと</rt></ruby>もいれば、<ruby>外<rt>そと</rt></ruby>が<ruby>少し<rt>すこし</rt></ruby>カリッとしてる<ruby>方<rt>ほう</rt></ruby>が<ruby>美味しい<rt>おいしい</rt></ruby>よっていう<ruby>人<rt>ひと</rt></ruby>もいますね。</p>
+        <p>ちなみに<ruby>昔<rt>むかし</rt></ruby>、<ruby>私<rt>わたし</rt></ruby>が<ruby>19歳<rt>さい</rt></ruby>ぐらいの<ruby>時<rt>とき</rt></ruby>に<ruby>友達<rt>ともだち</rt></ruby>と<ruby>一緒<rt>いっしょ</rt></ruby>に大阪旅行に行ったんですよ。その<ruby>時<rt>とき</rt></ruby>、<ruby>串カツ屋さん<rt>くしかつやさん</rt></ruby>に<ruby>入った<rt>はいった</rt></ruby>んですね。それで、そこの<ruby>店長さん<rt>てんちょうさん</rt></ruby>がすごく<ruby>明るくって<rt>あかるくって</rt></ruby><ruby>話し<rt>はなし</rt></ruby>やすい<ruby>人<rt>ひと</rt></ruby>だったので、たくさんおしゃべりをしたんですね。で、その<ruby>時<rt>とき</rt></ruby>たこ焼きの話になったんですよ。そうしたらその<ruby>店長さん<rt>てんちょうさん</rt></ruby>に、「<ruby>東京<rt>とうきょう</rt></ruby>の<ruby>たこ焼き<rt>たこやき</rt></ruby>は<ruby>たこ焼き<rt>たこやき</rt></ruby>ちゃうで、<ruby>揚げた<rt>あげた</rt></ruby>こや」って<ruby>言わ<rt>いわ</rt></ruby>れたんですね。<ruby>私<rt>わたし</rt></ruby>はその<ruby>旅行<rt>りょこう</rt></ruby>で<ruby>初めて<rt>はじめて</rt></ruby>、<ruby>東京<rt>とうきょう</rt></ruby>の<ruby>たこ焼き<rt>たこやき</rt></ruby>は<ruby>外<rt>そと</rt></ruby>がカリカリで、<ruby>大阪<rt>おおさか</rt></ruby>のたこ焼きはふわふわっていうことを<ruby>知った<rt>しった</rt></ruby>んですね。</p>
+        <p><ruby>結局<rt>けっきょく</rt></ruby>、どちらが<ruby>正しい<rt>ただしい</rt></ruby>かっていうより、<ruby>本当に<rt>ほんとうに</rt></ruby><ruby>好み<rt>このみ</rt></ruby>の違いなのかなって<ruby>思います<rt>おもいます</rt></ruby>ね。ちなみに<ruby>私<rt>わたし</rt></ruby>は<ruby>外<rt>そと</rt></ruby>がカリカリしてる<ruby>方<rt>ほう</rt></ruby>が<ruby>好き<rt>すき</rt></ruby>なので、<ruby>東京<rt>とうきょう</rt></ruby>の<ruby>たこ焼き派<rt>たこやきは</rt></ruby>ですね。</p>
+      </section>
+      <section class="content-section" id="section-8">
+        <h2>ソースだけじゃない<ruby>楽しみ方<rt>たのしみかた</rt></ruby></h2>
+        <p>たこ焼きって聞くと、<ruby>多く<rt>おおく</rt></ruby>の人がまずソースとマヨネーズを<ruby>思い浮かべます<rt>おもいうかべます</rt></ruby>よね。<ruby>私<rt>わたし</rt></ruby>ももちろん、その<ruby>組み合わせ<rt>くみあわせ</rt></ruby>が<ruby>大好き<rt>だいすき</rt></ruby>です。あの<ruby>香り<rt>かおり</rt></ruby>を<ruby>嗅ぐ<rt>かぐ</rt></ruby>と、<ruby>本当に<rt>ほんとうに</rt></ruby><ruby>食欲<rt>しょくよく</rt></ruby>をそそられます。</p>
+        <p>でも、<ruby>日本<rt>にほん</rt></ruby>では<ruby>たこ焼き<rt>たこやき</rt></ruby>ってソースをたっぷりかけて<ruby>食べる<rt>たべる</rt></ruby>食べ物っていうだけじゃない<ruby>気<rt>き</rt></ruby>がするんですよね。<ruby>例えば<rt>たとえば</rt></ruby>、<ruby>元祖<rt>がんそ</rt></ruby>として<ruby>知ら<rt>しら</rt></ruby>れている<ruby>会津屋<rt>あいづや</rt></ruby>では、<ruby>今<rt>いま</rt></ruby>でも何もつけずにそのまま<ruby>食べる<rt>たべる</rt></ruby>スタイルが<ruby>紹介<rt>しょうかい</rt></ruby>されています。</p>
+        <p>生地<ruby>自体<rt>じたい</rt></ruby>にしっかりと<ruby>味<rt>あじ</rt></ruby>がついていて、<ruby>出汁<rt>だし</rt></ruby>の<ruby>風味<rt>ふうみ</rt></ruby>を<ruby>楽しむ<rt>たのしむ</rt></ruby>食べ方なんですね。<ruby>実際<rt>じっさい</rt></ruby>にメニューでも、まずはそのまま<ruby>食べてみて<rt>たべてみて</rt></ruby>、<ruby>後から<rt>あとから</rt></ruby><ruby>お好み<rt>おこのみ</rt></ruby>でソースや<ruby>酢<rt>す</rt></ruby><ruby>醤油<rt>しょうゆ</rt></ruby>をつけて<ruby>食べてみてください<rt>たべてみてください</rt></ruby>ねっていう、そういった<ruby>食べ<rt>たべ</rt></ruby>方が<ruby>紹介<rt>しょうかい</rt></ruby>されているんですね。</p>
+        <p>こういうのを<ruby>見る<rt>みる</rt></ruby>と、<ruby>たこ焼き<rt>たこやき</rt></ruby>って生地の<ruby>味<rt>あじ</rt></ruby>だったり、それから<ruby>中<rt>なか</rt></ruby>に<ruby>入っている<rt>はいっている</rt></ruby><ruby>具材<rt>ぐざい</rt></ruby>だったり、<ruby>外<rt>そと</rt></ruby>と中の<ruby>食感<rt>しょくかん</rt></ruby>の違いだったりね、そういったものを<ruby>全部<rt>ぜんぶ</rt></ruby>一緒に<ruby>楽しむ<rt>たのしむ</rt></ruby>食べ物なんですね。<ruby>同じ<rt>おなじ</rt></ruby>たこ焼きでも、ソースが<ruby>主役<rt>しゅやく</rt></ruby>のものもあれば、<ruby>生地<rt>きじ</rt></ruby>の<ruby>味<rt>あじ</rt></ruby>が<ruby>主役<rt>しゅやく</rt></ruby>のものもあって、あとはネギや<ruby>ポン酢<rt>ぽんず</rt></ruby>の方が<ruby>合う<rt>あう</rt></ruby>っていうものもあったりするんですよ。なので、そう<ruby>考える<rt>かんがえる</rt></ruby>と、<ruby>たこ焼き<rt>たこやき</rt></ruby>って<ruby>意外と<rt>いがいと</rt></ruby><ruby>個性<rt>こせい</rt></ruby>の<ruby>強い<rt>つよい</rt></ruby>食べ物なんだなって<ruby>思います<rt>おもいます</rt></ruby>ね。</p>
+      </section>
+      <section class="content-section" id="section-9">
+        <h2><ruby>銀だこ<rt>ぎんだこ</rt></ruby>の<ruby>てり玉<rt>てりたま</rt></ruby></h2>
+        <p>私はやっぱりソースとマヨネーズをかけて<ruby>食べる<rt>たべる</rt></ruby>たこ焼きが一番<ruby>大好き<rt>だいすき</rt></ruby>なんですけど、<ruby>実は<rt>じつは</rt></ruby>もう一つ<ruby>好き<rt>すき</rt></ruby>な<ruby>たこ焼き<rt>たこやき</rt></ruby>があります。それが<ruby>築地銀だこ<rt>つきじぎんだこ</rt></ruby>っていう<ruby>東京<rt>とうきょう</rt></ruby><ruby>発祥<rt>はっしょう</rt></ruby><a href="#glossary-7" id="ref-7" class="footnote">*7</a>のたこ焼きチェーン<ruby>店<rt>てん</rt></ruby>の、<ruby>てり玉<rt>てりたま</rt></ruby>っていうメニューです。</p>
+        <p><ruby>銀だこ<rt>ぎんだこ</rt></ruby>のたこ焼きは、<ruby>油<rt>あぶら</rt></ruby>を多く使って<ruby>焼いている<rt>やいている</rt></ruby>ので、<ruby>外<rt>そと</rt></ruby>はカリッとしていて、<ruby>中<rt>なか</rt></ruby>はトロッとしているんですよ。この<ruby>てり玉<rt>てりたま</rt></ruby>は<ruby>照り焼き<rt>てりやき</rt></ruby>ソースと<ruby>卵<rt>たまご</rt></ruby>サラダがトッピングされています。<ruby>味<rt>あじ</rt></ruby>は、<ruby>甘じょっぱい<rt>あまじょっぱい</rt></ruby><ruby>照り焼き<rt>てりやき</rt></ruby>のコクと<ruby>卵<rt>たまご</rt></ruby>のまろやかさが<ruby>加わって<rt>くわわって</rt></ruby>、もうめっちゃ<ruby>美味しい<rt>おいしい</rt></ruby>の。<ruby>本当に<rt>ほんとうに</rt></ruby><ruby>美味しい<rt>おいしい</rt></ruby>んですよ。<ruby>普通<rt>ふつう</rt></ruby>のたこ焼きよりもボリュームがあるので、しっかり<ruby>食べ応え<rt>たべごたえ</rt></ruby><a href="#glossary-8" id="ref-8" class="footnote">*8</a>がある<ruby>感じ<rt>かんじ</rt></ruby>のたこ焼きですね。</p>
+        <p>この<ruby>銀だこ<rt>ぎんだこ</rt></ruby>は<ruby>全国<rt>ぜんこく</rt></ruby>に<ruby>お店<rt>おみせ</rt></ruby>がある<ruby>有名<rt>ゆうめい</rt></ruby>なチェーン<ruby>店<rt>てん</rt></ruby>なので、もし<ruby>機会<rt>きかい</rt></ruby>があれば、ぜひ<ruby>一度<rt>いちど</rt></ruby>食べてみてください。</p>
+      </section>
+      <section class="content-section" id="section-10">
+        <h2>たこ焼きあるある</h2>
+        <p>まず一つ目は、タコパをした<ruby>時<rt>とき</rt></ruby>、<ruby>最初<rt>さいしょ</rt></ruby>の<ruby>1回目<rt>かいめ</rt></ruby>はほぼ<ruby>練習<rt>れんしゅう</rt></ruby>になる。これ<ruby>本当<rt>ほんとう</rt></ruby>ですね。なぜか<ruby>最初<rt>さいしょ</rt></ruby>の<ruby>1回目<rt>かいめ</rt></ruby>って<ruby>綺麗<rt>きれい</rt></ruby>に<ruby>焼けない<rt>やけない</rt></ruby>んですよ。<ruby>形<rt>かたち</rt></ruby>が少し<ruby>歪ん<rt>いがん</rt></ruby>じゃったり、あとは<ruby>焼き<rt>やき</rt></ruby>が<ruby>足りなかっ<rt>たりなかっ</rt></ruby>たりね。<ruby>逆<rt>ぎゃく</rt></ruby>に少し<ruby>焦がしちゃっ<rt>こがしちゃっ</rt></ruby>たりすることもあります。なんだけど、<ruby>2回目<rt>かいめ</rt></ruby>から<ruby>急<rt>きゅう</rt></ruby>に<ruby>上達<rt>じょうたつ</rt></ruby>して、めっちゃ<ruby>上手<rt>じょうず</rt></ruby>に<ruby>焼ける<rt>やける</rt></ruby>ようになるんですよ。<ruby>不思議<rt>ふしぎ</rt></ruby>だなって<ruby>思います<rt>おもいます</rt></ruby>ね、あれは。</p>
+        <p><ruby>海外<rt>かいがい</rt></ruby>の方は、<ruby>日本人<rt>にほんじん</rt></ruby>はみんな<ruby>たこ焼き<rt>たこやき</rt></ruby><ruby>上手<rt>じょうず</rt></ruby>に作れるって思っている方、<ruby>結構<rt>けっこう</rt></ruby>いらっしゃるかなって<ruby>思う<rt>おもう</rt></ruby>んですけど、それは<ruby>実際<rt>じっさい</rt></ruby>は<ruby>違います<rt>ちがいます</rt></ruby>。<ruby>下手<rt>へた</rt></ruby>な人も多いと思いますね。<ruby>何回<rt>なんかい</rt></ruby><ruby>練習<rt>れんしゅう</rt></ruby>しても<ruby>上手<rt>じょうず</rt></ruby>に<ruby>焼けない<rt>やけない</rt></ruby>人もいます。<ruby>例えば<rt>たとえば</rt></ruby>、<ruby>韓国人<rt>かんこくじん</rt></ruby>がみんな<ruby>キムチ作り<rt>きむちづくり</rt></ruby>が<ruby>上手<rt>じょうず</rt></ruby>かって<ruby>言ったら<rt>いったら</rt></ruby>そうじゃないじゃないですか。だからそれと<ruby>一緒<rt>いっしょ</rt></ruby>かなって<ruby>思います<rt>おもいます</rt></ruby>ね。</p>
+        <p><ruby>二つ目<rt>ふたつめ</rt></ruby>は、タコよりも<ruby>他<rt>た</rt></ruby>の<ruby>具材<rt>ぐざい</rt></ruby>に<ruby>本気<rt>ほんき</rt></ruby>になることがある。<ruby>他<rt>た</rt></ruby>の<ruby>具材<rt>ぐざい</rt></ruby>って言えば、<ruby>例えば<rt>たとえば</rt></ruby>チーズ、<ruby>餅<rt>もち</rt></ruby>、ウインナー、キムチ、<ruby>明太子<rt>めんたいこ</rt></ruby>、コーンとかね。ほんといろいろあるんですけれども、そういったアレンジ<ruby>具材<rt>ぐざい</rt></ruby>を入れて楽しむ人も結構多いんですよね。あとはレシピとかでもすっごくたくさん<ruby>紹介<rt>しょうかい</rt></ruby>されています。だから、タコパをする<ruby>時<rt>とき</rt></ruby>はだいたい<ruby>必ず<rt>かならず</rt></ruby>タコ<ruby>以外<rt>いがい</rt></ruby>の具材もたくさん<ruby>用意<rt>ようい</rt></ruby>しますね。いろんな<ruby>味<rt>あじ</rt></ruby>を作って楽しむっていうことが<ruby>多い<rt>おおい</rt></ruby>かなと<ruby>思います<rt>おもいます</rt></ruby>。</p>
+        <p>私も、<ruby>たこ焼き<rt>たこやき</rt></ruby>をする<ruby>時<rt>とき</rt></ruby>は<ruby>結構他<rt>た</rt></ruby>の具材も<ruby>準備<rt>じゅんび</rt></ruby>したりしますね。チーズとか、あとはキムチとか、あとウインナー。ウインナーも<ruby>結構<rt>けっこう</rt></ruby><ruby>美味しいです<rt>おいしいです</rt></ruby>ね。でも、いろんな<ruby>具材<rt>ぐざい</rt></ruby>で楽しむんですけど、やっぱり<ruby>最後<rt>さいご</rt></ruby>はオリジナル、<ruby>普通<rt>ふつう</rt></ruby>のシンプルな<ruby>たこ焼き<rt>たこやき</rt></ruby>に<ruby>戻る<rt>もどる</rt></ruby>っていうのも、これも<ruby>結構<rt>けっこう</rt></ruby>みんなあるんじゃないかなって<ruby>思います<rt>おもいます</rt></ruby>ね。</p>
+        <p><ruby>三つ目<rt>みっつめ</rt></ruby>は、つまようじをさして<ruby>たこ焼き<rt>たこやき</rt></ruby>を<ruby>持ち上げよう<rt>もちあげよう</rt></ruby>としたら、タコだけ<ruby>出てくる<rt>でてくる</rt></ruby>。これは<ruby>柔らかい<rt>やわらかい</rt></ruby>たこ焼きでよくあることですね。<ruby>私<rt>わたし</rt></ruby>もこれ<ruby>何回<rt>なんかい</rt></ruby>も<ruby>経験<rt>けいけん</rt></ruby>したことがあります。でも、そのタコだけをちょっとソースにつけて<ruby>食べる<rt>たべる</rt></ruby>っていうのもすごく<ruby>美味しい<rt>おいしい</rt></ruby>んですよ。そういう<ruby>時<rt>とき</rt></ruby>、<ruby>私<rt>わたし</rt></ruby>はタコは<ruby>自分<rt>じぶん</rt></ruby>が食べて、<ruby>残り<rt>のこり</rt></ruby>はだいたい<ruby>旦那さん<rt>だんなさん</rt></ruby>にあげますね。</p>
+        <p><ruby>四つ目<rt>よっつめ</rt></ruby>は、ショッピングモールのフードコートで<ruby>たこ焼き屋さん<rt>たこやきやさん</rt></ruby>を見かけると<ruby>無性に<rt>むしょうに</rt></ruby><a href="#glossary-9" id="ref-9" class="footnote">*9</a>食べたくなる。これね、<ruby>私<rt>わたし</rt></ruby>も<ruby>経験<rt>けいけん</rt></ruby>あります。<ruby>日本<rt>にほん</rt></ruby>のショッピングモールには、<ruby>たこ焼き屋さん<rt>たこやきやさん</rt></ruby>が<ruby>入っている<rt>はいっている</rt></ruby>フードコートって<ruby>結構<rt>けっこう</rt></ruby>多いんですよね。しかもフードコートの<ruby>たこ焼き屋さん<rt>たこやきやさん</rt></ruby>って、<ruby>何で<rt>なんで</rt></ruby>か<ruby>分からない<rt>わからない</rt></ruby>んですけど、めっちゃ<ruby>美味し<rt>おいし</rt></ruby>そうに<ruby>見える<rt>みえる</rt></ruby>んですよ。<ruby>前<rt>まえ</rt></ruby>にフードコートに<ruby>行った<rt>いった</rt></ruby>時にラーメン<ruby>食べよう<rt>たべよう</rt></ruby>って決めてたんですよ。でも、<ruby>たこ焼き屋さん<rt>たこやきやさん</rt></ruby>の前を<ruby>通ったら<rt>とおったら</rt></ruby>、<ruby>たこ焼き<rt>たこやき</rt></ruby>の<ruby>美味し<rt>おいし</rt></ruby>そうな<ruby>匂い<rt>におい</rt></ruby>と、<ruby>焼く<rt>やく</rt></ruby><ruby>音<rt>おと</rt></ruby>、チューっていう<ruby>焼く<rt>やく</rt></ruby><ruby>音<rt>おと</rt></ruby>に<ruby>釣ら<rt>つら</rt></ruby>れて、ラーメンをやめて<ruby>たこ焼き<rt>たこやき</rt></ruby>を食べたっていうこともありましたね。</p>
+        <p><ruby>五つ目<rt>いつつめ</rt></ruby>は、<ruby>店員さん<rt>てんいんさん</rt></ruby>が<ruby>焼いている<rt>やいている</rt></ruby>ところをじーっと<ruby>観察<rt>かんさつ</rt></ruby>してしまう。<ruby>屋台<rt>やたい</rt></ruby>とか<ruby>お店<rt>おみせ</rt></ruby>で<ruby>たこ焼き<rt>たこやき</rt></ruby>を買う時、<ruby>店員さん<rt>てんいんさん</rt></ruby>が<ruby>焼いている<rt>やいている</rt></ruby>ところを<ruby>見る<rt>みる</rt></ruby>ことができるんですよね。なので、ついついじーっと<ruby>見ちゃう<rt>みちゃう</rt></ruby>んですよ。でも、この<ruby>たこ焼き<rt>たこやき</rt></ruby>を<ruby>焼く<rt>やく</rt></ruby>ピックで、くるくるくるくるって<ruby>回す<rt>まわす</rt></ruby><ruby>動き<rt>うごき</rt></ruby>、<ruby>本当に<rt>ほんとうに</rt></ruby>あれって、いつまでもずっと<ruby>見て<rt>みて</rt></ruby>られるんですよね。</p>
+        <p><ruby>本当に<rt>ほんとうに</rt></ruby><ruby>店員さん<rt>てんいんさん</rt></ruby>が作ってるところを<ruby>見る<rt>みる</rt></ruby>と、うわぁ、<ruby>本当に<rt>ほんとうに</rt></ruby>プロだなぁ、すごいなって<ruby>思う<rt>おもう</rt></ruby>んですよ。<ruby>焼いてる<rt>やいてる</rt></ruby>時に<ruby>油<rt>あぶら</rt></ruby>が結構<ruby>飛んでいる<rt>とんでいる</rt></ruby>のが見えるんですけど、<ruby>油<rt>あぶら</rt></ruby>が手に<ruby>飛んで<rt>とんで</rt></ruby>も<ruby>全く<rt>まったく</rt></ruby><ruby>皆さん<rt>みなさん</rt></ruby><ruby>動じない<rt>どうじない</rt></ruby>んですよね。<ruby>普通<rt>ふつう</rt></ruby>だったら「あつっ」とか<ruby>言う<rt>いう</rt></ruby>じゃないですか。もう<ruby>全く<rt>まったく</rt></ruby>何も言わないで、ひたすら<ruby>焼いてる<rt>やいてる</rt></ruby>みたいな。だから<ruby>本当に<rt>ほんとうに</rt></ruby>、そういうのを<ruby>見る<rt>みる</rt></ruby>と、わぁ、<ruby>職人技<rt>しょくにんわざ</rt></ruby><a href="#glossary-10" id="ref-10" class="footnote">*10</a>だなって<ruby>思います<rt>おもいます</rt></ruby>ね。<ruby>結構<rt>けっこう</rt></ruby><ruby>本当に<rt>ほんとうに</rt></ruby>かっこいいなって<ruby>思う<rt>おもう</rt></ruby>ので、<ruby>自分<rt>じぶん</rt></ruby>もあんな<ruby>風<rt>ふう</rt></ruby>に<ruby>焼きたい<rt>やきたい</rt></ruby>って思うんですよ。</p>
+        <p>だから、<ruby>実際<rt>じっさい</rt></ruby>に<ruby>家<rt>いえ</rt></ruby>で<ruby>たこ焼き<rt>たこやき</rt></ruby>を<ruby>焼いた<rt>やいた</rt></ruby>時に、ちょっと<ruby>真似<rt>まね</rt></ruby>してみるんですよね。だけど、どうやってやってたっけって<ruby>思い出せない<rt>おもいだせない</rt></ruby>し、<ruby>実際<rt>じっさい</rt></ruby>自分がやるってなると、あんなに<ruby>器用<rt>きよう</rt></ruby>にくるくるくるってできないんですよ。だから、<ruby>店員さん<rt>てんいんさん</rt></ruby>の<ruby>動き<rt>うごき</rt></ruby>っていうのは、いくら<ruby>真似<rt>まね</rt></ruby>しようと<ruby>思って<rt>おもって</rt></ruby>も<ruby>絶対<rt>ぜったい</rt></ruby>に<ruby>真似できない<rt>まねできない</rt></ruby>。そのまま<ruby>店員さん<rt>てんいんさん</rt></ruby>のように<ruby>焼く<rt>やく</rt></ruby>ことはできないなって<ruby>思います<rt>おもいます</rt></ruby>ね。</p>
+      </section>
+      <section class="content-section" id="section-11">
+        <h2>おわりに</h2>
+        <p>今日はたこ焼きについて<ruby>お話し<rt>おはなし</rt></ruby>しました。いかがでしたか。<ruby>皆さん<rt>みなさん</rt></ruby>はどんなスタイルの<ruby>たこ焼き<rt>たこやき</rt></ruby>が<ruby>好き<rt>すき</rt></ruby>ですか。<ruby>柔らかい<rt>やわらかい</rt></ruby>たこ焼きが好きなのか、もしくは<ruby>外<rt>そと</rt></ruby>が少しカリッとしていて<ruby>中<rt>なか</rt></ruby>がトロッとしている<ruby>たこ焼き<rt>たこやき</rt></ruby>が好きですかね。</p>
+        <p>もしよかったら、ぜひ<ruby>コメント欄<rt>こめんとらん</rt></ruby>で<ruby>教えてください<rt>おしえてください</rt></ruby>。それでは<ruby>本日<rt>ほんじつ</rt></ruby>も<ruby>最後<rt>さいご</rt></ruby>まで<ruby>聴いてくださって<rt>きいてくださって</rt></ruby>、どうもありがとうございました。また<ruby>次<rt>つぎ</rt></ruby>のポッドキャストでお<ruby>会い<rt>あい</rt></ruby>しましょう。バイバイ。</p>
+      </section>
+        <section class="content-section glossary-section" id="glossary">
+          <h2><ruby>語句<rt>ごく</rt></ruby>メモ</h2>
+          <ol class="glossary-list">
+          <li id="glossary-1" class="glossary-entry">
+            <h4>*1 一時帰国</h4>
+            <div class="glossary-block">
+              <p>海外などに住んでいる人が、短い期間だけ自分の国に帰ることです。</p>
+            </div>
+            <div class="glossary-block">
+              <a href="#ref-1" class="note-backref">本文へ戻る</a>
+            </div>
+          </li>
+          <li id="glossary-2" class="glossary-entry">
+            <h4>*2 必需品</h4>
+            <div class="glossary-block">
+              <p>なくては困る、とても大事なもののことです。</p>
+            </div>
+            <div class="glossary-block">
+              <a href="#ref-2" class="note-backref">本文へ戻る</a>
+            </div>
+          </li>
+          <li id="glossary-3" class="glossary-entry">
+            <h4>*3 タコパ</h4>
+            <div class="glossary-block">
+              <p>「たこ焼きパーティー」を短く言ったカジュアルな言い方です。</p>
+            </div>
+            <div class="glossary-block">
+              <a href="#ref-3" class="note-backref">本文へ戻る</a>
+            </div>
+          </li>
+          <li id="glossary-4" class="glossary-entry">
+            <h4>*4 屋台</h4>
+            <div class="glossary-block">
+              <p>お祭りや道ばたなどで食べ物や物を売る、小さな移動式の店のことです。</p>
+            </div>
+            <div class="glossary-block">
+              <a href="#ref-4" class="note-backref">本文へ戻る</a>
+            </div>
+          </li>
+          <li id="glossary-5" class="glossary-entry">
+            <h4>*5 ラジオ焼き</h4>
+            <div class="glossary-block">
+              <p>たこ焼きの元になったと言われる昔の料理で、タコの代わりに別の具を入れていた食べ物です。</p>
+            </div>
+            <div class="glossary-block">
+              <a href="#ref-5" class="note-backref">本文へ戻る</a>
+            </div>
+          </li>
+          <li id="glossary-6" class="glossary-entry">
+            <h4>*6 明石焼き</h4>
+            <div class="glossary-block">
+              <p>兵庫県明石市の名物で、タコを入れて丸く焼き、出汁につけて食べる料理です。</p>
+            </div>
+            <div class="glossary-block">
+              <a href="#ref-6" class="note-backref">本文へ戻る</a>
+            </div>
+          </li>
+          <li id="glossary-7" class="glossary-entry">
+            <h4>*7 発祥</h4>
+            <div class="glossary-block">
+              <p>ある物や文化が、最初に始まった場所や起こりを表す言葉です。</p>
+            </div>
+            <div class="glossary-block">
+              <a href="#ref-7" class="note-backref">本文へ戻る</a>
+            </div>
+          </li>
+          <li id="glossary-8" class="glossary-entry">
+            <h4>*8 食べ応え</h4>
+            <div class="glossary-block">
+              <p>食べた時にしっかりした満足感があることです。</p>
+            </div>
+            <div class="glossary-block">
+              <a href="#ref-8" class="note-backref">本文へ戻る</a>
+            </div>
+          </li>
+          <li id="glossary-9" class="glossary-entry">
+            <h4>*9 無性に</h4>
+            <div class="glossary-block">
+              <p>理由をはっきり説明できないけれど、とても強くそうしたくなる様子です。</p>
+            </div>
+            <div class="glossary-block">
+              <a href="#ref-9" class="note-backref">本文へ戻る</a>
+            </div>
+          </li>
+          <li id="glossary-10" class="glossary-entry">
+            <h4>*10 職人技</h4>
+            <div class="glossary-block">
+              <p>長い経験や練習で身についた、高い技術や上手なやり方のことです。</p>
+            </div>
+            <div class="glossary-block">
+              <a href="#ref-10" class="note-backref">本文へ戻る</a>
+            </div>
+          </li>
+          </ol>
+        </section>
+      </article>
+    </div>
+  </main>
+</body>
+</html>

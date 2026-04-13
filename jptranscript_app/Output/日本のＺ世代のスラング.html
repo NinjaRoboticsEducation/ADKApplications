@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>日本のＺ世代のスラング</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #fbf6ee;
+      --paper-deep: #efe4d3;
+      --sheet: rgba(255, 252, 248, 0.94);
+      --ink: #201a18;
+      --muted: #61564f;
+      --line: rgba(90, 62, 42, 0.16);
+      --line-strong: rgba(90, 62, 42, 0.28);
+      --accent: #c24c2f;
+      --accent-deep: #7f2f1f;
+      --accent-soft: rgba(194, 76, 47, 0.12);
+      --shadow: 0 22px 56px rgba(63, 35, 20, 0.11);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --max: 1180px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(194, 76, 47, 0.11), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(138, 93, 62, 0.10), transparent 24%),
+        linear-gradient(180deg, #f4ebdf 0%, #fbf8f3 48%, #f3ede4 100%);
+      font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans CJK JP", sans-serif;
+      line-height: 1.78;
+      min-height: 100vh;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(120, 77, 47, 0.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(120, 77, 47, 0.022) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.4), transparent 84%);
+    }
+    main {
+      position: relative;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 34px 18px 72px;
+    }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 24px;
+      padding: 32px 30px 28px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(250, 243, 235, 0.95)),
+        linear-gradient(180deg, rgba(194, 76, 47, 0.06), transparent 58%);
+      box-shadow: var(--shadow);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      right: -72px;
+      top: -96px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(194, 76, 47, 0.18), transparent 68%);
+    }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--accent-deep);
+      font-size: 0.8rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      margin: 0;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
+      font-size: clamp(2.2rem, 4.8vw, 3.55rem);
+      line-height: 1.05;
+      letter-spacing: 0.01em;
+    }
+    .lede {
+      max-width: 64ch;
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 0.82rem;
+      border-radius: 999px;
+      border: 1px solid rgba(127, 47, 31, 0.14);
+      background: rgba(255, 250, 245, 0.78);
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 285px) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    .toc {
+      position: sticky;
+      top: 18px;
+      background: rgba(255, 252, 248, 0.88);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 20px 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .toc h2 {
+      margin: 0 0 14px;
+      color: var(--accent-deep);
+      font-size: 0.96rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .toc ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 10px;
+    }
+    .toc a {
+      display: block;
+      padding: 0.75rem 0.88rem;
+      border-radius: 14px;
+      color: inherit;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid transparent;
+      transition: transform 150ms ease, border-color 150ms ease, background 150ms ease, color 150ms ease;
+    }
+    .toc a:hover {
+      transform: translateX(3px);
+      border-color: rgba(194, 76, 47, 0.24);
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--accent-deep);
+    }
+    article {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 251, 246, 0.94));
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .content-section {
+      padding: 28px 30px;
+      scroll-margin-top: 24px;
+    }
+    .content-section + .content-section {
+      border-top: 1px solid var(--line);
+    }
+    h2 {
+      margin: 0 0 16px;
+      display: inline-block;
+      padding-bottom: 0.36rem;
+      border-bottom: 2px solid rgba(194, 76, 47, 0.18);
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
+      font-size: 1.58rem;
+      line-height: 1.3;
+    }
+    h3 {
+      margin: 0 0 18px;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
+      font-size: 1.36rem;
+      line-height: 1.35;
+    }
+    h4 {
+      margin: 0;
+      font-size: 1.08rem;
+      line-height: 1.35;
+    }
+    p {
+      margin: 0;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
+      font-size: 1.12rem;
+      line-height: 1.96;
+      text-wrap: pretty;
+    }
+    p + p { margin-top: 1.04em; }
+    ruby { ruby-position: over; }
+    rt {
+      font-size: 0.5em;
+      color: rgba(78, 59, 49, 0.72);
+      letter-spacing: 0.02em;
+    }
+    .footnote {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.55em;
+      padding: 0 0.38em;
+      margin-left: 0.18em;
+      border-radius: 999px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.72em;
+      line-height: 1.6;
+      vertical-align: super;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      box-shadow: 0 8px 18px rgba(127, 47, 31, 0.2);
+    }
+    .glossary-section {
+      background: linear-gradient(180deg, rgba(239, 228, 211, 0.28), rgba(255, 252, 248, 0.92));
+    }
+    .glossary-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 18px;
+    }
+    .glossary-entry {
+      padding: 18px 18px 16px;
+      border: 1px solid rgba(127, 47, 31, 0.12);
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.78);
+    }
+    .glossary-entry h4 {
+      margin-bottom: 10px;
+      font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans CJK JP", sans-serif;
+    }
+    .glossary-entry p {
+      font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans CJK JP", sans-serif;
+      font-size: 0.98rem;
+      line-height: 1.78;
+    }
+    .glossary-entry ul {
+      margin: 8px 0 0;
+      padding-left: 1.15rem;
+      color: var(--muted);
+    }
+    .glossary-entry li + li {
+      margin-top: 0.36rem;
+    }
+    .glossary-block + .glossary-block {
+      margin-top: 12px;
+    }
+    .backlink {
+      color: var(--accent-deep);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(127, 47, 31, 0.24);
+    }
+    .backlink:hover {
+      border-color: currentColor;
+    }
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .toc {
+        position: static;
+      }
+    }
+    @media (max-width: 720px) {
+      main {
+        padding: 18px 12px 42px;
+      }
+      .hero {
+        padding: 24px 20px 22px;
+        border-radius: 24px;
+      }
+      .content-section {
+        padding: 22px 18px;
+      }
+      h2 {
+        font-size: 1.34rem;
+      }
+      p {
+        font-size: 1.02rem;
+        line-height: 1.88;
+      }
+      .toc {
+        padding: 18px 16px;
+      }
+    }
+    @page {
+      size: A4;
+      margin: 14mm;
+    }
+    @media print {
+      body {
+        background: #fff;
+      }
+      body::before {
+        display: none;
+      }
+      main {
+        max-width: none;
+        padding: 0;
+      }
+      .hero,
+      .toc,
+      article,
+      .glossary-entry {
+        box-shadow: none;
+        border-color: #cfc7bf;
+        background: #fff;
+      }
+      .layout {
+        display: block;
+      }
+      .toc {
+        position: static;
+        margin-bottom: 12mm;
+        break-inside: avoid;
+      }
+      .content-section,
+      .glossary-entry {
+        break-inside: avoid;
+      }
+      .footnote,
+      .backlink,
+      .toc a {
+        color: inherit;
+      }
+      .footnote {
+        background: none;
+        box-shadow: none;
+        border: 1px solid #b9b0a7;
+      }
+      a {
+        text-decoration: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <p class="eyebrow">Japanese Podcast Transcript</p>
+      <h1>日本のＺ世代のスラング</h1>
+      <p class="lede">中上級の日本語学習者向けに、ポッドキャスト本文・ふりがな・語句解説を一つにまとめた学習用ドキュメントです。</p>
+      <div class="meta-row">
+        <span class="meta-chip">Ruby Support</span>
+        <span class="meta-chip">Glossary Linked</span>
+        <span class="meta-chip">Print Friendly</span>
+      </div>
+    </header>
+    <div class="layout">
+      <aside class="toc" aria-label="目次">
+        <h2><ruby>目次<rt>もくじ</rt></ruby></h2>
+        <ul>
+          <li><a href="#section-1"><ruby>導入<rt>どうにゅう</rt></ruby></a></li>
+          <li><a href="#section-2"><ruby>カエル化現象<rt>かえるかげんしょう</rt></ruby>とは</a></li>
+          <li><a href="#section-3"><ruby>恋愛<rt>れんあい</rt></ruby>での<ruby>カエル化現象<rt>かえるかげんしょう</rt></ruby></a></li>
+          <li><a href="#section-4">「〇〇しか<ruby>勝たん<rt>かたん</rt></ruby>」</a></li>
+          <li><a href="#section-5">「〇〇<ruby>界隈<rt>かいわい</rt></ruby>」</a></li>
+          <li><a href="#section-6">「おじ」と<ruby>関連<rt>かんれん</rt></ruby>スラング</a></li>
+          <li><a href="#section-7"><ruby>港区女子<rt>みなとくじょし</rt></ruby></a></li>
+          <li><a href="#section-8"><ruby>好きすぎて<rt>すきすぎて</rt></ruby><ruby>死ぬ<rt>しぬ</rt></ruby>・<ruby>滅<rt>めつ</rt></ruby></a></li>
+          <li><a href="#section-9">ガチとワンチャン</a></li>
+          <li><a href="#section-10">ヤクザという<ruby>言い方<rt>いいかた</rt></ruby></a></li>
+          <li><a href="#section-11">日本語らしいぼかし<ruby>表現<rt>ひょうげん</rt></ruby></a></li>
+        </ul>
+      </aside>
+      <article>
+      <section id="section-1" class="content-section">
+        <h2><ruby>導入<rt>どうにゅう</rt></ruby></h2>
+        <p>今日も<ruby>一日<rt>いちにち</rt></ruby><ruby>お疲れ様<rt>おつかれさま</rt></ruby>。<ruby>お疲れ<rt>おつかれ</rt></ruby>ジャパニーズのユリコです。 このチャンネルでは、日本語を<ruby>勉強<rt>べんきょう</rt></ruby>している<ruby>皆さん<rt>みなさん</rt></ruby>と<ruby>一緒<rt>いっしょ</rt></ruby>に、<ruby>夜<rt>よる</rt></ruby><ruby>寝る<rt>ねる</rt></ruby>前に<ruby>日本語<rt>にほんご</rt></ruby>と<ruby>日本文化<rt>にほんぶんか</rt></ruby>をゆっくり<ruby>楽しく<rt>たのしく</rt></ruby><ruby>学んでいきます<rt>まなんでいきます</rt></ruby>。</p>
+        <p>今日のテーマはこちら。<ruby>外国人<rt>がいこくじん</rt></ruby>が<ruby>理解<rt>りかい</rt></ruby>できない<ruby>日本<rt>にほん</rt></ruby>の<ruby>Z世代<rt>ぜっとせだい</rt></ruby>スラングトップテン。最近の<ruby>日本<rt>にほん</rt></ruby>では、もちろんこれは<ruby>日本<rt>にほん</rt></ruby>に<ruby>限った<rt>かぎった</rt></ruby>話ではないんだけど、やっぱりSNSを<ruby>中心<rt>ちゅうしん</rt></ruby>に<ruby>若者<rt>わかもの</rt></ruby>が<ruby>主<rt>おも</rt></ruby>に<ruby>新しい<rt>あたらしい</rt></ruby><ruby>言葉<rt>ことば</rt></ruby>をどんどん<ruby>生み出している<rt>うみだしている</rt></ruby>かなって<ruby>思う<rt>おもう</rt></ruby>んだけど、今日はその<ruby>中<rt>なか</rt></ruby>でも<ruby>特に<rt>とくに</rt></ruby>私が<ruby>最近<rt>さいきん</rt></ruby><ruby>目<rt>め</rt></ruby>にする、<ruby>Z世代<rt>ぜっとせだい</rt></ruby>がよく<ruby>使う<rt>つかう</rt></ruby><ruby>言葉<rt>ことば</rt></ruby>っていうのを<ruby>紹介<rt>しょうかい</rt></ruby>していきたいと<ruby>思います<rt>おもいます</rt></ruby>。</p>
+      </section>
+      <section id="section-2" class="content-section">
+        <h2><ruby>カエル化現象<rt>かえるかげんしょう</rt></ruby>とは</h2>
+        <p>一つ目。<ruby>カエル化現象<rt>かえるかげんしょう</rt></ruby><a href="#glossary-1" id="ref-1" class="footnote">*1</a>。これは<ruby>最近<rt>さいきん</rt></ruby>とても<ruby>有名<rt>ゆうめい</rt></ruby>になった<ruby>言葉<rt>ことば</rt></ruby>なんですが、<ruby>皆さん<rt>みなさん</rt></ruby>、カエルって<ruby>何<rt>なに</rt></ruby>かわかりますか。カエルっていう<ruby>言葉<rt>ことば</rt></ruby>は<ruby>多分<rt>たぶん</rt></ruby>いろんな<ruby>意味<rt>いみ</rt></ruby>があると<ruby>思う<rt>おもう</rt></ruby>んだけど、カエル、<ruby>変える<rt>かえる</rt></ruby>、そして<ruby>帰る<rt>かえる</rt></ruby>、買えるという<ruby>発音<rt>はつおん</rt></ruby>をした<ruby>時<rt>とき</rt></ruby>に、<ruby>私たち<rt>わたしたち</rt></ruby>が<ruby>思い浮かべる<rt>おもいうかべる</rt></ruby>のは<ruby>緑色<rt>みどりいろ</rt></ruby>の<ruby>動物<rt>どうぶつ</rt></ruby>なわけなんですけれども、カエル化現象と<ruby>言われる<rt>いわれる</rt></ruby><ruby>言葉<rt>ことば</rt></ruby>があります。カエルは<ruby>緑色<rt>みどりいろ</rt></ruby>のその<ruby>動物<rt>どうぶつ</rt></ruby>のことで、<ruby>化<rt>か</rt></ruby>っていうのは<ruby>化ける<rt>ばける</rt></ruby>っていう<ruby>意味<rt>いみ</rt></ruby>。そして<ruby>現象<rt>げんしょう</rt></ruby>っていうのは、そうなっちゃったみたいな、そういう<ruby>状況<rt>じょうきょう</rt></ruby>みたいな<ruby>感じ<rt>かんじ</rt></ruby>なんだけど、<ruby>意味<rt>いみ</rt></ruby>としては、<ruby>好き<rt>すき</rt></ruby>だった<ruby>人<rt>ひと</rt></ruby>を<ruby>急<rt>きゅう</rt></ruby>に<ruby>気持ち<rt>きもち</rt></ruby><ruby>悪く<rt>わるく</rt></ruby>感じることっていう<ruby>感じ<rt>かんじ</rt></ruby>ですね。</p>
+        <p><ruby>例えば<rt>たとえば</rt></ruby>、<ruby>好き<rt>すき</rt></ruby>だった<ruby>人<rt>ひと</rt></ruby>が<ruby>変<rt>へん</rt></ruby>な<ruby>食べ<rt>たべ</rt></ruby>方をしてた。よくある<ruby>例<rt>れい</rt></ruby>としては、<ruby>女性目線<rt>じょせいめせん</rt></ruby>で<ruby>言う<rt>いう</rt></ruby>と、すごいおしゃれなパスタ<ruby>屋さん<rt>やさん</rt></ruby>に<ruby>連れて<rt>つれて</rt></ruby>行ってくれたんだけど、ほら、思いっきり<ruby>静か<rt>しずか</rt></ruby>で、すごいね、<ruby>綺麗<rt>きれい</rt></ruby>だ、<ruby>綺麗<rt>きれい</rt></ruby>じゃない、おしゃれだね。パスタ<ruby>屋さん<rt>やさん</rt></ruby>に<ruby>連れてってくれた<rt>つれてってくれた</rt></ruby>んだけど、<ruby>男性<rt>だんせい</rt></ruby>がズルズルズルって<ruby>食べたり<rt>たべたり</rt></ruby>とか、あとは<ruby>急<rt>きゅう</rt></ruby>に<ruby>夜中<rt>よなか</rt></ruby>に<ruby>変<rt>へん</rt></ruby>なLINEを<ruby>送ってきた<rt>おくってきた</rt></ruby>とか、そんな<ruby>瞬間<rt>しゅんかん</rt></ruby>にはなんかちょっと<ruby>無理<rt>むり</rt></ruby>みたいなふうに<ruby>急<rt>きゅう</rt></ruby>に<ruby>冷めてしまう<rt>さめてしまう</rt></ruby>ことがあるかなって<ruby>思います<rt>おもいます</rt></ruby>。それを<ruby>カエル化現象<rt>かえるかげんしょう</rt></ruby>と<ruby>言います<rt>いいます</rt></ruby>。</p>
+      </section>
+      <section id="section-3" class="content-section">
+        <h2><ruby>恋愛<rt>れんあい</rt></ruby>での<ruby>カエル化現象<rt>かえるかげんしょう</rt></ruby></h2>
+        <p><ruby>恋愛<rt>れんあい</rt></ruby>で<ruby>想像<rt>そうぞう</rt></ruby>すると、よくカエルが<ruby>王子様<rt>おうじさま</rt></ruby>になるっていうことってあると<ruby>思う<rt>おもう</rt></ruby>んだけど、私はまさにそれの<ruby>逆<rt>ぎゃく</rt></ruby>かなと<ruby>思ってて<rt>おもってて</rt></ruby>、<ruby>王子様<rt>おうじさま</rt></ruby>がカエルになっちゃうみたいな、<ruby>元<rt>もと</rt></ruby>に<ruby>戻っちゃう<rt>もどっちゃう</rt></ruby>みたいな、そんなイメージね。なので、よく「めっちゃ<ruby>好き<rt>すき</rt></ruby>だった<ruby>彼氏<rt>かれし</rt></ruby>、なんか<ruby>カエル化現象<rt>かえるかげんしょう</rt></ruby>したんだよね」みたいなふうに<ruby>言ったりします<rt>いったりします</rt></ruby>ね。<ruby>皆さん<rt>みなさん</rt></ruby>も<ruby>カエル化<rt>かえるか</rt></ruby>されないように、パスタを<ruby>食べる<rt>たべる</rt></ruby>ときは<ruby>音<rt>おと</rt></ruby>を<ruby>立てない<rt>たてない</rt></ruby>ように<ruby>気<rt>き</rt></ruby>をつけましょう。</p>
+      </section>
+      <section id="section-4" class="content-section">
+        <h2>「〇〇しか<ruby>勝たん<rt>かたん</rt></ruby>」</h2>
+        <p><ruby>第2位<rt>だいにい</rt></ruby>は「〇〇しか<ruby>勝たん<rt>かたん</rt></ruby>」<a href="#glossary-2" id="ref-2" class="footnote">*2</a>。これはSNSですごく<ruby>人気<rt>にんき</rt></ruby>の<ruby>言葉<rt>ことば</rt></ruby>かなって<ruby>思う<rt>おもう</rt></ruby>んですけど、<ruby>例えば<rt>たとえば</rt></ruby>使い方としては「モンチしか<ruby>勝たん<rt>かたん</rt></ruby>」、そんな<ruby>感じ<rt>かんじ</rt></ruby>ですね。<ruby>意味<rt>いみ</rt></ruby>は、これが<ruby>一番最高<rt>いちばんさいこう</rt></ruby>。ラーメンしか<ruby>勝たん<rt>かたん</rt></ruby>、<ruby>猫<rt>ねこ</rt></ruby>しか<ruby>勝たん<rt>かたん</rt></ruby>、<ruby>電車<rt>でんしゃ</rt></ruby>しか<ruby>勝たん<rt>かたん</rt></ruby>。つまり、これが<ruby>一番好き<rt>いちばんすき</rt></ruby>っていう<ruby>意味<rt>いみ</rt></ruby>ですね。ちょっと<ruby>文法的<rt>ぶんぽうてき</rt></ruby>に<ruby>解説<rt>かいせつ</rt></ruby>すると、「〇〇しか勝たん」っていうのは、「<ruby>何々<rt>なになに</rt></ruby>しか<ruby>勝たない<rt>かたない</rt></ruby>」という<ruby>意味<rt>いみ</rt></ruby>なんですね。なので、「<ruby>何々<rt>なになに</rt></ruby> only can win」って<ruby>感じ<rt>かんじ</rt></ruby>。ちょっと<ruby>私<rt>わたし</rt></ruby>の<ruby>英語<rt>えいご</rt></ruby>は<ruby>合ってる<rt>あってる</rt></ruby>かわかんないけど、何かだけ<ruby>勝つ<rt>かつ</rt></ruby>ことができる、<ruby>何々<rt>なになに</rt></ruby>しか<ruby>勝てない<rt>かてない</rt></ruby>っていう<ruby>意味<rt>いみ</rt></ruby>、イコール<ruby>何々<rt>なになに</rt></ruby>だけが<ruby>勝つ<rt>かつ</rt></ruby>ことができるっていう<ruby>意味<rt>いみ</rt></ruby>ですね。なので、なんとかしか<ruby>勝たん<rt>かたん</rt></ruby>っていう<ruby>表現<rt>ひょうげん</rt></ruby>になっています。</p>
+      </section>
+      <section id="section-5" class="content-section">
+        <h2>「〇〇<ruby>界隈<rt>かいわい</rt></ruby>」</h2>
+        <p>そして<ruby>第3位<rt>だいさんい</rt></ruby>が「〇〇<ruby>界隈<rt>かいわい</rt></ruby>」<a href="#glossary-3" id="ref-3" class="footnote">*3</a>です。これはコミュニティやグループを<ruby>意味<rt>いみ</rt></ruby>するんですけど、<ruby>例えば<rt>たとえば</rt></ruby>、カメラ<ruby>界隈<rt>かいわい</rt></ruby>とか<ruby>電車界隈<rt>でんしゃかいわい</rt></ruby>とかアニメ<ruby>界隈<rt>かいわい</rt></ruby>とかね。<ruby>英語<rt>えいご</rt></ruby>だとコミュニティとかシーンに<ruby>近い<rt>ちかい</rt></ruby>言葉なんじゃないかなって<ruby>思う<rt>おもう</rt></ruby>んだけど、<ruby>界隈<rt>かいわい</rt></ruby>っていうふうに<ruby>言う<rt>いう</rt></ruby>と、ちょっとなんか<ruby>面白い<rt>おもしろい</rt></ruby><ruby>雰囲気<rt>ふんいき</rt></ruby>があるよね。よく、おじいちゃんとかおばあちゃんのことをSNSで「<ruby>天国界隈<rt>てんごくかいわい</rt></ruby>にいる<ruby>人<rt>ひと</rt></ruby>」って<ruby>言う<rt>いう</rt></ruby>人がいるんだけど、まだ<ruby>天国<rt>てんごく</rt></ruby>じゃないでしょって<ruby>思う<rt>おもう</rt></ruby>んだけど、ちょっとそういう<ruby>言い方<rt>いいかた</rt></ruby>をしたりとか。あとは<ruby>一番<rt>いちばん</rt></ruby><ruby>面白い<rt>おもしろい</rt></ruby><ruby>界隈<rt>かいわい</rt></ruby>は<ruby>何<rt>なに</rt></ruby>かな。ちょっと<ruby>待って<rt>まって</rt></ruby>ね、<ruby>界隈<rt>かいわい</rt></ruby>の<ruby>面白い<rt>おもしろい</rt></ruby>使い方。<ruby>面白い<rt>おもしろい</rt></ruby>界隈、何がある。そうね、なんでもみんな<ruby>界隈<rt>かいわい</rt></ruby>をつけたがる<ruby>感じ<rt>かんじ</rt></ruby>かな。こういう<ruby>人たち<rt>ひとたち</rt></ruby>みたいな<ruby>感じ<rt>かんじ</rt></ruby>で、なんとか<ruby>界隈<rt>かいわい</rt></ruby>っていうふうな<ruby>言い方<rt>いいかた</rt></ruby>をするんだけど、ちょっと<ruby>面白い<rt>おもしろい</rt></ruby>なって<ruby>個人的<rt>こじんてき</rt></ruby>には<ruby>思います<rt>おもいます</rt></ruby>。</p>
+      </section>
+      <section id="section-6" class="content-section">
+        <h2>「おじ」と<ruby>関連<rt>かんれん</rt></ruby>スラング</h2>
+        <p>はい、<ruby>次<rt>つぎ</rt></ruby>、<ruby>第4位<rt>だいよんい</rt></ruby>。「おじ」です。最近、日本では「おじ」っていう<ruby>言葉<rt>ことば</rt></ruby>がとても<ruby>増えてきている<rt>ふえてきている</rt></ruby>ような<ruby>気<rt>き</rt></ruby>がします。もともとはイケオジとかこどおじとか、<ruby>鉄道<rt>てつどう</rt></ruby>おじとか、カメラおじとか、そういういろんな<ruby>言葉<rt>ことば</rt></ruby>があったんだけど、最近では<ruby>特に<rt>とくに</rt></ruby>「おじ」だけをピックアップして<ruby>使われている<rt>つかわれている</rt></ruby>ようなイメージがありますね。「おじ」っていうと、<ruby>要するに<rt>ようするに</rt></ruby><ruby>中年<rt>ちゅうねん</rt></ruby>の<ruby>男性<rt>だんせい</rt></ruby>のことなんですけど、ちょっとミームっぽい<ruby>感じ<rt>かんじ</rt></ruby>の<ruby>言い方<rt>いいかた</rt></ruby>ですよね。</p>
+        <p>「おじさん」っていうとちょっと<ruby>距離<rt>きょり</rt></ruby>があるんだけど、「おじ」っていうとちょっと<ruby>可愛らしい<rt>かわいらしい</rt></ruby><ruby>雰囲気<rt>ふんいき</rt></ruby>があるような<ruby>言い方<rt>いいかた</rt></ruby>になってますね。なんか、おじさんっていうとちょっと<ruby>遠い<rt>とおい</rt></ruby>感じになるんだけど、「おじ」っていうと、ちょっと<ruby>対等感<rt>たいとうかん</rt></ruby>、もしくはちょっと<ruby>下<rt>した</rt></ruby>に<ruby>見てる<rt>みてる</rt></ruby>ような<ruby>言い方<rt>いいかた</rt></ruby>かなって<ruby>個人的<rt>こじんてき</rt></ruby>には<ruby>思ったりします<rt>おもったりします</rt></ruby>ね。</p>
+        <p>その<ruby>中<rt>なか</rt></ruby>でめっちゃ<ruby>面白い<rt>おもしろい</rt></ruby>なって<ruby>思う<rt>おもう</rt></ruby>言葉が<ruby>二つ<rt>ふたつ</rt></ruby>あって、一つは「こどおじ」<a href="#glossary-4" id="ref-4" class="footnote">*4</a>です。<ruby>皆さん<rt>みなさん</rt></ruby>は「こどおじ」って<ruby>聞いて<rt>きいて</rt></ruby>、どんなおじさんを<ruby>想像<rt>そうぞう</rt></ruby>しますか。<ruby>答え<rt>こたえ</rt></ruby>は「<ruby>子供部屋おじさん<rt>こどもべやおじさん</rt></ruby>」なんですけど、<ruby>40歳<rt>よんじゅうさい</rt></ruby>とかにもなってまだ<ruby>実家<rt>じっか</rt></ruby>の<ruby>子供部屋<rt>こどもべや</rt></ruby>で<ruby>暮らしている<rt>くらしている</rt></ruby><ruby>男性<rt>だんせい</rt></ruby><ruby>に対して<rt>にたいして</rt></ruby>、「こどおじ」って<ruby>使ったりする<rt>つかったりする</rt></ruby>んですね。<ruby>別に<rt>べつに</rt></ruby>私、これ<ruby>悪い<rt>わるい</rt></ruby>ことだと<ruby>思っていなくて<rt>おもっていなくて</rt></ruby>、<ruby>周り<rt>まわり</rt></ruby>にも<ruby>結構<rt>けっこう</rt></ruby>こどおじの<ruby>人<rt>ひと</rt></ruby>いたんですけど、<ruby>婚活<rt>こんかつ</rt></ruby>パーティーとかで、<ruby>会計士<rt>かいけいし</rt></ruby>なんだけど<ruby>彼女<rt>かのじょ</rt></ruby>がずっといなくて、<ruby>婚活<rt>こんかつ</rt></ruby>パーティーとかに<ruby>通って<rt>かよって</rt></ruby><ruby>結婚相手<rt>けっこんあいて</rt></ruby>を<ruby>真剣<rt>しんけん</rt></ruby>に<ruby>探している<rt>さがしている</rt></ruby>人の<ruby>中<rt>なか</rt></ruby>にも、やっぱりこどおじの人とかいて、よく<ruby>他<rt>た</rt></ruby>の<ruby>男同士<rt>おとこどうし</rt></ruby>の<ruby>会話<rt>かいわ</rt></ruby>で、「何々さんはこどおじだからね」とか<ruby>言って<rt>いって</rt></ruby>、からかってるのを<ruby>聞く<rt>きく</rt></ruby>のはよくありましたね。<ruby>私自身<rt>わたしじしん</rt></ruby>が<ruby>何<rt>なに</rt></ruby>か<ruby>思う<rt>おもう</rt></ruby>ことはないんだけど、<ruby>同性<rt>どうせい</rt></ruby>の<ruby>男性<rt>だんせい</rt></ruby>からは、ちょっと「こどおじ」と<ruby>言って<rt>いって</rt></ruby>、ちょっと<ruby>冷ややか<rt>ひややか</rt></ruby>な<ruby>目<rt>め</rt></ruby>で<ruby>見られる<rt>みられる</rt></ruby>こともあるかもしれませんね。</p>
+        <p>そしてもう<ruby>一つ<rt>ひとつ</rt></ruby>、ちょっと<ruby>面白い<rt>おもしろい</rt></ruby>言葉としては「イケオジ」ですね。イケオジの<ruby>意味<rt>いみ</rt></ruby>、わかりますか。イケオジは、イケてるおじさんとか、イケメンなおじさん。ちょっとどっちかわかんないんだけど、<ruby>要するに<rt>ようするに</rt></ruby>ちょっとかっこいいおじさんのことですね。やっぱりね、中には、<ruby>若い<rt>わかい</rt></ruby>頃よりも<ruby>中年<rt>ちゅうねん</rt></ruby>の<ruby>30、40代<rt>さんじゅう、よんじゅうだい</rt></ruby>になってからの<ruby>方<rt>ほう</rt></ruby>がちょっと<ruby>魅力<rt>みりょく</rt></ruby>が<ruby>出る<rt>でる</rt></ruby><ruby>男性<rt>だんせい</rt></ruby>もいるのかなと<ruby>思う<rt>おもう</rt></ruby>んですけど、そういう<ruby>人<rt>ひと</rt></ruby>のことをイケオジって<ruby>言ったりします<rt>いったりします</rt></ruby>ね。</p>
+        <p><ruby>映画<rt>えいが</rt></ruby>とかでも、<ruby>40、50代<rt>よんじゅう、ごじゅうだい</rt></ruby>になってからの<ruby>方<rt>ほう</rt></ruby>が<ruby>味<rt>あじ</rt></ruby>が<ruby>出て<rt>でて</rt></ruby>、かっこいいなって<ruby>思う<rt>おもう</rt></ruby>人がいますよね。ジェームズ・ボンドとかもそうですよね。なんかいつも<ruby>20代<rt>にじゅうだい</rt></ruby>ぐらいの<ruby>若い<rt>わかい</rt></ruby><ruby>女<rt>おんな</rt></ruby>の<ruby>人<rt>ひと</rt></ruby>が<ruby>彼女<rt>かのじょ</rt></ruby>になってますけど、<ruby>相手<rt>あいて</rt></ruby>の<ruby>人<rt>ひと</rt></ruby>を<ruby>見る<rt>みる</rt></ruby>と、パッと<ruby>見<rt>み</rt></ruby>、おじさんだと<ruby>思う<rt>おもう</rt></ruby>んですけど、ああいうのをイケオジっていうふうに<ruby>言う<rt>いう</rt></ruby>のが<ruby>正しい<rt>ただしい</rt></ruby>のかなって<ruby>思います<rt>おもいます</rt></ruby>。おじ、使ってください。</p>
+      </section>
+      <section id="section-7" class="content-section">
+        <h2><ruby>港区女子<rt>みなとくじょし</rt></ruby></h2>
+        <p>そして<ruby>第5位<rt>だいごい</rt></ruby>は「<ruby>港区女子<rt>みなとくじょし</rt></ruby>」<a href="#glossary-5" id="ref-5" class="footnote">*5</a>です。これは<ruby>本当に<rt>ほんとうに</rt></ruby>最近、日本ではすごく<ruby>有名<rt>ゆうめい</rt></ruby>な<ruby>言葉<rt>ことば</rt></ruby>なんだけど、<ruby>港区<rt>みなとく</rt></ruby>っていうのは<ruby>東京23区<rt>とうきょうにじゅうさんく</rt></ruby>の<ruby>中<rt>なか</rt></ruby>にある<ruby>一つ<rt>ひとつ</rt></ruby>の<ruby>区<rt>く</rt></ruby>のことなんですけど、<ruby>主<rt>おも</rt></ruby>に<ruby>六本木<rt>ろっぽんぎ</rt></ruby>とか<ruby>麻布<rt>あざぶ</rt></ruby>とか<ruby>青山<rt>あおやま</rt></ruby>と<ruby>呼ばれる<rt>よばれる</rt></ruby>エリアになっています。イメージとしては<ruby>東京<rt>とうきょう</rt></ruby>タワーの<ruby>近く<rt>ちかく</rt></ruby>ですね。本当に東京で<ruby>一番高級<rt>いちばんこうきゅう</rt></ruby>なエリアと<ruby>言われていて<rt>いわれていて</rt></ruby>、日本ってすごく<ruby>安い<rt>やすい</rt></ruby>イメージ、皆さんあるかなって<ruby>思う<rt>おもう</rt></ruby>んですけど、<ruby>港区<rt>みなとく</rt></ruby>のタワマンとか<ruby>港区<rt>みなとく</rt></ruby>のマンション、<ruby>普通<rt>ふつう</rt></ruby>のマンション<ruby>に関して<rt>にかんして</rt></ruby>も、結構もう<ruby>億<rt>おく</rt></ruby>は<ruby>超えてくる<rt>こえてくる</rt></ruby>ようなイメージになっています。</p>
+        <p>日本も<ruby>安い<rt>やすい</rt></ruby>国と<ruby>思われ<rt>おもわれ</rt></ruby>がちなんだけど、本当に<ruby>港区<rt>みなとく</rt></ruby>は<ruby>高い<rt>たかい</rt></ruby>。<ruby>日本人<rt>にほんじん</rt></ruby>じゃ、もう<ruby>多分<rt>たぶん</rt></ruby>マンションを<ruby>買えない<rt>かえない</rt></ruby>。本当、<ruby>経営者<rt>けいえいしゃ</rt></ruby>とかじゃないとマンション<ruby>買えない<rt>かえない</rt></ruby>なって<ruby>言われている<rt>いわれている</rt></ruby>ようなエリアになっています。そんな<ruby>港区女子<rt>みなとくじょし</rt></ruby>とは、<ruby>高級<rt>こうきゅう</rt></ruby>レストランや<ruby>お金持ち<rt>おかねもち</rt></ruby>の<ruby>男性<rt>だんせい</rt></ruby>がいる<ruby>場所<rt>ばしょ</rt></ruby>によくいる<ruby>女性<rt>じょせい</rt></ruby>のことを<ruby>指します<rt>さします</rt></ruby>。SNS<ruby>文化<rt>ぶんか</rt></ruby>から<ruby>生まれた<rt>うまれた</rt></ruby>言葉なんですけど、これ<ruby>一番<rt>いちばん</rt></ruby><ruby>面白い<rt>おもしろい</rt></ruby>のは、<ruby>実は<rt>じつは</rt></ruby>港区女子は<ruby>港区<rt>みなとく</rt></ruby>に<ruby>生息<rt>せいそく</rt></ruby>しているだけで、港区に<ruby>住んでいる<rt>すんでいる</rt></ruby>わけではないんですね。<ruby>実は<rt>じつは</rt></ruby><ruby>住居<rt>じゅうきょ</rt></ruby>は<ruby>埼玉<rt>さいたま</rt></ruby>だったりとか<ruby>千葉<rt>ちば</rt></ruby>だったりとか、あと<ruby>横浜<rt>よこはま</rt></ruby>だったりとか、東京じゃないところに<ruby>住んでいたりする<rt>すんでいたりする</rt></ruby>のが<ruby>一番<rt>いちばん</rt></ruby>面白いところです。だいたいそういう<ruby>港区女子<rt>みなとくじょし</rt></ruby>はイケオジと<ruby>一緒<rt>いっしょ</rt></ruby>に<ruby>遊んでいたりする<rt>あそんでいたりする</rt></ruby>わけなんですけど、そういう<ruby>世界<rt>せかい</rt></ruby>もありますよっていう<ruby>話<rt>はなし</rt></ruby>なんですけどね。ちょっと<ruby>興味深いです<rt>きょうみぶかいです</rt></ruby>よね。</p>
+      </section>
+      <section id="section-8" class="content-section">
+        <h2><ruby>好きすぎて<rt>すきすぎて</rt></ruby><ruby>死ぬ<rt>しぬ</rt></ruby>・<ruby>滅<rt>めつ</rt></ruby></h2>
+        <p><ruby>次<rt>つぎ</rt></ruby>、<ruby>六番目<rt>ろくばんめ</rt></ruby>。「<ruby>好きすぎて<rt>すきすぎて</rt></ruby><ruby>死ぬ<rt>しぬ</rt></ruby>」<a href="#glossary-6" id="ref-6" class="footnote">*6</a>ってやつですね。これはSNSでよく<ruby>見る<rt>みる</rt></ruby><ruby>表現<rt>ひょうげん</rt></ruby>かなって<ruby>思う<rt>おもう</rt></ruby>んですけど、<ruby>意味<rt>いみ</rt></ruby>は、好きすぎてもう<ruby>本当に<rt>ほんとうに</rt></ruby><ruby>苦しくなる<rt>くるしくなる</rt></ruby>ぐらい<ruby>好き<rt>すき</rt></ruby>って<ruby>感じ<rt>かんじ</rt></ruby>ですね。もう「I&#x27;m dying」っていうニュアンスに<ruby>近い<rt>ちかい</rt></ruby>のかなって<ruby>思う<rt>おもう</rt></ruby>んですけど、「好きすぎて死ぬ」って<ruby>感じ<rt>かんじ</rt></ruby>は、例えば「モンチ、<ruby>可愛すぎて<rt>かわいすぎて</rt></ruby>死ぬ」って<ruby>言っちゃった<rt>いっちゃった</rt></ruby>、<ruby>可愛すぎて<rt>かわいすぎて</rt></ruby>死ぬって感じですね。めっちゃ<ruby>可愛い<rt>かわいい</rt></ruby>よ。本当に<ruby>可愛いです<rt>かわいいです</rt></ruby>。自分の<ruby>好き<rt>すき</rt></ruby>なものとかことを<ruby>語る<rt>かたる</rt></ruby>時に、皆さんよく「好きすぎて死ぬ」って<ruby>言ったりします<rt>いったりします</rt></ruby>ね。</p>
+        <p><ruby>次<rt>つぎ</rt></ruby>、<ruby>第7位<rt>だいなない</rt></ruby>が「好きすぎて<ruby>滅<rt>めつ</rt></ruby>」<a href="#glossary-7" id="ref-7" class="footnote">*7</a>っていう<ruby>言葉<rt>ことば</rt></ruby>なんですけど、これはさらに<ruby>強い<rt>つよい</rt></ruby>言葉で、最近<ruby>流行りだした<rt>はやりだした</rt></ruby><ruby>印象<rt>いんしょう</rt></ruby>がありますね。「死ぬ」って<ruby>言葉<rt>ことば</rt></ruby>って、あんまり<ruby>使わない<rt>つかわない</rt></ruby>方がいいかなって<ruby>思う<rt>おもう</rt></ruby>んだけど、それの<ruby>代わり<rt>かわり</rt></ruby>に<ruby>出てきた<rt>でてきた</rt></ruby>のが「<ruby>滅<rt>めつ</rt></ruby>」です。<ruby>滅<rt>めつ</rt></ruby>はパッと<ruby>見<rt>み</rt></ruby>、<ruby>鬼滅の刃<rt>きめつのやいば</rt></ruby>の「滅」って感じなんだけど、意味としては<ruby>多分<rt>たぶん</rt></ruby>、<ruby>消滅<rt>しょうめつ</rt></ruby>とか<ruby>滅亡<rt>めつぼう</rt></ruby>っていうような<ruby>意味<rt>いみ</rt></ruby>がありますね。つまり、好きすぎて<ruby>存在<rt>そんざい</rt></ruby>が<ruby>消える<rt>きえる</rt></ruby>っていうレベルで、ちょっとオタクっぽい<ruby>表現<rt>ひょうげん</rt></ruby>かなって<ruby>思います<rt>おもいます</rt></ruby>。好きすぎて<ruby>存在<rt>そんざい</rt></ruby>が<ruby>消える<rt>きえる</rt></ruby>ってどういうことやねん、みたいな。人類が<ruby>滅亡<rt>めつぼう</rt></ruby>するみたいな、モンチが<ruby>好きすぎて<rt>すきすぎて</rt></ruby>、みたいな、そんな<ruby>感じ<rt>かんじ</rt></ruby>のイメージですね。</p>
+      </section>
+      <section id="section-9" class="content-section">
+        <h2>ガチとワンチャン</h2>
+        <p>そして<ruby>第8位<rt>だいはちい</rt></ruby>は「ガチ」<a href="#glossary-8" id="ref-8" class="footnote">*8</a>ですね。意味としては「本当に？」っていう、まあそういう<ruby>感じ<rt>かんじ</rt></ruby>かな。例えば、「うわ、これガチで<ruby>美味しい<rt>おいしい</rt></ruby>ね」とか、「ガチで<ruby>面白い<rt>おもしろい</rt></ruby>ね」とか、<ruby>若者<rt>わかもの</rt></ruby>が<ruby>言う<rt>いう</rt></ruby>スラングになっていますね。でもこれ、<ruby>流行った<rt>はやった</rt></ruby>のは<ruby>結構<rt>けっこう</rt></ruby><ruby>長い<rt>ながい</rt></ruby><ruby>期間<rt>きかん</rt></ruby>な<ruby>気<rt>き</rt></ruby>がしますね。もう<ruby>十年<rt>じゅうねん</rt></ruby>ぐらい「ガチで」っていう<ruby>言葉<rt>ことば</rt></ruby>を<ruby>使ってる<rt>つかってる</rt></ruby>ようなイメージがありますね。</p>
+        <p>次、<ruby>第9位<rt>だいきゅうい</rt></ruby>。「ワンチャン」<a href="#glossary-9" id="ref-9" class="footnote">*9</a>です。意味は「もしかしたら」って<ruby>意味<rt>いみ</rt></ruby>なんだけど、ワンチャンスって<ruby>意味<rt>いみ</rt></ruby>ですね。ワンチャンス、ワンチャンスってどういうことやって<ruby>感じ<rt>かんじ</rt></ruby>だけど、チャンスがあるっていう<ruby>意味<rt>いみ</rt></ruby>ですね。例えば、「ワンチャンいける」とか、「ちょっとワンチャンいけそうだったよね」みたいな。<ruby>雰囲気的<rt>ふんいきてき</rt></ruby>には、<ruby>可能性<rt>かのうせい</rt></ruby>があるって<ruby>感じ<rt>かんじ</rt></ruby>かな。<ruby>多分<rt>たぶん</rt></ruby>とか、ちょっと<ruby>可能性<rt>かのうせい</rt></ruby>あったよねとか、<ruby>可能性<rt>かのうせい</rt></ruby>あるとか、そんな<ruby>言い方<rt>いいかた</rt></ruby>になっています。<ruby>割<rt>わり</rt></ruby>と<ruby>若い<rt>わかい</rt></ruby><ruby>大学生<rt>だいがくせい</rt></ruby>ぐらいの<ruby>子<rt>こ</rt></ruby>が<ruby>使っている<rt>つかっている</rt></ruby>言葉のイメージがあります。私もやっぱり<ruby>大学生<rt>だいがくせい</rt></ruby>の<ruby>時<rt>とき</rt></ruby>はワンチャンって<ruby>使ってました<rt>つかってました</rt></ruby>ね。でも、なんかワンチャン、ワンチャン、ワンチャンって<ruby>言ってて<rt>いってて</rt></ruby>、だんだん<ruby>語彙<rt>ごい</rt></ruby>がなくて、<ruby>微妙<rt>びみょう</rt></ruby>だなっていうふうに<ruby>思われる<rt>おもわれる</rt></ruby>かもしれないので、ほどほどにワンチャンは<ruby>使った<rt>つかった</rt></ruby>方がいいかなと<ruby>思います<rt>おもいます</rt></ruby>。さっきの<ruby>第8位<rt>だいはちい</rt></ruby>のガチは<ruby>結構<rt>けっこう</rt></ruby><ruby>自然<rt>しぜん</rt></ruby>に<ruby>使える<rt>つかえる</rt></ruby>かもしれないですね。ワンチャンに<ruby>比べたら<rt>くらべたら</rt></ruby>。ワンチャンはもうちょっとノリが<ruby>軽い<rt>かるい</rt></ruby>感じがあるんだけど、「ガチで」っていうのは<ruby>結構<rt>けっこう</rt></ruby>もうちょっと<ruby>一般的<rt>いっぱんてき</rt></ruby>に<ruby>使える<rt>つかえる</rt></ruby>言葉かもしれません。</p>
+      </section>
+      <section id="section-10" class="content-section">
+        <h2>ヤクザという<ruby>言い方<rt>いいかた</rt></ruby></h2>
+        <p>そして<ruby>第10位<rt>だいじゅうい</rt></ruby>。<ruby>個人的<rt>こじんてき</rt></ruby>、<ruby>第10位<rt>だいじゅうい</rt></ruby>なんですけど、「ヤクザ」かなって<ruby>思ってて<rt>おもってて</rt></ruby>。<ruby>本来<rt>ほんらい</rt></ruby>、ヤクザって<ruby>日本<rt>にほん</rt></ruby>の<ruby>犯罪組織<rt>はんざいそしき</rt></ruby>を<ruby>意味<rt>いみ</rt></ruby>するんですけど、最近、<ruby>若者<rt>わかもの</rt></ruby>がスラングとして、えぐいとか<ruby>異常<rt>いじょう</rt></ruby>とか<ruby>強すぎる<rt>つよすぎる</rt></ruby>っていう意味で<ruby>使う<rt>つかう</rt></ruby>ことがあるような<ruby>気<rt>き</rt></ruby>がします。例えば、「うわ、このカメラの<ruby>値段<rt>ねだん</rt></ruby>、2000ドルとかマジでヤクザだわ」みたいな。<ruby>高すぎる<rt>たかすぎる</rt></ruby>っていうことを<ruby>表現<rt>ひょうげん</rt></ruby>したいときに、ちょっと「ヤクザ」っていう言葉を<ruby>使う<rt>つかう</rt></ruby>と、なんかすごくしっくりくる<a href="#glossary-10" id="ref-10" class="footnote">*10</a>ような<ruby>気<rt>き</rt></ruby>はするので、最近使ってる人が<ruby>多い<rt>おおい</rt></ruby>ような<ruby>印象<rt>いんしょう</rt></ruby>ですね。</p>
+      </section>
+      <section id="section-11" class="content-section">
+        <h2>日本語らしいぼかし<ruby>表現<rt>ひょうげん</rt></ruby></h2>
+        <p><ruby>個人的<rt>こじんてき</rt></ruby>な<ruby>意見<rt>いけん</rt></ruby>なんですけど、日本語って、前にも<ruby>何回<rt>なんかい</rt></ruby>もこのテーマで<ruby>話した<rt>はなした</rt></ruby>と<ruby>思う<rt>おもう</rt></ruby>んだけど、オノマトペを<ruby>使ったり<rt>つかったり</rt></ruby>とか、カタカナ<ruby>言葉<rt>ことば</rt></ruby>を<ruby>使ったり<rt>つかったり</rt></ruby>とか、すごくはっきり<ruby>言わない<rt>いわない</rt></ruby><ruby>民族<rt>みんぞく</rt></ruby>なんですね、<ruby>日本人<rt>にほんじん</rt></ruby>というのが。そういう<ruby>中<rt>なか</rt></ruby>で、いろいろな<ruby>言葉<rt>ことば</rt></ruby>が<ruby>新しく<rt>あたらしく</rt></ruby><ruby>生み出されている<rt>うみだされている</rt></ruby>っていうのは、ある<ruby>意味<rt>いみ</rt></ruby>、そのはっきり<ruby>言わない<rt>いわない</rt></ruby><ruby>文化<rt>ぶんか</rt></ruby>だからこそなのかなって<ruby>個人的<rt>こじんてき</rt></ruby>には<ruby>思っています<rt>おもっています</rt></ruby>。例えば、「もしかしたらいけるよね」っていう言葉があったとして、「もしかしたらいけるね」とか、「<ruby>多分<rt>たぶん</rt></ruby>いけるんじゃない」っていうんじゃなくて、「ワンチャンいけるかもね」「ワンチャンいけるくね」とかっていうと、ちょっとノリが<ruby>軽い<rt>かるい</rt></ruby>ような<ruby>印象<rt>いんしょう</rt></ruby>になりますよね。あと、「ヤクザ」っていう言葉も、「この<ruby>値段<rt>ねだん</rt></ruby>、<ruby>高すぎる<rt>たかすぎる</rt></ruby>ね」っていうと、ちょっと<ruby>真面目<rt>まじめ</rt></ruby>な<ruby>感じ<rt>かんじ</rt></ruby>なんだけど、「ヤクザみたいだね」みたいなふうに<ruby>言う<rt>いう</rt></ruby>と、ちょっと<ruby>和らぐ<rt>やわらぐ</rt></ruby>というか、そんな<ruby>印象<rt>いんしょう</rt></ruby>があるのかなっていうのは<ruby>個人的<rt>こじんてき</rt></ruby>な<ruby>意見<rt>いけん</rt></ruby>ですね。</p>
+        <p><ruby>多分<rt>たぶん</rt></ruby>、<ruby>日本人<rt>にほんじん</rt></ruby>はいろいろな<ruby>言葉<rt>ことば</rt></ruby>の<ruby>表現<rt>ひょうげん</rt></ruby>が<ruby>好き<rt>すき</rt></ruby>だし、言葉を<ruby>大事<rt>だいじ</rt></ruby>にしている<ruby>民族<rt>みんぞく</rt></ruby>なのかなって<ruby>思います<rt>おもいます</rt></ruby>。なので、あえて<ruby>断定的<rt>だんていてき</rt></ruby>な<ruby>言い方<rt>いいかた</rt></ruby>をしないのかなって<ruby>思います<rt>おもいます</rt></ruby>。「好きすぎて死ぬ」っていう言葉だけはちょっとどうなのかなって<ruby>思ってた<rt>おもってた</rt></ruby>んだけど、最近、<ruby>新しい<rt>あたらしい</rt></ruby>言葉が<ruby>出てきた<rt>でてきた</rt></ruby>ので、皆さんは「好きすぎて滅」って<ruby>方<rt>ほう</rt></ruby>を<ruby>使う<rt>つかう</rt></ruby>ようにしてください。</p>
+        <p>ということで、皆さんは<ruby>今日<rt>きょう</rt></ruby>の<ruby>言葉<rt>ことば</rt></ruby>をいくつ<ruby>知っていましたでしょう<rt>しっていましたでしょう</rt></ruby>か。コメントで<ruby>教えてもらえたら<rt>おしえてもらえたら</rt></ruby><ruby>嬉しいです<rt>うれしいです</rt></ruby>。それでは<ruby>皆さん<rt>みなさん</rt></ruby>、今日も<ruby>一日<rt>いちにち</rt></ruby><ruby>お疲れ様<rt>おつかれさま</rt></ruby>でした。また<ruby>次<rt>つぎ</rt></ruby>の<ruby>授業<rt>じゅぎょう</rt></ruby>で<ruby>お会いしましょう<rt>おあいしましょう</rt></ruby>。おやすみなさい。</p>
+      </section>
+        <section class="content-section glossary-section" id="glossary">
+          <h3>言葉の解説 (Glossary)</h3>
+          <ol class="glossary-list">
+          <li id="glossary-1" class="glossary-entry">
+            <h4>カエル化現象</h4>
+            <p><strong>意味 (Meaning):</strong> もともと好意を持っていた相手に対して、あるきっかけで急に嫌悪感や無理だという気持ちが生まれることを表す恋愛系スラングです。</p>
+            <div class="glossary-block">
+              <p><strong>例文 (Examples):</strong></p>
+              <ul>
+            <li>デート中の食べ方を見て、急にカエル化現象になってしまった。</li>
+            <li>毎日は好きだったのに、メッセージの送り方でカエル化現象が起きた。</li>
+              </ul>
+            </div>
+            <div class="glossary-block">
+              <p><strong>比較 (Comparison):</strong></p>
+              <ul>
+            <li><strong>「冷める」との違い:</strong> 「冷める」は気持ちが弱くなる広い表現ですが、「カエル化現象」は好きだった相手を急に受けつけなくなる強い変化を表します。</li>
+              </ul>
+            </div>
+            <p><a href="#ref-1" class="backlink">本文へ戻る</a></p>
+          </li>
+          <li id="glossary-2" class="glossary-entry">
+            <h4>〜しか勝たん</h4>
+            <p><strong>意味 (Meaning):</strong> 「これが一番好き」「これ以外ありえない」と強く推す時に使うくだけた表現です。SNSや会話で好みを勢いよく言いたい時によく使われます。</p>
+            <div class="glossary-block">
+              <p><strong>例文 (Examples):</strong></p>
+              <ul>
+            <li>夏はアイスしか勝たん。</li>
+            <li>休日は家で映画を見るのしか勝たん。</li>
+              </ul>
+            </div>
+            <div class="glossary-block">
+              <p><strong>比較 (Comparison):</strong></p>
+              <ul>
+            <li><strong>「〜が一番好き」との違い:</strong> 意味は近いですが、「〜しか勝たん」の方が若者っぽく、ノリや熱量が強く出ます。</li>
+              </ul>
+            </div>
+            <p><a href="#ref-2" class="backlink">本文へ戻る</a></p>
+          </li>
+          <li id="glossary-3" class="glossary-entry">
+            <h4>界隈</h4>
+            <p><strong>意味 (Meaning):</strong> ある趣味、話題、属性のまわりにいる人たちや、その世界全体をゆるく指す言い方です。ネットでは特に便利なラベルとしてよく使われます。</p>
+            <div class="glossary-block">
+              <p><strong>例文 (Examples):</strong></p>
+              <ul>
+            <li>文房具界隈では、その新商品がかなり話題になっている。</li>
+            <li>旅行界隈の人たちは、写真の撮り方にもこだわりが強い。</li>
+              </ul>
+            </div>
+            <div class="glossary-block">
+              <p><strong>比較 (Comparison):</strong></p>
+              <ul>
+            <li><strong>「コミュニティ」との違い:</strong> 「コミュニティ」はまとまりのある集団を指しやすいですが、「界隈」はもっとゆるく雰囲気ごとまとめる感じがあります。</li>
+              </ul>
+            </div>
+            <p><a href="#ref-3" class="backlink">本文へ戻る</a></p>
+          </li>
+          <li id="glossary-4" class="glossary-entry">
+            <h4>こどおじ</h4>
+            <p><strong>意味 (Meaning):</strong> 「子供部屋おじさん」を短くした俗語で、実家の自分の部屋で暮らしている大人の男性を指します。からかいや批判のニュアンスを含むことがあります。</p>
+            <div class="glossary-block">
+              <p><strong>例文 (Examples):</strong></p>
+              <ul>
+            <li>彼は実家暮らしだけど、ネットではすぐにこどおじと言われてしまう。</li>
+            <li>その言い方は冗談でも、こどおじと呼ばれる人には失礼に聞こえることがある。</li>
+              </ul>
+            </div>
+            <div class="glossary-block">
+              <p><strong>比較 (Comparison):</strong></p>
+              <ul>
+            <li><strong>「実家暮らし」との違い:</strong> 「実家暮らし」は事実を中立的に言う表現ですが、「こどおじ」はネットスラングで、評価や皮肉が入りやすいです。</li>
+              </ul>
+            </div>
+            <p><a href="#ref-4" class="backlink">本文へ戻る</a></p>
+          </li>
+          <li id="glossary-5" class="glossary-entry">
+            <h4>港区女子</h4>
+            <p><strong>意味 (Meaning):</strong> 東京の港区周辺の華やかな店や人間関係に出入りしている女性をイメージした言い方で、SNS由来のステレオタイプを強く含む表現です。</p>
+            <div class="glossary-block">
+              <p><strong>例文 (Examples):</strong></p>
+              <ul>
+            <li>そのドラマには、いわゆる港区女子っぽい登場人物が出てくる。</li>
+            <li>高級レストランの写真ばかり投稿すると、港区女子みたいだと言われることがある。</li>
+              </ul>
+            </div>
+            <div class="glossary-block">
+              <p><strong>比較 (Comparison):</strong></p>
+              <ul>
+            <li><strong>「セレブ」との違い:</strong> 「セレブ」は本当に裕福な人そのものを指しやすいですが、「港区女子」はライフスタイルや見られ方も含めたネット的なラベルです。</li>
+              </ul>
+            </div>
+            <p><a href="#ref-5" class="backlink">本文へ戻る</a></p>
+          </li>
+          <li id="glossary-6" class="glossary-entry">
+            <h4>好きすぎて死ぬ</h4>
+            <p><strong>意味 (Meaning):</strong> 何かを好きな気持ちが強すぎて、苦しいくらいだと大げさに表す言い方です。もちろん本当に死ぬ意味ではありません。</p>
+            <div class="glossary-block">
+              <p><strong>例文 (Examples):</strong></p>
+              <ul>
+            <li>この猫、可愛すぎて死ぬ。</li>
+            <li>推しの新しい写真が良すぎて、好きすぎて死ぬって感じだった。</li>
+              </ul>
+            </div>
+            <div class="glossary-block">
+              <p><strong>比較 (Comparison):</strong></p>
+              <ul>
+            <li><strong>「大好き」との違い:</strong> 「大好き」は普通の強い好意ですが、「好きすぎて死ぬ」は感情があふれている勢いまで含みます。</li>
+              </ul>
+            </div>
+            <p><a href="#ref-6" class="backlink">本文へ戻る</a></p>
+          </li>
+          <li id="glossary-7" class="glossary-entry">
+            <h4>好きすぎて滅</h4>
+            <p><strong>意味 (Meaning):</strong> 「好きすぎて死ぬ」に近い意味で、好きな気持ちが強すぎて自分が消えてしまいそうだという冗談っぽいノリを出す新しめの表現です。</p>
+            <div class="glossary-block">
+              <p><strong>例文 (Examples):</strong></p>
+              <ul>
+            <li>この衣装、好きすぎて滅。</li>
+            <li>新曲のイントロだけで好きすぎて滅ってなった。</li>
+              </ul>
+            </div>
+            <div class="glossary-block">
+              <p><strong>比較 (Comparison):</strong></p>
+              <ul>
+            <li><strong>「好きすぎて死ぬ」との違い:</strong> どちらも誇張表現ですが、「好きすぎて滅」の方がネットっぽく、少しオタク的で遊びのある響きがあります。</li>
+              </ul>
+            </div>
+            <p><a href="#ref-7" class="backlink">本文へ戻る</a></p>
+          </li>
+          <li id="glossary-8" class="glossary-entry">
+            <h4>ガチ</h4>
+            <p><strong>意味 (Meaning):</strong> 「本気で」「本当に」「冗談ではなく」という意味で使うくだけた言い方です。形容詞や動詞を強く押し出す時によく付きます。</p>
+            <div class="glossary-block">
+              <p><strong>例文 (Examples):</strong></p>
+              <ul>
+            <li>この店、ガチで美味しい。</li>
+            <li>あの映画はガチで泣けた。</li>
+              </ul>
+            </div>
+            <div class="glossary-block">
+              <p><strong>比較 (Comparison):</strong></p>
+              <ul>
+            <li><strong>「本当に」との違い:</strong> 「本当に」は幅広く使えますが、「ガチ」はもっと会話的で若い印象が強いです。</li>
+              </ul>
+            </div>
+            <p><a href="#ref-8" class="backlink">本文へ戻る</a></p>
+          </li>
+          <li id="glossary-9" class="glossary-entry">
+            <h4>ワンチャン</h4>
+            <p><strong>意味 (Meaning):</strong> 「もしかしたら可能性がある」「うまくいくかもしれない」という意味で使う軽い口調の表現です。もとは「ワンチャンス」から来ています。</p>
+            <div class="glossary-block">
+              <p><strong>例文 (Examples):</strong></p>
+              <ul>
+            <li>電車が遅れても、ワンチャン間に合うかもしれない。</li>
+            <li>今日ならワンチャン会えるんじゃない？</li>
+              </ul>
+            </div>
+            <div class="glossary-block">
+              <p><strong>比較 (Comparison):</strong></p>
+              <ul>
+            <li><strong>「もしかしたら」との違い:</strong> 「もしかしたら」は中立的ですが、「ワンチャン」はもっとラフでノリの軽い響きがあります。</li>
+              </ul>
+            </div>
+            <p><a href="#ref-9" class="backlink">本文へ戻る</a></p>
+          </li>
+          <li id="glossary-10" class="glossary-entry">
+            <h4>しっくりくる</h4>
+            <p><strong>意味 (Meaning):</strong> 感覚的にぴったり合う、自然に納得できる、違和感がないと感じる時に使う表現です。</p>
+            <div class="glossary-block">
+              <p><strong>例文 (Examples):</strong></p>
+              <ul>
+            <li>この表現の方が文脈にしっくりくる。</li>
+            <li>新しい机は部屋の雰囲気にしっくりきている。</li>
+              </ul>
+            </div>
+            <div class="glossary-block">
+              <p><strong>比較 (Comparison):</strong></p>
+              <ul>
+            <li><strong>「ぴったりくる」との違い:</strong> どちらも合う感覚を表しますが、「しっくりくる」は気分や感覚まで含めた自然さを言うことが多いです。</li>
+              </ul>
+            </div>
+            <p><a href="#ref-10" class="backlink">本文へ戻る</a></p>
+          </li>
+          </ol>
+        </section>
+      </article>
+    </div>
+  </main>
+</body>
+</html>

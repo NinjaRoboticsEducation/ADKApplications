@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>224 学校の変化の話</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f5f3ef;
+      --paper-deep: #e5e0d7;
+      --sheet: rgba(255, 255, 252, 0.92);
+      --ink: #1d232b;
+      --muted: #53606f;
+      --line: rgba(56, 73, 92, 0.14);
+      --line-strong: rgba(56, 73, 92, 0.26);
+      --accent: #3b6f96;
+      --accent-deep: #214866;
+      --accent-soft: rgba(59, 111, 150, 0.12);
+      --shadow: 0 20px 52px rgba(26, 39, 51, 0.1);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --max: 1180px;
+      --measure: 39em;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(59, 111, 150, 0.12), transparent 24%),
+        radial-gradient(circle at bottom right, rgba(89, 117, 87, 0.08), transparent 22%),
+        linear-gradient(180deg, #ece8e1 0%, #f7f5f2 44%, #ece9e3 100%);
+      font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans CJK JP", sans-serif;
+      line-height: 1.78;
+      min-height: 100vh;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(81, 100, 111, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(81, 100, 111, 0.025) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.44), transparent 86%);
+    }
+    main {
+      position: relative;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 34px 18px 72px;
+    }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 24px;
+      padding: 34px 30px 28px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(247, 249, 251, 0.94)),
+        linear-gradient(180deg, rgba(59, 111, 150, 0.06), transparent 62%);
+      box-shadow: var(--shadow);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      right: -86px;
+      top: -106px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(59, 111, 150, 0.18), transparent 70%);
+    }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--accent-deep);
+      font-size: 0.8rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      margin: 0;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
+      font-size: clamp(2.15rem, 4.9vw, 3.45rem);
+      line-height: 1.08;
+      letter-spacing: 0.01em;
+    }
+    .lede {
+      max-width: 66ch;
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 0.82rem;
+      border-radius: 999px;
+      border: 1px solid rgba(33, 72, 102, 0.14);
+      background: rgba(255, 255, 255, 0.76);
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .reading-note {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(33, 72, 102, 0.12);
+      background: rgba(247, 250, 252, 0.82);
+    }
+    .reading-note p {
+      margin: 0;
+      max-width: 64ch;
+      color: var(--muted);
+      font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans CJK JP", sans-serif;
+      font-size: 0.96rem;
+      line-height: 1.7;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 285px) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    .toc {
+      position: sticky;
+      top: 18px;
+      background: rgba(255, 255, 252, 0.88);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 20px 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .toc h2 {
+      margin: 0 0 14px;
+      color: var(--accent-deep);
+      font-size: 0.96rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .toc ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 10px;
+    }
+    .toc a {
+      display: block;
+      padding: 0.75rem 0.88rem;
+      border-radius: 14px;
+      color: inherit;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.62);
+      border: 1px solid transparent;
+      transition: transform 150ms ease, border-color 150ms ease, background 150ms ease, color 150ms ease;
+    }
+    .toc a:hover {
+      transform: translateX(3px);
+      border-color: rgba(59, 111, 150, 0.24);
+      background: rgba(255, 255, 255, 0.94);
+      color: var(--accent-deep);
+    }
+    article {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(252, 252, 249, 0.95));
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .content-section {
+      padding: 28px 30px;
+      scroll-margin-top: 24px;
+    }
+    .content-section h2,
+    .content-section p {
+      max-width: var(--measure);
+    }
+    .content-section + .content-section {
+      border-top: 1px solid var(--line);
+    }
+    h2 {
+      margin: 0 0 16px;
+      display: inline-block;
+      padding-bottom: 0.36rem;
+      border-bottom: 2px solid rgba(59, 111, 150, 0.16);
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
+      font-size: 1.54rem;
+      line-height: 1.3;
+    }
+    h4 {
+      margin: 0;
+      font-size: 1.08rem;
+      line-height: 1.35;
+    }
+    p {
+      margin: 0;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
+      font-size: 1.1rem;
+      line-height: 1.96;
+      text-wrap: pretty;
+    }
+    p + p { margin-top: 1.04em; }
+    ruby { ruby-position: over; }
+    rt {
+      font-size: 0.5em;
+      color: rgba(83, 96, 111, 0.76);
+      letter-spacing: 0.02em;
+    }
+    .footnote {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.55em;
+      padding: 0 0.38em;
+      margin-left: 0.18em;
+      border-radius: 999px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.72em;
+      line-height: 1.6;
+      vertical-align: super;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      box-shadow: 0 8px 18px rgba(33, 72, 102, 0.22);
+    }
+    .glossary-section {
+      background: linear-gradient(180deg, rgba(224, 232, 239, 0.34), rgba(255, 255, 252, 0.92));
+    }
+    .glossary-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 18px;
+    }
+    .glossary-entry {
+      padding: 18px 18px 16px;
+      border: 1px solid rgba(33, 72, 102, 0.12);
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.8);
+    }
+    .glossary-entry h4 {
+      margin-bottom: 10px;
+      font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans CJK JP", sans-serif;
+    }
+    .glossary-entry p,
+    .glossary-entry li {
+      font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans CJK JP", sans-serif;
+      font-size: 0.98rem;
+      line-height: 1.78;
+    }
+    .glossary-entry ul {
+      margin: 8px 0 0;
+      padding-left: 1.15rem;
+    }
+    .glossary-block + .glossary-block {
+      margin-top: 12px;
+    }
+    .note-backref {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--accent-deep);
+      font-size: 0.88rem;
+      text-decoration: none;
+    }
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .toc {
+        position: relative;
+        top: auto;
+      }
+    }
+    @media (max-width: 720px) {
+      main { padding: 18px 12px 52px; }
+      .hero { padding: 24px 20px 22px; }
+      .content-section { padding: 22px 20px; }
+      p { font-size: 1.02rem; line-height: 1.88; }
+      .reading-note { padding: 12px 13px; }
+    }
+    @page {
+      size: A4;
+      margin: 14mm;
+    }
+    @media print {
+      body {
+        background: #fff;
+      }
+      body::before,
+      .toc {
+        display: none;
+      }
+      main {
+        max-width: none;
+        padding: 0;
+      }
+      .hero,
+      article {
+        border: none;
+        box-shadow: none;
+        background: #fff;
+      }
+      .hero,
+      .glossary-entry,
+      h2,
+      h4 {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      h2,
+      h4 {
+        break-after: avoid;
+        page-break-after: avoid;
+      }
+      p {
+        orphans: 3;
+        widows: 3;
+      }
+      .content-section {
+        padding: 0 0 18px;
+      }
+      .reading-note {
+        padding: 0;
+        border: none;
+        background: transparent;
+      }
+      .content-section + .content-section {
+        border-top: none;
+        padding-top: 18px;
+      }
+      .footnote {
+        color: var(--accent-deep);
+        background: transparent;
+        box-shadow: none;
+        border: 1px solid rgba(33, 72, 102, 0.24);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">Learner-Friendly Transcript</p>
+      <h1>224 学校の<ruby>変化<rt>へんか</rt></ruby>の<ruby>話<rt>はなし</rt></ruby></h1>
+      <p class="lede">日本語学校制度の変化、留学生教育、特定技能、そして教育制度への懸念までを、ふりがなと語句メモ付きで追える学習用ドキュメントです。</p>
+      <div class="meta-row">
+        <span class="meta-chip">ふりがな付き</span>
+        <span class="meta-chip">語句メモ 10件</span>
+        <span class="meta-chip">教育・社会</span>
+        <span class="meta-chip">全12章</span>
+      </div>
+      <div class="reading-note">
+        <p>本文の小さな番号から語句メモへ移動できます。ふりがなは読みの補助として残しつつ、A4印刷でも長文が追いやすいように行間と余白を整えています。</p>
+      </div>
+    </section>
+    <div class="layout">
+      <aside class="toc" aria-label="目次">
+        <h2><ruby>目次<rt>もくじ</rt></ruby></h2>
+        <ul>
+          <li><a href="#section-1">はじめに</a></li>
+          <li><a href="#section-2"><ruby>留学生<rt>りゅうがくせい</rt></ruby>が<ruby>増える<rt>ふえる</rt></ruby><ruby>春<rt>はる</rt></ruby></a></li>
+          <li><a href="#section-3">日本語学校の<ruby>現場<rt>げんば</rt></ruby>の<ruby>苦労<rt>くろう</rt></ruby></a></li>
+          <li><a href="#section-4">日本語学校<ruby>制度<rt>せいど</rt></ruby>の<ruby>大<rt>だい</rt></ruby><ruby>転換<rt>てんかん</rt></ruby></a></li>
+          <li><a href="#section-5"><ruby>文化庁<rt>ぶんかちょう</rt></ruby>から<ruby>文部<rt>もんぶ</rt></ruby><ruby>科学<rt>かがく</rt></ruby><ruby>省<rt>しょう</rt></ruby>へ</a></li>
+          <li><a href="#section-6"><ruby>審査<rt>しんさ</rt></ruby><ruby>基準<rt>きじゅん</rt></ruby>と<ruby>教師<rt>きょうし</rt></ruby><ruby>資格<rt>しかく</rt></ruby>の<ruby>厳格<rt>げんかく</rt></ruby><ruby>化<rt>か</rt></ruby></a></li>
+          <li><a href="#section-7"><ruby>少子<rt>しょうし</rt></ruby><ruby>高齢<rt>こうれい</rt></ruby><ruby>化<rt>か</rt></ruby>と<ruby>日本語<rt>にほんご</rt></ruby><ruby>教育<rt>きょういく</rt></ruby>の<ruby>役割<rt>やくわり</rt></ruby></a></li>
+          <li><a href="#section-8"><ruby>小規模<rt>しょうきぼ</rt></ruby><ruby>校<rt>こう</rt></ruby>の<ruby>淘汰<rt>とうた</rt></ruby>と<ruby>再編<rt>さいへん</rt></ruby></a></li>
+          <li><a href="#section-9"><ruby>企業<rt>きぎょう</rt></ruby>が<ruby>経営<rt>けいえい</rt></ruby>する<ruby>日本語<rt>にほんご</rt></ruby>学校</a></li>
+          <li><a href="#section-10"><ruby>特定<rt>とくてい</rt></ruby><ruby>技能<rt>ぎのう</rt></ruby>と<ruby>育成<rt>いくせい</rt></ruby><ruby>就労<rt>しゅうろう</rt></ruby><ruby>制度<rt>せいど</rt></ruby></a></li>
+          <li><a href="#section-11"><ruby>複線<rt>ふくせん</rt></ruby><ruby>型<rt>がた</rt></ruby><ruby>教育<rt>きょういく</rt></ruby>への<ruby>懸念<rt>けねん</rt></ruby></a></li>
+          <li><a href="#section-12">おわりに</a></li>
+          <li><a href="#glossary"><ruby>語句<rt>ごく</rt></ruby>メモ</a></li>
+        </ul>
+      </aside>
+      <article>
+      <section class="content-section" id="section-1">
+        <h2>はじめに</h2>
+        <p>皆さん、こんにちは。<ruby>日本語<rt>にほんご</rt></ruby>聞きはめです。このプログラムでは、<ruby>日本語<rt>にほんご</rt></ruby><ruby>学習<rt>がくしゅう</rt></ruby><ruby>中<rt>ちゅう</rt></ruby>の<ruby>皆さん<rt>みなさん</rt></ruby>に<ruby>色々<rt>いろいろ</rt></ruby>なテーマについて、<ruby>自然<rt>しぜん</rt></ruby>なスピードで、ほんの<ruby>少し<rt>すこし</rt></ruby>だけ<ruby>言葉<rt>ことば</rt></ruby>や<ruby>文法<rt>ぶんぽう</rt></ruby>を<ruby>簡単<rt>かんたん</rt></ruby>にして<ruby>お話し<rt>おはなし</rt></ruby>しています。</p>
+      </section>
+      <section class="content-section" id="section-2">
+        <h2><ruby>留学生<rt>りゅうがくせい</rt></ruby>が<ruby>増える<rt>ふえる</rt></ruby><ruby>春<rt>はる</rt></ruby></h2>
+        <p>皆さん、こんにちは。3<ruby>月<rt>がつ</rt></ruby>も<ruby>終わり<rt>おわり</rt></ruby>に<ruby>近づい<rt>ちかづい</rt></ruby>てきて、<ruby>桜<rt>さくら</rt></ruby>も<ruby>少し<rt>すこし</rt></ruby>ずつ<ruby>咲き<rt>さき</rt></ruby><ruby>出し<rt>だし</rt></ruby>ている。ちょうど<ruby>入学<rt>にゅうがく</rt></ruby><ruby>式<rt>しき</rt></ruby>のシーズンなんですけど、この4<ruby>月<rt>がつ</rt></ruby>にはこれまで<ruby>以上<rt>いじょう</rt></ruby>にたくさんの<ruby>留学生<rt>りゅうがくせい</rt></ruby>が<ruby>大学<rt>だいがく</rt></ruby>や<ruby>専門<rt>せんもん</rt></ruby>学校に<ruby>入っ<rt>はいっ</rt></ruby>てきます。というのは、コロナがあって、<ruby>多く<rt>おおく</rt></ruby>の<ruby>留学生<rt>りゅうがくせい</rt></ruby>たちが<ruby>留学<rt>りゅうがく</rt></ruby>できなかったんですね。<ruby>その後<rt>そのご</rt></ruby>、<ruby>一気に<rt>いっきに</rt></ruby>たくさんの<ruby>留学生<rt>りゅうがくせい</rt></ruby>たちが<ruby>日本<rt>にほん</rt></ruby>にやってきて、その<ruby>多く<rt>おおく</rt></ruby>は<ruby>日本語<rt>にほんご</rt></ruby>学校で1<ruby>年<rt>ねん</rt></ruby><ruby>半<rt>はん</rt></ruby>から2<ruby>年間<rt>ねんかん</rt></ruby>日本語を<ruby>学ん<rt>まなん</rt></ruby>で、<ruby>その後<rt>そのご</rt></ruby>、<ruby>専門<rt>せんもん</rt></ruby>学校や<ruby>大学<rt>だいがく</rt></ruby>という<ruby>進学<rt>しんがく</rt></ruby>先に<ruby>進学<rt>しんがく</rt></ruby>していくんですね。ですので、コロナでストップした<ruby>後<rt>あと</rt></ruby>に<ruby>大量<rt>たいりょう</rt></ruby>にやってきた<ruby>日本語<rt>にほんご</rt></ruby>学校の<ruby>生徒<rt>せいと</rt></ruby>たちが、<ruby>今<rt>いま</rt></ruby>ちょうど<ruby>大学<rt>だいがく</rt></ruby>の<ruby>門<rt>もん</rt></ruby>を<ruby>叩い<rt>たたい</rt></ruby>ている<a href="#glossary-1" id="ref-1" class="footnote">*1</a>、そんな<ruby>状態<rt>じょうたい</rt></ruby>なんですね。</p>
+      </section>
+      <section class="content-section" id="section-3">
+        <h2>日本語学校の<ruby>現場<rt>げんば</rt></ruby>の<ruby>苦労<rt>くろう</rt></ruby></h2>
+        <p>ですので、<ruby>私<rt>わたし</rt></ruby>の<ruby>大学<rt>だいがく</rt></ruby>にも<ruby>一気に<rt>いっきに</rt></ruby><ruby>今年<rt>ことし</rt></ruby>から<ruby>留学生<rt>りゅうがくせい</rt></ruby>の<ruby>数<rt>かず</rt></ruby>が<ruby>増え<rt>ふえ</rt></ruby>ています。<ruby>日本語<rt>にほんご</rt></ruby>学校<ruby>側<rt>がわ</rt></ruby>も、なんとか<ruby>自分<rt>じぶん</rt></ruby>たちの<ruby>卒業生<rt>そつぎょうせい</rt></ruby>をどこかに<ruby>送り込ま<rt>おくりこま</rt></ruby>なければいけないということで、<ruby>結構<rt>けっこう</rt></ruby><ruby>苦労<rt>くろう</rt></ruby>しているんですね。というのは、<ruby>留学生<rt>りゅうがくせい</rt></ruby>たちは<ruby>基本<rt>きほん</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>日本語<rt>にほんご</rt></ruby>学校にはマックス2<ruby>年間<rt>ねんかん</rt></ruby>しか<ruby>勉強<rt>べんきょう</rt></ruby>できないんですね。<ruby>その後<rt>そのご</rt></ruby>は<ruby>必ず<rt>かならず</rt></ruby>どこかへ<ruby>進学<rt>しんがく</rt></ruby>しないと、あとは<ruby>国<rt>くに</rt></ruby>へ<ruby>帰る<rt>かえる</rt></ruby>しかないという<ruby>状態<rt>じょうたい</rt></ruby>ですので、<ruby>日本語<rt>にほんご</rt></ruby>学校も<ruby>卒業生<rt>そつぎょうせい</rt></ruby>たちの<ruby>進学<rt>しんがく</rt></ruby>先<ruby>探し<rt>さがし</rt></ruby>に<ruby>必死<rt>ひっし</rt></ruby>になっていたんですね。それももう3<ruby>月<rt>がつ</rt></ruby><ruby>終わり<rt>おわり</rt></ruby>ですので、<ruby>落ち着い<rt>おちつい</rt></ruby>た<ruby>頃<rt>ころ</rt></ruby>だと<ruby>思い<rt>おもい</rt></ruby>ますが、<ruby>今日<rt>きょう</rt></ruby>はこの<ruby>日本語<rt>にほんご</rt></ruby>学校について<ruby>少し<rt>すこし</rt></ruby><ruby>お話<rt>おはなし</rt></ruby>をしたいと<ruby>思い<rt>おもい</rt></ruby>ます。</p>
+      </section>
+      <section class="content-section" id="section-4">
+        <h2>日本語学校<ruby>制度<rt>せいど</rt></ruby>の<ruby>大<rt>だい</rt></ruby><ruby>転換<rt>てんかん</rt></ruby></h2>
+        <p>このポッドキャストでも、これまで<ruby>外国<rt>がいこく</rt></ruby><ruby>人<rt>じん</rt></ruby>の<ruby>受け入れ<rt>うけいれ</rt></ruby>とか、あるいは<ruby>留学生<rt>りゅうがくせい</rt></ruby>の<ruby>教育<rt>きょういく</rt></ruby>みたいなことは<ruby>何<rt>なん</rt></ruby><ruby>回<rt>かい</rt></ruby>か<ruby>取り上げ<rt>とりあげ</rt></ruby>てきたんですけど、<ruby>日本<rt>にほん</rt></ruby>の<ruby>日本語<rt>にほんご</rt></ruby>学校は<ruby>今<rt>いま</rt></ruby>、<ruby>大きな<rt>おおきな</rt></ruby><ruby>変革<rt>へんかく</rt></ruby>を<ruby>迫ら<rt>せまら</rt></ruby>れています。というのは、<ruby>日本語<rt>にほんご</rt></ruby>学校の<ruby>認定<rt>にんてい</rt></ruby>、<ruby>日本語<rt>にほんご</rt></ruby>学校を<ruby>国<rt>くに</rt></ruby>が<ruby>認める<rt>みとめる</rt></ruby>制度が<ruby>大きく<rt>おおきく</rt></ruby><ruby>変わっ<rt>かわっ</rt></ruby>たからですね。これまで<ruby>日本語<rt>にほんご</rt></ruby><ruby>教育<rt>きょういく</rt></ruby><ruby>機関<rt>きかん</rt></ruby>、つまり<ruby>日本語<rt>にほんご</rt></ruby>学校ですけども、ここを<ruby>所管<rt>しょかん</rt></ruby>していた、コントロールしていたのは<ruby>文化庁<rt>ぶんかちょう</rt></ruby>だったんですが、これが<ruby>文部<rt>もんぶ</rt></ruby><ruby>科学<rt>かがく</rt></ruby><ruby>省<rt>しょう</rt></ruby>に<ruby>変わり<rt>かわり</rt></ruby>ます。ミニストリー・オブ・エデュケーションですね。<ruby>文化庁<rt>ぶんかちょう</rt></ruby>も<ruby>広い<rt>ひろい</rt></ruby><ruby>意味<rt>いみ</rt></ruby>では<ruby>文部<rt>もんぶ</rt></ruby><ruby>科学<rt>かがく</rt></ruby><ruby>省<rt>しょう</rt></ruby>の<ruby>下<rt>した</rt></ruby>にある<ruby>機関<rt>きかん</rt></ruby>なんですが、この<ruby>文化庁<rt>ぶんかちょう</rt></ruby>というのは、その<ruby>名前<rt>なまえ</rt></ruby>の<ruby>通り<rt>とおり</rt></ruby><ruby>文化<rt>ぶんか</rt></ruby>の<ruby>振興<rt>しんこう</rt></ruby>ですね。<ruby>日本<rt>にほん</rt></ruby><ruby>文化<rt>ぶんか</rt></ruby>が<ruby>色々<rt>いろいろ</rt></ruby>世界に<ruby>広まる<rt>ひろまる</rt></ruby>ように、こういったことを<ruby>目的<rt>もくてき</rt></ruby>としている<ruby>機関<rt>きかん</rt></ruby>です。ですので、<ruby>日本<rt>にほん</rt></ruby>の<ruby>文化<rt>ぶんか</rt></ruby>が<ruby>海外<rt>かいがい</rt></ruby>に<ruby>知ら<rt>しら</rt></ruby>れるようになる、<ruby>日本<rt>にほん</rt></ruby>の<ruby>文化<rt>ぶんか</rt></ruby>を<ruby>海外<rt>かいがい</rt></ruby>に<ruby>広げる<rt>ひろげる</rt></ruby>ため、そういった<ruby>機関<rt>きかん</rt></ruby>ですね。</p>
+      </section>
+      <section class="content-section" id="section-5">
+        <h2><ruby>文化庁<rt>ぶんかちょう</rt></ruby>から<ruby>文部<rt>もんぶ</rt></ruby>科学省へ</h2>
+        <p><ruby>文化<rt>ぶんか</rt></ruby><ruby>交流<rt>こうりゅう</rt></ruby>を<ruby>担っ<rt>になっ</rt></ruby>てきた<ruby>機関<rt>きかん</rt></ruby>なので、それが<ruby>法務省<rt>ほうむしょう</rt></ruby>、<ruby>法務省<rt>ほうむしょう</rt></ruby>っていうのはですね、<ruby>外国<rt>がいこく</rt></ruby><ruby>人<rt>じん</rt></ruby>の<ruby>受け入れ<rt>うけいれ</rt></ruby>の<ruby>可否<rt>かひ</rt></ruby>、<ruby>受け入れ<rt>うけいれ</rt></ruby>ていいか<ruby>受け入れ<rt>うけいれ</rt></ruby>て<ruby>良く<rt>よく</rt></ruby>ないかを<ruby>決める<rt>きめる</rt></ruby><ruby>機関<rt>きかん</rt></ruby>ですけれども、そこと<ruby>役割<rt>やくわり</rt></ruby><ruby>分担<rt>ぶんたん</rt></ruby>をして、つまりどういう<ruby>人<rt>ひと</rt></ruby>を<ruby>受け入れ<rt>うけいれ</rt></ruby>ていいか、この<ruby>人<rt>ひと</rt></ruby>は<ruby>国<rt>くに</rt></ruby>に<ruby>入れ<rt>いれ</rt></ruby>ていいか、<ruby>入れ<rt>いれ</rt></ruby>て<ruby>良く<rt>よく</rt></ruby>ないかを<ruby>判断<rt>はんだん</rt></ruby>するのが<ruby>法務省<rt>ほうむしょう</rt></ruby>で、<ruby>外国<rt>がいこく</rt></ruby><ruby>人<rt>じん</rt></ruby>との<ruby>交流<rt>こうりゅう</rt></ruby>にいろんなノウハウを<ruby>持っ<rt>もっ</rt></ruby>ていた<ruby>文化庁<rt>ぶんかちょう</rt></ruby>が<ruby>日本語<rt>にほんご</rt></ruby>教育<ruby>機関<rt>きかん</rt></ruby>、<ruby>日本語<rt>にほんご</rt></ruby>学校のチェックをしていたんですね。ですので、<ruby>簡単<rt>かんたん</rt></ruby>に<ruby>言う<rt>いう</rt></ruby>と、これまでは<ruby>文化庁<rt>ぶんかちょう</rt></ruby>のもとで<ruby>日本<rt>にほん</rt></ruby>文化をどんどん<ruby>広げよ<rt>ひろげよ</rt></ruby>うという、そういう<ruby>枠組み<rt>わくぐみ</rt></ruby>のもとで、<ruby>日本語<rt>にほんご</rt></ruby>教育機関っていうのはチェックされていたわけです。これが<ruby>文化庁<rt>ぶんかちょう</rt></ruby>から<ruby>文部<rt>もんぶ</rt></ruby>科学省に<ruby>移管<rt>いかん</rt></ruby>された<a href="#glossary-2" id="ref-2" class="footnote">*2</a>ということは、つまり<ruby>日本語<rt>にほんご</rt></ruby>教育、<ruby>日本語<rt>にほんご</rt></ruby>を<ruby>教育<rt>きょういく</rt></ruby>するということを<ruby>国<rt>くに</rt></ruby>の<ruby>教育<rt>きょういく</rt></ruby>、<ruby>国<rt>くに</rt></ruby>の<ruby>責任<rt>せきにん</rt></ruby>として、<ruby>教育<rt>きょういく</rt></ruby>がもっと<ruby>広まれ<rt>ひろまれ</rt></ruby>ばいいなというそういう<ruby>目的<rt>もくてき</rt></ruby>ではなくて、<ruby>日本語<rt>にほんご</rt></ruby>教育がもう<ruby>国<rt>くに</rt></ruby>のインフラとなる<ruby>事業<rt>じぎょう</rt></ruby>の1つであるというふうに、きっちりと<ruby>定義<rt>ていぎ</rt></ruby>されたということです。<ruby>国<rt>くに</rt></ruby>が<ruby>責任<rt>せきにん</rt></ruby>を<ruby>持っ<rt>もっ</rt></ruby>て<ruby>日本語<rt>にほんご</rt></ruby>教育をしますよということですね。</p>
+      </section>
+      <section class="content-section" id="section-6">
+        <h2><ruby>審査<rt>しんさ</rt></ruby><ruby>基準<rt>きじゅん</rt></ruby>と<ruby>教師<rt>きょうし</rt></ruby><ruby>資格<rt>しかく</rt></ruby>の<ruby>厳格<rt>げんかく</rt></ruby><ruby>化<rt>か</rt></ruby></h2>
+        <p>ですので、<ruby>当然<rt>とうぜん</rt></ruby>、日本語教育機関、日本語学校が<ruby>審査<rt>しんさ</rt></ruby>されるその<ruby>審査<rt>しんさ</rt></ruby><ruby>基準<rt>きじゅん</rt></ruby>ですね、チェックの<ruby>基準<rt>きじゅん</rt></ruby>も<ruby>非常<rt>ひじょう</rt></ruby>に<ruby>厳しい<rt>きびしい</rt></ruby>ものになります。これまでの<ruby>文化庁<rt>ぶんかちょう</rt></ruby>によるチェックっていうのは、どちらかというと、<ruby>例えば<rt>たとえば</rt></ruby>日本語を<ruby>学び<rt>まなび</rt></ruby>に<ruby>来<rt>き</rt></ruby>ているという<ruby>名目<rt>めいもく</rt></ruby>で<ruby>日本語<rt>にほんご</rt></ruby>学校に<ruby>入っ<rt>はいっ</rt></ruby>ているけど、<ruby>実際<rt>じっさい</rt></ruby>は<ruby>出稼ぎ<rt>でかせぎ</rt></ruby>のように<ruby>日本<rt>にほん</rt></ruby><ruby>国内<rt>こくない</rt></ruby>で<ruby>労働<rt>ろうどう</rt></ruby>している、<ruby>働い<rt>はたらい</rt></ruby>ている、こういったことを<ruby>防ぐ<rt>ふせぐ</rt></ruby>ためのチェックっていうのが1<ruby>番<rt>ばん</rt></ruby><ruby>主<rt>おも</rt></ruby>な<ruby>理由<rt>りゆう</rt></ruby>だったんですね。ですが、<ruby>文部<rt>もんぶ</rt></ruby>科学省がコントロールする、チェックするということになると、そのカリキュラムとか<ruby>教科書<rt>きょうかしょ</rt></ruby>とか<ruby>先生<rt>せんせい</rt></ruby>のクオリティとか、こういったことがしっかりと<ruby>問わ<rt>とわ</rt></ruby>れるようになります。<ruby>当然<rt>とうぜん</rt></ruby>、<ruby>学校<rt>がっこう</rt></ruby>の<ruby>質<rt>しつ</rt></ruby>だけではなくて、<ruby>日本語<rt>にほんご</rt></ruby><ruby>教員<rt>きょういん</rt></ruby>、日本語の<ruby>先生<rt>せんせい</rt></ruby>の<ruby>資格<rt>しかく</rt></ruby>、クオリフィケーションも<ruby>厳しく<rt>きびしく</rt></ruby>チェックされるようになります。<ruby>登録<rt>とうろく</rt></ruby>日本語<ruby>教員<rt>きょういん</rt></ruby><a href="#glossary-3" id="ref-3" class="footnote">*3</a>という<ruby>国家<rt>こっか</rt></ruby><ruby>資格<rt>しかく</rt></ruby>になったんですね。この<ruby>資格<rt>しかく</rt></ruby>を<ruby>持っ<rt>もっ</rt></ruby>ていないと、<ruby>今後<rt>こんご</rt></ruby>は<ruby>留学生<rt>りゅうがくせい</rt></ruby>に<ruby>日本語<rt>にほんご</rt></ruby>を<ruby>教える<rt>おしえる</rt></ruby>ことはできないですし、<ruby>日本語<rt>にほんご</rt></ruby>学校で<ruby>働く<rt>はたらく</rt></ruby><ruby>先生<rt>せんせい</rt></ruby>も<ruby>全員<rt>ぜんいん</rt></ruby>この<ruby>免許<rt>めんきょ</rt></ruby>を<ruby>取る<rt>とる</rt></ruby><ruby>必要<rt>ひつよう</rt></ruby>が<ruby>出<rt>で</rt></ruby>てきます。<ruby>小中<rt>しょうちゅう</rt></ruby><ruby>高校<rt>こうこう</rt></ruby>の<ruby>先生<rt>せんせい</rt></ruby>に<ruby>免許<rt>めんきょ</rt></ruby>があるのと<ruby>同じ<rt>おなじ</rt></ruby>ですね。きちんと<ruby>試験<rt>しけん</rt></ruby>に<ruby>受かっ<rt>うかっ</rt></ruby>て<ruby>先生<rt>せんせい</rt></ruby>になることができる。</p>
+        <p>もちろんこれまでも<ruby>日本語<rt>にほんご</rt></ruby>学校で<ruby>働く<rt>はたらく</rt></ruby>ための<ruby>資格<rt>しかく</rt></ruby>というのはあったんですが、これはあくまで<ruby>目安<rt>めやす</rt></ruby>なんですね。<ruby>例えば<rt>たとえば</rt></ruby><ruby>英語<rt>えいご</rt></ruby>の<ruby>塾<rt>じゅく</rt></ruby>で<ruby>教える<rt>おしえる</rt></ruby>時に、<ruby>例えば<rt>たとえば</rt></ruby>TOEICが<ruby>何<rt>なん</rt></ruby><ruby>点<rt>てん</rt></ruby>ありますよ、TOEFLが<ruby>何<rt>なん</rt></ruby><ruby>点<rt>てん</rt></ruby>あります、<ruby>英語<rt>えいご</rt></ruby>の<ruby>検定<rt>けんてい</rt></ruby>に<ruby>例えば<rt>たとえば</rt></ruby>1<ruby>級<rt>きゅう</rt></ruby>に<ruby>受かっ<rt>うかっ</rt></ruby>てますよとかっていうのは、あった<ruby>方<rt>ほう</rt></ruby>がいいですけど、なくても<ruby>英語<rt>えいご</rt></ruby>の<ruby>塾<rt>じゅく</rt></ruby>で<ruby>教える<rt>おしえる</rt></ruby>ことができますよね。それと<ruby>同じ<rt>おなじ</rt></ruby>で、<ruby>日本語<rt>にほんご</rt></ruby>学校で<ruby>働く<rt>はたらく</rt></ruby>時にも、この<ruby>試験<rt>しけん</rt></ruby>に<ruby>受かっ<rt>うかっ</rt></ruby>ていた<ruby>方<rt>ほう</rt></ruby>がいいよとかね、あるいは<ruby>専門<rt>せんもん</rt></ruby>学校でこうした<ruby>講義<rt>こうぎ</rt></ruby>を<ruby>受け<rt>うけ</rt></ruby>ていた<ruby>方<rt>ほう</rt></ruby>がいいよという<ruby>形<rt>かたち</rt></ruby>の<ruby>目安<rt>めやす</rt></ruby>のようなものはあったんですが、なくても<ruby>日本語<rt>にほんご</rt></ruby>の<ruby>先生<rt>せんせい</rt></ruby>になれたんですね。<ruby>昔<rt>むかし</rt></ruby>、<ruby>国語<rt>こくご</rt></ruby>の先生だったから、この<ruby>経験<rt>けいけん</rt></ruby>が<ruby>長かっ<rt>ながかっ</rt></ruby>たからみたいな<ruby>形<rt>かたち</rt></ruby>で<ruby>日本語<rt>にほんご</rt></ruby>の先生をやってる<ruby>方<rt>ほう</rt></ruby>もいらっしゃいました。</p>
+      </section>
+      <section class="content-section" id="section-7">
+        <h2><ruby>少子<rt>しょうし</rt></ruby><ruby>高齢<rt>こうれい</rt></ruby>化と<ruby>日本語<rt>にほんご</rt></ruby>教育の<ruby>役割<rt>やくわり</rt></ruby></h2>
+        <p>このように<ruby>大きく<rt>おおきく</rt></ruby>制度システムが<ruby>変わっ<rt>かわっ</rt></ruby>たのは、もちろんたくさんの<ruby>外国<rt>がいこく</rt></ruby>人が<ruby>日本<rt>にほん</rt></ruby>に<ruby>来<rt>き</rt></ruby>て<ruby>学ぶ<rt>まなぶ</rt></ruby>ようになっているからです。<ruby>日本<rt>にほん</rt></ruby>も<ruby>他<rt>た</rt></ruby>の<ruby>先進<rt>せんしん</rt></ruby><ruby>国<rt>こく</rt></ruby>と<ruby>同じ<rt>おなじ</rt></ruby>ように<ruby>少子<rt>しょうし</rt></ruby><ruby>高齢<rt>こうれい</rt></ruby>化<a href="#glossary-4" id="ref-4" class="footnote">*4</a>に<ruby>苦しん<rt>くるしん</rt></ruby>でいますけれども、<ruby>少子<rt>しょうし</rt></ruby>高齢化でどんどんみんなが<ruby>高齢<rt>こうれい</rt></ruby>化していく。<ruby>働け<rt>はたらけ</rt></ruby>なくなってくるんですね。でも、これまで<ruby>労働<rt>ろうどう</rt></ruby><ruby>人口<rt>じんこう</rt></ruby>、<ruby>働ける<rt>はたらける</rt></ruby>人の<ruby>数<rt>かず</rt></ruby>というのはそこまで<ruby>減っ<rt>へっ</rt></ruby>てこなかったんですね。というのは、これまで<ruby>主婦<rt>しゅふ</rt></ruby>だった<ruby>人<rt>ひと</rt></ruby>がたくさん<ruby>労働<rt>ろうどう</rt></ruby><ruby>市場<rt>しじょう</rt></ruby>に<ruby>出<rt>で</rt></ruby>て、<ruby>女性<rt>じょせい</rt></ruby>が<ruby>働く<rt>はたらく</rt></ruby>ようになって、そして<ruby>老人<rt>ろうじん</rt></ruby>もですね、<ruby>引退<rt>いんたい</rt></ruby>した<ruby>後<rt>あと</rt></ruby>も75<ruby>歳<rt>さい</rt></ruby>ぐらいまでは<ruby>働ける<rt>はたらける</rt></ruby>ので、みんなそういった、これまで<ruby>働い<rt>はたらい</rt></ruby>てこなかった<ruby>人<rt>ひと</rt></ruby>たちが<ruby>労働<rt>ろうどう</rt></ruby><ruby>市場<rt>しじょう</rt></ruby>に<ruby>出<rt>で</rt></ruby>てきたので、<ruby>今<rt>いま</rt></ruby>までは<ruby>人口<rt>じんこう</rt></ruby>は<ruby>減っ<rt>へっ</rt></ruby>ているものの、<ruby>労働<rt>ろうどう</rt></ruby><ruby>人口<rt>じんこう</rt></ruby>はそこまで<ruby>減ら<rt>へら</rt></ruby>なかったんですね。でも、これ<ruby>以上<rt>いじょう</rt></ruby>もう<ruby>女性<rt>じょせい</rt></ruby>の<ruby>労働<rt>ろうどう</rt></ruby><ruby>者<rt>しゃ</rt></ruby>も<ruby>増え<rt>ふえ</rt></ruby>ないですし、また<ruby>高齢<rt>こうれい</rt></ruby><ruby>者<rt>しゃ</rt></ruby>の<ruby>方<rt>ほう</rt></ruby>というのはもちろん<ruby>働い<rt>はたらい</rt></ruby>て<ruby>欲しい<rt>ほしい</rt></ruby>ですけれども、75<ruby>歳<rt>さい</rt></ruby>を<ruby>超える<rt>こえる</rt></ruby>となかなか<ruby>体力<rt>たいりょく</rt></ruby><ruby>的<rt>てき</rt></ruby>にも<ruby>厳しく<rt>きびしく</rt></ruby>なってきますよね。ですので、60<ruby>歳<rt>さい</rt></ruby>とか65<ruby>歳<rt>さい</rt></ruby>で<ruby>引退<rt>いんたい</rt></ruby>した<ruby>後<rt>あと</rt></ruby>、<ruby>その後<rt>そのご</rt></ruby>10<ruby>年<rt>ねん</rt></ruby>ぐらい<ruby>働い<rt>はたらい</rt></ruby>ている<ruby>人<rt>ひと</rt></ruby>が<ruby>多かっ<rt>おおかっ</rt></ruby>たですけれども、いよいよこうした<ruby>人<rt>ひと</rt></ruby>たちも<ruby>働け<rt>はたらけ</rt></ruby>なくなってくるとなると、<ruby>本当に<rt>ほんとうに</rt></ruby><ruby>労働<rt>ろうどう</rt></ruby><ruby>力<rt>りょく</rt></ruby>が<ruby>足り<rt>たり</rt></ruby>なくなってきて、<ruby>外国<rt>がいこく</rt></ruby>人の<ruby>労働<rt>ろうどう</rt></ruby><ruby>者<rt>しゃ</rt></ruby>の<ruby>力<rt>ちから</rt></ruby>に<ruby>頼ら<rt>たよら</rt></ruby>ざるを<ruby>得<rt>え</rt></ruby>なくなりつつあります。</p>
+        <p>もちろん<ruby>機械<rt>きかい</rt></ruby>化とかAIによるいろんな<ruby>仕事<rt>しごと</rt></ruby>の<ruby>効率<rt>こうりつ</rt></ruby>化みたいなこともみんなやっていますけれども、それにはやはり<ruby>時間<rt>じかん</rt></ruby>がかかりますね。ということで、<ruby>日本<rt>にほん</rt></ruby>で<ruby>働い<rt>はたらい</rt></ruby>てくれる<ruby>人<rt>ひと</rt></ruby>を<ruby>育てる<rt>そだてる</rt></ruby>日本語教育機関というのはですね、<ruby>現在<rt>げんざい</rt></ruby>は<ruby>日本<rt>にほん</rt></ruby><ruby>社会<rt>しゃかい</rt></ruby>に<ruby>不可欠<rt>ふかけつ</rt></ruby>な、<ruby>絶対<rt>ぜったい</rt></ruby>に<ruby>必要<rt>ひつよう</rt></ruby>な<ruby>労働<rt>ろうどう</rt></ruby><ruby>力<rt>りょく</rt></ruby>を<ruby>育てる<rt>そだてる</rt></ruby>インフラとなりつつあるんですね。ですので、その<ruby>教育<rt>きょういく</rt></ruby>機関の<ruby>質<rt>しつ</rt></ruby>に、クオリティに<ruby>国<rt>くに</rt></ruby>が<ruby>責任<rt>せきにん</rt></ruby>を<ruby>持ち<rt>もち</rt></ruby>ましょうという<ruby>形<rt>かたち</rt></ruby>になったわけです。ですので<ruby>当然<rt>とうぜん</rt></ruby>、チェックも<ruby>厳しく<rt>きびしく</rt></ruby>なるわけですね。カリキュラムや<ruby>教員<rt>きょういん</rt></ruby>の<ruby>数<rt>かず</rt></ruby>、それから<ruby>財政<rt>ざいせい</rt></ruby><ruby>基盤<rt>きばん</rt></ruby><a href="#glossary-5" id="ref-5" class="footnote">*5</a>ですね。きちんと<ruby>健全<rt>けんぜん</rt></ruby>な<ruby>経営<rt>けいえい</rt></ruby>ができているか、<ruby>赤字<rt>あかじ</rt></ruby>が<ruby>多く<rt>おおく</rt></ruby>出ていないか、こういったところまで<ruby>厳しく<rt>きびしく</rt></ruby>チェックされます。</p>
+      </section>
+      <section class="content-section" id="section-8">
+        <h2><ruby>小規模<rt>しょうきぼ</rt></ruby><ruby>校<rt>こう</rt></ruby>の<ruby>淘汰<rt>とうた</rt></ruby>と<ruby>再編<rt>さいへん</rt></ruby></h2>
+        <p>日本語学校には<ruby>小規模<rt>しょうきぼ</rt></ruby>なところ、<ruby>小さな<rt>ちいさな</rt></ruby>学校も<ruby>多かっ<rt>おおかっ</rt></ruby>たんですね。そうすると、こうしたところっていうのは<ruby>財政<rt>ざいせい</rt></ruby><ruby>基盤<rt>きばん</rt></ruby>が<ruby>弱かっ<rt>よわかっ</rt></ruby>たりとか、あるいはきちんと<ruby>資格<rt>しかく</rt></ruby>のある<ruby>国家<rt>こっか</rt></ruby>資格のある<ruby>先生<rt>せんせい</rt></ruby>を<ruby>揃える<rt>そろえる</rt></ruby>ことができなかったりとか、<ruby>今<rt>いま</rt></ruby>は<ruby>人件<rt>じんけん</rt></ruby><ruby>費<rt>ひ</rt></ruby>も<ruby>高く<rt>たかく</rt></ruby>なってますからね。そして、<ruby>日本語<rt>にほんご</rt></ruby>学校の<ruby>経営<rt>けいえい</rt></ruby>者の<ruby>高齢<rt>こうれい</rt></ruby>化も<ruby>進ん<rt>すすん</rt></ruby>でいて、なかなか<ruby>学校<rt>がっこう</rt></ruby>が<ruby>続け<rt>つづけ</rt></ruby>られないというケースも<ruby>増え<rt>ふえ</rt></ruby>てきているわけです。<ruby>日本語<rt>にほんご</rt></ruby>教育をどんどん<ruby>充実<rt>じゅうじつ</rt></ruby>させなければいけないという<ruby>一方<rt>いっぽう</rt></ruby>で、どんどん<ruby>日本語<rt>にほんご</rt></ruby>学校が<ruby>潰れ<rt>つぶれ</rt></ruby>ていく、あるいは<ruby>大きな<rt>おおきな</rt></ruby>日本語学校に<ruby>吸収<rt>きゅうしゅう</rt></ruby>されていく、そういう<ruby>状態<rt>じょうたい</rt></ruby>なんですね。ただし、これはやはり<ruby>必要<rt>ひつよう</rt></ruby>なプロセスだと<ruby>思い<rt>おもい</rt></ruby>ますね。きちんとした<ruby>教育<rt>きょういく</rt></ruby>ができないような<ruby>日本語<rt>にほんご</rt></ruby>学校は、やはり<ruby>潰れ<rt>つぶれ</rt></ruby>ざるを<ruby>得<rt>え</rt></ruby>ない<a href="#glossary-10" id="ref-10" class="footnote">*10</a>ですよね。<ruby>日本語<rt>にほんご</rt></ruby><ruby>教師<rt>きょうし</rt></ruby>もこれまではあまり<ruby>待遇<rt>たいぐう</rt></ruby>が<ruby>良く<rt>よく</rt></ruby>ない、<ruby>給料<rt>きゅうりょう</rt></ruby>があまり<ruby>良く<rt>よく</rt></ruby>ない、<ruby>働く<rt>はたらく</rt></ruby><ruby>環境<rt>かんきょう</rt></ruby>が<ruby>良く<rt>よく</rt></ruby>ないと<ruby>言わ<rt>いわ</rt></ruby>れていたので、<ruby>今回<rt>こんかい</rt></ruby>このシステムになって<ruby>国家<rt>こっか</rt></ruby>資格を<ruby>持っ<rt>もっ</rt></ruby>たきちんとした<ruby>人材<rt>じんざい</rt></ruby>であることが<ruby>認め<rt>みとめ</rt></ruby>られるようになればですね、<ruby>日本語<rt>にほんご</rt></ruby><ruby>教員<rt>きょういん</rt></ruby>のステータスも<ruby>上がる<rt>あがる</rt></ruby>はずですので、<ruby>私<rt>わたし</rt></ruby><ruby>自身<rt>じしん</rt></ruby>も<ruby>留学生<rt>りゅうがくせい</rt></ruby>に<ruby>日本語<rt>にほんご</rt></ruby>を<ruby>教え<rt>おしえ</rt></ruby>てる<ruby>立場<rt>たちば</rt></ruby>として、この<ruby>制度<rt>せいど</rt></ruby>は<ruby>必要<rt>ひつよう</rt></ruby>だと<ruby>思い<rt>おもい</rt></ruby>ます。</p>
+      </section>
+      <section class="content-section" id="section-9">
+        <h2><ruby>企業<rt>きぎょう</rt></ruby>が<ruby>経営<rt>けいえい</rt></ruby>する<ruby>日本語<rt>にほんご</rt></ruby>学校</h2>
+        <p>その<ruby>大きな<rt>おおきな</rt></ruby><ruby>流れ<rt>ながれ</rt></ruby>としてですね、<ruby>小さな<rt>ちいさな</rt></ruby>日本語学校がどんどん<ruby>潰れ<rt>つぶれ</rt></ruby>ていったり、<ruby>大手<rt>おおて</rt></ruby>の<ruby>教育<rt>きょういく</rt></ruby>機関とか<ruby>会社<rt>かいしゃ</rt></ruby>が<ruby>経営<rt>けいえい</rt></ruby>する<ruby>日本語<rt>にほんご</rt></ruby>学校に<ruby>吸収<rt>きゅうしゅう</rt></ruby>されていってるんですが、この<ruby>大手<rt>おおて</rt></ruby>の<ruby>日本語<rt>にほんご</rt></ruby>教育機関、日本語学校というのはですね、<ruby>多く<rt>おおく</rt></ruby>の<ruby>場合<rt>ばあい</rt></ruby>、<ruby>会社<rt>かいしゃ</rt></ruby>が経営している。その<ruby>会社<rt>かいしゃ</rt></ruby>というのは<ruby>外国<rt>がいこく</rt></ruby>人<ruby>人材<rt>じんざい</rt></ruby>が<ruby>欲しい<rt>ほしい</rt></ruby><ruby>会社<rt>かいしゃ</rt></ruby>ですね。<ruby>労働<rt>ろうどう</rt></ruby>者が<ruby>欲しい<rt>ほしい</rt></ruby><ruby>会社<rt>かいしゃ</rt></ruby>です。<ruby>単純<rt>たんじゅん</rt></ruby>に日本語学校を<ruby>作っ<rt>つくっ</rt></ruby>て<ruby>設けよ<rt>もうけよ</rt></ruby>うということではなくて、<ruby>人材<rt>じんざい</rt></ruby><ruby>供給<rt>きょうきゅう</rt></ruby>をしてくれる<ruby>場所<rt>ばしょ</rt></ruby>、つまり<ruby>自分<rt>じぶん</rt></ruby>たちが<ruby>経営<rt>けいえい</rt></ruby>する日本語学校で<ruby>学ん<rt>まなん</rt></ruby>でもらって、<ruby>日本語<rt>にほんご</rt></ruby>がうまくなった<ruby>後<rt>のち</rt></ruby>は<ruby>自分<rt>じぶん</rt></ruby>たちの<ruby>会社<rt>かいしゃ</rt></ruby>で<ruby>雇う<rt>やとう</rt></ruby>んですね。<ruby>自分<rt>じぶん</rt></ruby>たちの<ruby>会社<rt>かいしゃ</rt></ruby>で<ruby>働い<rt>はたらい</rt></ruby>てもらう。そのために<ruby>日本語<rt>にほんご</rt></ruby>学校を<ruby>経営<rt>けいえい</rt></ruby>するというところもどんどん<ruby>増え<rt>ふえ</rt></ruby>てるんですね。こうした<ruby>会社<rt>かいしゃ</rt></ruby>が経営する日本語学校が<ruby>増え<rt>ふえ</rt></ruby>てきたその<ruby>背景<rt>はいけい</rt></ruby>はですね、<ruby>日本<rt>にほん</rt></ruby>で<ruby>特定<rt>とくてい</rt></ruby><ruby>技能<rt>ぎのう</rt></ruby>という<ruby>制度<rt>せいど</rt></ruby>と<ruby>育成<rt>いくせい</rt></ruby><ruby>就労<rt>しゅうろう</rt></ruby>という<ruby>制度<rt>せいど</rt></ruby>ができたからです。</p>
+      </section>
+      <section class="content-section" id="section-10">
+        <h2><ruby>特定<rt>とくてい</rt></ruby><ruby>技能<rt>ぎのう</rt></ruby>と<ruby>育成<rt>いくせい</rt></ruby><ruby>就労<rt>しゅうろう</rt></ruby>制度</h2>
+        <p><ruby>特定<rt>とくてい</rt></ruby>技能<a href="#glossary-6" id="ref-6" class="footnote">*6</a>というのはビザの1つですけれども、ビザというのは<ruby>皆さん<rt>みなさん</rt></ruby>知っている<ruby>通り<rt>とおり</rt></ruby>、<ruby>資格<rt>しかく</rt></ruby>ですね。<ruby>日本<rt>にほん</rt></ruby>に<ruby>来る<rt>くる</rt></ruby>ための<ruby>資格<rt>しかく</rt></ruby>です。<ruby>例えば<rt>たとえば</rt></ruby><ruby>留学<rt>りゅうがく</rt></ruby>ビザっていうのがあれば、<ruby>大学<rt>だいがく</rt></ruby>に<ruby>通う<rt>かよう</rt></ruby>、あるいは<ruby>専門<rt>せんもん</rt></ruby>学校に<ruby>通う<rt>かよう</rt></ruby><ruby>学生<rt>がくせい</rt></ruby>ですよというビザを<ruby>持っ<rt>もっ</rt></ruby>て<ruby>日本<rt>にほん</rt></ruby>に<ruby>滞在<rt>たいざい</rt></ruby>していいですよ、こういう<ruby>許可<rt>きょか</rt></ruby><ruby>証<rt>しょう</rt></ruby>ですよね。これまではですね、<ruby>単純<rt>たんじゅん</rt></ruby><ruby>労働<rt>ろうどう</rt></ruby>、つまり<ruby>工場<rt>こうじょう</rt></ruby>で働くとか、<ruby>何<rt>なに</rt></ruby>か<ruby>清掃<rt>せいそう</rt></ruby>しますとか、<ruby>工事<rt>こうじ</rt></ruby><ruby>現場<rt>げんば</rt></ruby>で<ruby>働き<rt>はたらき</rt></ruby>ますのような<ruby>単純<rt>たんじゅん</rt></ruby><ruby>労働<rt>ろうどう</rt></ruby>をするためのビザっていうのはなかったんですね。<ruby>単純<rt>たんじゅん</rt></ruby>労働だけをする<ruby>外国<rt>がいこく</rt></ruby>人の<ruby>受け入れ<rt>うけいれ</rt></ruby>っていうのは、<ruby>基本<rt>きほん</rt></ruby><ruby>的<rt>てき</rt></ruby>には<ruby>国<rt>くに</rt></ruby>は<ruby>認め<rt>みとめ</rt></ruby>てこなかったんです。それは<ruby>国民<rt>こくみん</rt></ruby>の<ruby>強い<rt>つよい</rt></ruby><ruby>反対<rt>はんたい</rt></ruby>があったからですね。しかし、もうそんなことは<ruby>言っ<rt>いっ</rt></ruby>ていられないぐらい<ruby>人手<rt>ひとで</rt></ruby><ruby>不足<rt>ふそく</rt></ruby>が<ruby>進ん<rt>すすん</rt></ruby>でいますので、<ruby>特定<rt>とくてい</rt></ruby>の<ruby>分野<rt>ぶんや</rt></ruby>に<ruby>限り<rt>かぎり</rt></ruby>ますけれど、この<ruby>分野<rt>ぶんや</rt></ruby>では<ruby>単純<rt>たんじゅん</rt></ruby>労働の<ruby>外国<rt>がいこく</rt></ruby>人を<ruby>受け入れ<rt>うけいれ</rt></ruby>ますよ、そのためのビザを<ruby>作り<rt>つくり</rt></ruby>ますよ、これが<ruby>特定<rt>とくてい</rt></ruby>技能ですね。これまでずっと<ruby>国<rt>くに</rt></ruby>が<ruby>認め<rt>みとめ</rt></ruby>てこなかった<ruby>単純<rt>たんじゅん</rt></ruby>労働者を<ruby>受け入れる<rt>うけいれる</rt></ruby>ということを<ruby>始め<rt>はじめ</rt></ruby>たんですね。そして<ruby>育成<rt>いくせい</rt></ruby>就労制度<a href="#glossary-7" id="ref-7" class="footnote">*7</a>というのは、この<ruby>特定<rt>とくてい</rt></ruby>技能というビザにつながるように<ruby>外国<rt>がいこく</rt></ruby>人を<ruby>育成<rt>いくせい</rt></ruby>しますよ。<ruby>働い<rt>はたらい</rt></ruby>てもらいながら<ruby>外国<rt>がいこく</rt></ruby>人の<ruby>日本語<rt>にほんご</rt></ruby><ruby>力<rt>りょく</rt></ruby>を<ruby>上げ<rt>あげ</rt></ruby>て、スキルを<ruby>磨い<rt>みがい</rt></ruby>てもらって<ruby>日本<rt>にほん</rt></ruby>に<ruby>就職<rt>しゅうしょく</rt></ruby>させますよ、こういう<ruby>制度<rt>せいど</rt></ruby>も<ruby>始まっ<rt>はじまっ</rt></ruby>たんですね。まさに<ruby>実質<rt>じっしつ</rt></ruby><ruby>上<rt>じょう</rt></ruby>の<ruby>移民<rt>いみん</rt></ruby><ruby>政策<rt>せいさく</rt></ruby>です。これまでずっと<ruby>日本<rt>にほん</rt></ruby>では<ruby>移民<rt>いみん</rt></ruby>は<ruby>受け入れ<rt>うけいれ</rt></ruby>ていませんという<ruby>建前<rt>たてまえ</rt></ruby><a href="#glossary-8" id="ref-8" class="footnote">*8</a>だったわけですが、もう<ruby>本格<rt>ほんかく</rt></ruby>的に<ruby>外国<rt>がいこく</rt></ruby>人の、<ruby>特に<rt>とくに</rt></ruby><ruby>単純<rt>たんじゅん</rt></ruby>労働者を<ruby>受け入れる<rt>うけいれる</rt></ruby>という<ruby>制度<rt>せいど</rt></ruby>を<ruby>始め<rt>はじめ</rt></ruby>たんですね。</p>
+        <p>そうすると<ruby>当然<rt>とうぜん</rt></ruby>ながら、<ruby>企業<rt>きぎょう</rt></ruby>はたくさんの<ruby>人材<rt>じんざい</rt></ruby>、<ruby>労働<rt>ろうどう</rt></ruby>力が<ruby>欲しい<rt>ほしい</rt></ruby>わけですから、こうした<ruby>企業<rt>きぎょう</rt></ruby>が<ruby>新しく<rt>あたらしく</rt></ruby>日本語学校を<ruby>作る<rt>つくる</rt></ruby>、あるいは<ruby>既存<rt>きそん</rt></ruby>のすでにある<ruby>日本語<rt>にほんご</rt></ruby>学校を<ruby>飲み込む<rt>のみこむ</rt></ruby>ような<ruby>形<rt>かたち</rt></ruby>で<ruby>日本語<rt>にほんご</rt></ruby>教育機関を<ruby>経営<rt>けいえい</rt></ruby>するようになるんですね。ですので、<ruby>教育<rt>きょういく</rt></ruby>にフォーカスがあるのではなくて、<ruby>その後<rt>そのご</rt></ruby>に<ruby>就職<rt>しゅうしょく</rt></ruby>してもらうことにフォーカスのある<ruby>日本語<rt>にほんご</rt></ruby>学校ということになります。これは<ruby>実は<rt>じつは</rt></ruby><ruby>非常<rt>ひじょう</rt></ruby>に<ruby>大きな<rt>おおきな</rt></ruby><ruby>転換<rt>てんかん</rt></ruby>、シフトでですね、これまで<ruby>学校<rt>がっこう</rt></ruby>というのは<ruby>基本<rt>きほん</rt></ruby>的に<ruby>小中<rt>しょうちゅう</rt></ruby><ruby>高校<rt>こうこう</rt></ruby>あるいは<ruby>大学<rt>だいがく</rt></ruby>と<ruby>進ん<rt>すすん</rt></ruby>できて、<ruby>外国<rt>がいこく</rt></ruby>の<ruby>方<rt>ほう</rt></ruby>の<ruby>場合<rt>ばあい</rt></ruby>は<ruby>日本語<rt>にほんご</rt></ruby>教育機関にも<ruby>行っ<rt>いっ</rt></ruby>て、こうした<ruby>学校<rt>がっこう</rt></ruby>を<ruby>出<rt>で</rt></ruby>て、<ruby>その後<rt>そのご</rt></ruby>、<ruby>自分<rt>じぶん</rt></ruby>たちで<ruby>仕事<rt>しごと</rt></ruby>を<ruby>選ぶ<rt>えらぶ</rt></ruby>んですよね。<ruby>自分<rt>じぶん</rt></ruby>たちが<ruby>学校<rt>がっこう</rt></ruby>で<ruby>学ん<rt>まなん</rt></ruby>だスキル、<ruby>外国<rt>がいこく</rt></ruby><ruby>語<rt>ご</rt></ruby>のスキルとかコンピューターのスキルとか、あるいは<ruby>日本語<rt>にほんご</rt></ruby>力、こういったものを<ruby>使っ<rt>つかっ</rt></ruby>て<ruby>自分<rt>じぶん</rt></ruby>たちが<ruby>就職<rt>しゅうしょく</rt></ruby>先を<ruby>選ぶ<rt>えらぶ</rt></ruby>立場でしたけれども、そうではなくて、<ruby>企業<rt>きぎょう</rt></ruby>が<ruby>作る<rt>つくる</rt></ruby>学校というのはですね、<ruby>基本<rt>きほん</rt></ruby>的なゴールが<ruby>決まっ<rt>きまっ</rt></ruby>てるんですね。この<ruby>会社<rt>かいしゃ</rt></ruby>に<ruby>就職<rt>しゅうしょく</rt></ruby>してもらうことを<ruby>目的<rt>もくてき</rt></ruby>とした<ruby>学校<rt>がっこう</rt></ruby>がどんどんできていくということになります。</p>
+      </section>
+      <section class="content-section" id="section-11">
+        <h2><ruby>複線<rt>ふくせん</rt></ruby><ruby>型<rt>がた</rt></ruby>教育への<ruby>懸念<rt>けねん</rt></ruby></h2>
+        <p>これは<ruby>個人<rt>こじん</rt></ruby>的には、<ruby>複線<rt>ふくせん</rt></ruby><ruby>型<rt>がた</rt></ruby>教育<a href="#glossary-9" id="ref-9" class="footnote">*9</a>の<ruby>復活<rt>ふっかつ</rt></ruby>ではないかと<ruby>思っ<rt>おもっ</rt></ruby>てるんですね。<ruby>教育<rt>きょういく</rt></ruby>の<ruby>制度<rt>せいど</rt></ruby>には<ruby>大きく<rt>おおきく</rt></ruby><ruby>分け<rt>わけ</rt></ruby>て<ruby>単線<rt>たんせん</rt></ruby>型、1<ruby>本<rt>ほん</rt></ruby>の<ruby>線<rt>せん</rt></ruby>の<ruby>単線<rt>たんせん</rt></ruby>型と、<ruby>複数<rt>ふくすう</rt></ruby>のいくつか<ruby>線<rt>せん</rt></ruby>がある<ruby>複線<rt>ふくせん</rt></ruby>型教育というのに<ruby>分かれ<rt>わかれ</rt></ruby>ます。<ruby>単線<rt>たんせん</rt></ruby>型というのは1<ruby>本<rt>ほん</rt></ruby>しかないですから、みんなが<ruby>幼稚園<rt>ようちえん</rt></ruby>、<ruby>小学校<rt>しょうがっこう</rt></ruby>、<ruby>中学校<rt>ちゅうがっこう</rt></ruby>、<ruby>高校<rt>こうこう</rt></ruby>、<ruby>大学<rt>だいがく</rt></ruby>と、みんなが<ruby>同じ<rt>おなじ</rt></ruby>ように1<ruby>本<rt>ほん</rt></ruby>の<ruby>線<rt>せん</rt></ruby>で<ruby>教育<rt>きょういく</rt></ruby>を<ruby>受け<rt>うけ</rt></ruby>ていく、こういう<ruby>制度<rt>せいど</rt></ruby>ですね。<ruby>今<rt>いま</rt></ruby>の<ruby>日本<rt>にほん</rt></ruby>は<ruby>基本<rt>きほん</rt></ruby>的にはこの<ruby>形<rt>かたち</rt></ruby>だと<ruby>思い<rt>おもい</rt></ruby>ます。<ruby>一方<rt>いっぽう</rt></ruby>で、ドイツなどが<ruby>有名<rt>ゆうめい</rt></ruby>ですけれども、<ruby>小学校<rt>しょうがっこう</rt></ruby>とか<ruby>中学校<rt>ちゅうがっこう</rt></ruby>を<ruby>出る<rt>でる</rt></ruby>と、かなり<ruby>早い<rt>はやい</rt></ruby><ruby>段階<rt>だんかい</rt></ruby>、<ruby>非常<rt>ひじょう</rt></ruby>に<ruby>若い<rt>わかい</rt></ruby><ruby>段階<rt>だんかい</rt></ruby>から<ruby>自分<rt>じぶん</rt></ruby>が<ruby>何<rt>なに</rt></ruby>をしたいのかに<ruby>分かれ<rt>わかれ</rt></ruby>てですね、そのまま<ruby>勉強<rt>べんきょう</rt></ruby>したい<ruby>人<rt>ひと</rt></ruby>は<ruby>大学<rt>だいがく</rt></ruby>まで<ruby>行き<rt>いき</rt></ruby>ますけれども、そうでない<ruby>人<rt>ひと</rt></ruby>は<ruby>職業<rt>しょくぎょう</rt></ruby><ruby>訓練<rt>くんれん</rt></ruby><ruby>校<rt>こう</rt></ruby>にどんどん<ruby>行く<rt>いく</rt></ruby>というような<ruby>形<rt>かたち</rt></ruby>です。<ruby>自分<rt>じぶん</rt></ruby>が<ruby>就き<rt>つき</rt></ruby>たい<ruby>仕事<rt>しごと</rt></ruby>に<ruby>必要<rt>ひつよう</rt></ruby>なスキル、それを<ruby>身<rt>み</rt></ruby>につけるための<ruby>勉強<rt>べんきょう</rt></ruby>をどんどんするという<ruby>形<rt>かたち</rt></ruby>ですね。これはいくつか、あなたは<ruby>専門<rt>せんもん</rt></ruby>学校に<ruby>行き<rt>いき</rt></ruby>ます、あなたは<ruby>職業<rt>しょくぎょう</rt></ruby><ruby>訓練<rt>くんれん</rt></ruby>校に<ruby>行き<rt>いき</rt></ruby>ます、あなたは<ruby>教員<rt>きょういん</rt></ruby>になるための<ruby>勉強<rt>べんきょう</rt></ruby>をします、あなたは<ruby>研究<rt>けんきゅう</rt></ruby>しますから<ruby>大学<rt>だいがく</rt></ruby>に<ruby>行き<rt>いき</rt></ruby>ます、のような<ruby>形<rt>かたち</rt></ruby>でいくつも<ruby>線<rt>せん</rt></ruby>があるので、<ruby>複数<rt>ふくすう</rt></ruby>の<ruby>線<rt>せん</rt></ruby>があるので<ruby>複線<rt>ふくせん</rt></ruby>型教育と<ruby>呼ぶ<rt>よぶ</rt></ruby>んですね。</p>
+        <p><ruby>日本<rt>にほん</rt></ruby>では<ruby>第<rt>だい</rt></ruby>2<ruby>次<rt>じ</rt></ruby>世界<ruby>大戦<rt>たいせん</rt></ruby>の<ruby>前<rt>まえ</rt></ruby>までは<ruby>複線<rt>ふくせん</rt></ruby>型教育でした。<ruby>大学<rt>だいがく</rt></ruby>まで<ruby>行く<rt>いく</rt></ruby>のはほんの<ruby>一部<rt>いちぶ</rt></ruby>の<ruby>人<rt>ひと</rt></ruby>で、それ<ruby>以外<rt>いがい</rt></ruby>の<ruby>人<rt>ひと</rt></ruby>はほとんど<ruby>職業<rt>しょくぎょう</rt></ruby><ruby>訓練<rt>くんれん</rt></ruby>を<ruby>受け<rt>うけ</rt></ruby>ていたんですね。でも、<ruby>戦争<rt>せんそう</rt></ruby>が<ruby>終わっ<rt>おわっ</rt></ruby>て、このエリート<ruby>教育<rt>きょういく</rt></ruby>、<ruby>非常<rt>ひじょう</rt></ruby>に<ruby>恵まれ<rt>めぐまれ</rt></ruby>た<ruby>人<rt>ひと</rt></ruby>だけが<ruby>中学<rt>ちゅうがく</rt></ruby>、<ruby>高校<rt>こうこう</rt></ruby>、<ruby>大学<rt>だいがく</rt></ruby>、<ruby>大学院<rt>だいがくいん</rt></ruby>と<ruby>行ける<rt>いける</rt></ruby>、<ruby>国民<rt>こくみん</rt></ruby>の10%ぐらいでしょうかね、こういった<ruby>人<rt>ひと</rt></ruby>たちだけが<ruby>高度<rt>こうど</rt></ruby>な<ruby>教育<rt>きょういく</rt></ruby>を受けられて、それ<ruby>以外<rt>いがい</rt></ruby>の<ruby>人<rt>ひと</rt></ruby>たちは、<ruby>自分<rt>じぶん</rt></ruby>で<ruby>選ん<rt>えらん</rt></ruby>だと<ruby>言い<rt>いい</rt></ruby>ながら、そういった<ruby>道<rt>みち</rt></ruby>に<ruby>進ま<rt>すすま</rt></ruby>ざるを<ruby>得<rt>え</rt></ruby>ない、<ruby>例えば<rt>たとえば</rt></ruby><ruby>お金<rt>おかね</rt></ruby>の<ruby>問題<rt>もんだい</rt></ruby>とかね、そういった<ruby>問題<rt>もんだい</rt></ruby>で<ruby>職業<rt>しょくぎょう</rt></ruby>訓練の<ruby>方<rt>ほう</rt></ruby>に<ruby>進ま<rt>すすま</rt></ruby>ざるを得なかった。こういった<ruby>反省<rt>はんせい</rt></ruby>から、みんなが<ruby>高等<rt>こうとう</rt></ruby>教育を受けられるようにということで、<ruby>単線<rt>たんせん</rt></ruby>型教育に<ruby>変わっ<rt>かわっ</rt></ruby>てきたという、そういう<ruby>側面<rt>そくめん</rt></ruby>があるんですね。もちろん<ruby>単線<rt>たんせん</rt></ruby>型教育、<ruby>複線<rt>ふくせん</rt></ruby>型教育、どちらにもメリット・デメリットはあります。ただ、<ruby>日本<rt>にほん</rt></ruby>の<ruby>歴史<rt>れきし</rt></ruby>で<ruby>見<rt>み</rt></ruby>てみると、<ruby>複線<rt>ふくせん</rt></ruby>型教育の<ruby>反省<rt>はんせい</rt></ruby>から<ruby>単線<rt>たんせん</rt></ruby>型教育になってきたという<ruby>歴史<rt>れきし</rt></ruby>があるんですね。</p>
+        <p>ここに<ruby>今回<rt>こんかい</rt></ruby>の日本語教育の<ruby>新しい<rt>あたらしい</rt></ruby><ruby>流れ<rt>ながれ</rt></ruby>が<ruby>入っ<rt>はいっ</rt></ruby>てくる。つまり<ruby>企業<rt>きぎょう</rt></ruby>が<ruby>自分<rt>じぶん</rt></ruby>たちの<ruby>育て<rt>そだて</rt></ruby>たい<ruby>人材<rt>じんざい</rt></ruby>を<ruby>育てる<rt>そだてる</rt></ruby>ための<ruby>学校<rt>がっこう</rt></ruby>、日本語学校をどんどん<ruby>作る<rt>つくる</rt></ruby>ということはですね、<ruby>少し<rt>すこし</rt></ruby>ネガティブに<ruby>捉える<rt>とらえる</rt></ruby>と、こうした<ruby>学校<rt>がっこう</rt></ruby>に<ruby>行く<rt>いく</rt></ruby><ruby>外国<rt>がいこく</rt></ruby>人たちというのは、<ruby>最終<rt>さいしゅう</rt></ruby>的に<ruby>将来<rt>しょうらい</rt></ruby>的には<ruby>単純<rt>たんじゅん</rt></ruby>労働というか、<ruby>肉体<rt>にくたい</rt></ruby>労働に<ruby>就く<rt>つく</rt></ruby>ブルーカラーになる、こういった<ruby>道<rt>みち</rt></ruby>が<ruby>約束<rt>やくそく</rt></ruby>された<ruby>学校<rt>がっこう</rt></ruby>ということになりますよね。その<ruby>意味<rt>いみ</rt></ruby>では、かつては<ruby>日本<rt>にほん</rt></ruby><ruby>国内<rt>こくない</rt></ruby>で<ruby>起こっ<rt>おこっ</rt></ruby>た<ruby>大学<rt>だいがく</rt></ruby>まで<ruby>行ける<rt>いける</rt></ruby>人と<ruby>職業<rt>しょくぎょう</rt></ruby>訓練に<ruby>行か<rt>いか</rt></ruby>ざるを得ない<ruby>人<rt>ひと</rt></ruby>という、こういった<ruby>格差<rt>かくさ</rt></ruby>がですね、<ruby>今度<rt>こんど</rt></ruby>は<ruby>日本人<rt>にほんじん</rt></ruby>と<ruby>外国<rt>がいこく</rt></ruby>人の<ruby>間<rt>ま</rt></ruby>で<ruby>起こっ<rt>おこっ</rt></ruby>てしまうかもしれません。もちろん<ruby>外国<rt>がいこく</rt></ruby>人の方でも<ruby>優秀<rt>ゆうしゅう</rt></ruby>な<ruby>方<rt>ほう</rt></ruby>はたくさんいますし、<ruby>日本<rt>にほん</rt></ruby>の<ruby>大学<rt>だいがく</rt></ruby>などを<ruby>出<rt>で</rt></ruby>てくる、いわゆる<ruby>高度<rt>こうど</rt></ruby><ruby>人材<rt>じんざい</rt></ruby>というのはいるんですけれども、<ruby>今<rt>いま</rt></ruby>、<ruby>実際<rt>じっさい</rt></ruby>に<ruby>日本<rt>にほん</rt></ruby>に<ruby>来<rt>き</rt></ruby>ている<ruby>労働<rt>ろうどう</rt></ruby>者とか、あるいは<ruby>留学生<rt>りゅうがくせい</rt></ruby>にしてもですね、<ruby>外国<rt>がいこく</rt></ruby>人労働者のほとんどは<ruby>単純<rt>たんじゅん</rt></ruby>労働に<ruby>従事<rt>じゅうじ</rt></ruby>している<ruby>人<rt>ひと</rt></ruby>、<ruby>単純<rt>たんじゅん</rt></ruby>労働をしている<ruby>人<rt>ひと</rt></ruby>ですし、<ruby>留学生<rt>りゅうがくせい</rt></ruby>も<ruby>実は<rt>じつは</rt></ruby><ruby>大学<rt>だいがく</rt></ruby>とかに<ruby>行く<rt>いく</rt></ruby>人よりもですね、<ruby>多く<rt>おおく</rt></ruby>の<ruby>場合<rt>ばあい</rt></ruby>は<ruby>日本語<rt>にほんご</rt></ruby>学校とか<ruby>専門<rt>せんもん</rt></ruby>学校とか、そういったところの<ruby>人<rt>ひと</rt></ruby>が<ruby>多い<rt>おおい</rt></ruby>んですよね。</p>
+      </section>
+      <section class="content-section" id="section-12">
+        <h2>おわりに</h2>
+        <p>このような<ruby>現実<rt>げんじつ</rt></ruby>を踏まえれ<ruby>ば<rt>ふまえれば</rt></ruby>、<ruby>企業<rt>きぎょう</rt></ruby>が<ruby>作り出す<rt>つくりだす</rt></ruby>日本語学校に<ruby>通う<rt>かよう</rt></ruby><ruby>外国<rt>がいこく</rt></ruby>人、<ruby>留学生<rt>りゅうがくせい</rt></ruby>っていうのは、<ruby>将来<rt>しょうらい</rt></ruby>はどちらかというと<ruby>単純<rt>たんじゅん</rt></ruby>労働、ブルーワーカーになる<ruby>人<rt>ひと</rt></ruby>が<ruby>多く<rt>おおく</rt></ruby>て、<ruby>日本人<rt>にほんじん</rt></ruby>の方がホワイトカラーの<ruby>仕事<rt>しごと</rt></ruby>に<ruby>就く<rt>つく</rt></ruby>。こんなような<ruby>複線<rt>ふくせん</rt></ruby>型の教育が<ruby>生まれ<rt>うまれ</rt></ruby>てしまうかもしれないですね。このような<ruby>意味<rt>いみ</rt></ruby>で、<ruby>悪い<rt>わるい</rt></ruby><ruby>意味<rt>いみ</rt></ruby>での<ruby>複線<rt>ふくせん</rt></ruby>型教育の<ruby>復活<rt>ふっかつ</rt></ruby>という<ruby>側面<rt>そくめん</rt></ruby>も<ruby>見え<rt>みえ</rt></ruby>なくはないんですが、そうは<ruby>言っ<rt>いっ</rt></ruby>ても、このような<ruby>日本語<rt>にほんご</rt></ruby>教育機関をしっかりチェックする、そしてきちんと<ruby>教育<rt>きょういく</rt></ruby>の<ruby>質<rt>しつ</rt></ruby>が<ruby>保て<rt>たもて</rt></ruby>ないような<ruby>学校<rt>がっこう</rt></ruby>が<ruby>潰れ<rt>つぶれ</rt></ruby>ていくっていうのは<ruby>当然<rt>とうぜん</rt></ruby>の<ruby>流れ<rt>ながれ</rt></ruby>ですので、どんな<ruby>制度<rt>せいど</rt></ruby>にもメリット、デメリット、<ruby>悪い<rt>わるい</rt></ruby><ruby>点<rt>てん</rt></ruby>っていうのはありますから、<ruby>悪い<rt>わるい</rt></ruby>ことが<ruby>起こり<rt>おこり</rt></ruby>そうな<ruby>可能<rt>かのう</rt></ruby><ruby>性<rt>せい</rt></ruby>があればですね、それを<ruby>考え<rt>かんがえ</rt></ruby>て、また<ruby>制度<rt>せいど</rt></ruby>を<ruby>改良<rt>かいりょう</rt></ruby>していけばいいんですよね。ですので、<ruby>私<rt>わたし</rt></ruby>は<ruby>今回<rt>こんかい</rt></ruby>の<ruby>変換<rt>へんかん</rt></ruby>っていうのは<ruby>必要<rt>ひつよう</rt></ruby>なプロセスだと<ruby>考え<rt>かんがえ</rt></ruby>ています。ということで、4<ruby>月<rt>がつ</rt></ruby>を<ruby>前<rt>まえ</rt></ruby>にして、たくさんの<ruby>留学生<rt>りゅうがくせい</rt></ruby>が<ruby>日本語<rt>にほんご</rt></ruby>学校から<ruby>私<rt>わたし</rt></ruby>の<ruby>大学<rt>だいがく</rt></ruby>にも<ruby>入っ<rt>はいっ</rt></ruby>てくるので、<ruby>今日<rt>きょう</rt></ruby>は日本語学校、日本語教育の<ruby>今<rt>いま</rt></ruby>の<ruby>動向<rt>どうこう</rt></ruby>について<ruby>考え<rt>かんがえ</rt></ruby>てみました。また<ruby>来週<rt>らいしゅう</rt></ruby>も<ruby>聞い<rt>きい</rt></ruby>てくれると<ruby>嬉しい<rt>うれしい</rt></ruby>です。</p>
+      </section>
+        <section class="content-section glossary-section" id="glossary">
+          <h2><ruby>語句<rt>ごく</rt></ruby>メモ</h2>
+          <ol class="glossary-list">
+            <li id="glossary-1" class="glossary-entry">
+              <h4>*1 <ruby>門<rt>もん</rt></ruby>を<ruby>叩い<rt>たたい</rt></ruby>ている</h4>
+              <div class="glossary-block">
+                <p><strong>意味</strong> 新しい世界や組織に入ろうとして行動していることを表す慣用表現です。実際に門をたたくわけではなく、「挑戦する」「入り口に立つ」という比喩です。</p>
+              </div>
+              <div class="glossary-block">
+                <p><strong>例文</strong></p>
+                <ul>
+                <li>春になると、多くの高校生が大学の門を叩きます。</li>
+                <li>彼はずっと憧れていた会社の門を叩きました。</li>
+                </ul>
+              </div>
+              <div class="glossary-block">
+                <p><strong>比較</strong> **「応募する」との違い:** 「応募する」は事実として申し込むことですが、「門を叩く」は新しい場へ踏み出す感じや挑戦のニュアンスを含みます。</p>
+              </div>
+              <div class="glossary-block">
+                <a href="#ref-1" class="note-backref">本文へ戻る</a>
+              </div>
+            </li>
+            <li id="glossary-2" class="glossary-entry">
+              <h4>*2 <ruby>移管<rt>いかん</rt></ruby>された</h4>
+              <div class="glossary-block">
+                <p><strong>意味</strong> ある機関や組織が持っていた仕事・権限・担当が、別の機関や組織へ移されたことを表します。</p>
+              </div>
+              <div class="glossary-block">
+                <p><strong>例文</strong></p>
+                <ul>
+                <li>この事業は来年度から別の部署に移管されます。</li>
+                <li>管理業務が県から市に移管されました。</li>
+                </ul>
+              </div>
+              <div class="glossary-block">
+                <p><strong>比較</strong> **「移動する」との違い:** 「移動する」は人や物が場所を変える意味ですが、「移管する」は権限や担当が別の組織に移る時によく使います。</p>
+              </div>
+              <div class="glossary-block">
+                <a href="#ref-2" class="note-backref">本文へ戻る</a>
+              </div>
+            </li>
+            <li id="glossary-3" class="glossary-entry">
+              <h4>*3 <ruby>登録<rt>とうろく</rt></ruby>日本語<ruby>教員<rt>きょういん</rt></ruby></h4>
+              <div class="glossary-block">
+                <p><strong>意味</strong> 国に正式に登録された、日本語を教えるための国家資格を持つ教員のことです。</p>
+              </div>
+              <div class="glossary-block">
+                <p><strong>例文</strong></p>
+                <ul>
+                <li>彼女は登録日本語教員として留学生に日本語を教えています。</li>
+                <li>これからは登録日本語教員の資格がますます重要になりそうです。</li>
+                </ul>
+              </div>
+              <div class="glossary-block">
+                <p><strong>比較</strong> **「日本語教師」との違い:** 「日本語教師」は一般的な呼び方ですが、「登録日本語教員」は国家資格として制度上認められた立場を強く示します。</p>
+              </div>
+              <div class="glossary-block">
+                <a href="#ref-3" class="note-backref">本文へ戻る</a>
+              </div>
+            </li>
+            <li id="glossary-4" class="glossary-entry">
+              <h4>*4 <ruby>少子<rt>しょうし</rt></ruby><ruby>高齢<rt>こうれい</rt></ruby>化</h4>
+              <div class="glossary-block">
+                <p><strong>意味</strong> 子どもの数が減り、高齢者の割合が増えていく社会の変化を表す言葉です。</p>
+              </div>
+              <div class="glossary-block">
+                <p><strong>例文</strong></p>
+                <ul>
+                <li>少子高齢化の影響で、地方の学校の統合が進んでいます。</li>
+                <li>少子高齢化は医療や年金の制度にも大きく関わります。</li>
+                </ul>
+              </div>
+              <div class="glossary-block">
+                <p><strong>比較</strong> **「高齢化」との違い:** 「高齢化」は高齢者が増えることだけを指しますが、「少子高齢化」は子どもが減ることも合わせて表します。</p>
+              </div>
+              <div class="glossary-block">
+                <a href="#ref-4" class="note-backref">本文へ戻る</a>
+              </div>
+            </li>
+            <li id="glossary-5" class="glossary-entry">
+              <h4>*5 <ruby>財政<rt>ざいせい</rt></ruby><ruby>基盤<rt>きばん</rt></ruby></h4>
+              <div class="glossary-block">
+                <p><strong>意味</strong> 学校や会社などを安定して運営するためのお金の土台、経済的な支えのことです。</p>
+              </div>
+              <div class="glossary-block">
+                <p><strong>例文</strong></p>
+                <ul>
+                <li>財政基盤が弱い組織は、長く安定して運営するのが難しくなります。</li>
+                <li>新しい事業を続けるには、まず財政基盤を整える必要があります。</li>
+                </ul>
+              </div>
+              <div class="glossary-block">
+                <p><strong>比較</strong> **「予算」との違い:** 「予算」は一定期間に使うお金の計画ですが、「財政基盤」はもっと長期的な経営の土台を指します。</p>
+              </div>
+              <div class="glossary-block">
+                <a href="#ref-5" class="note-backref">本文へ戻る</a>
+              </div>
+            </li>
+            <li id="glossary-6" class="glossary-entry">
+              <h4>*6 <ruby>特定<rt>とくてい</rt></ruby>技能</h4>
+              <div class="glossary-block">
+                <p><strong>意味</strong> 人手不足の分野で外国人が働けるようにするための在留資格の名前です。</p>
+              </div>
+              <div class="glossary-block">
+                <p><strong>例文</strong></p>
+                <ul>
+                <li>彼は特定技能の資格で介護の仕事をしています。</li>
+                <li>特定技能では、分野によって試験に合格する必要があります。</li>
+                </ul>
+              </div>
+              <div class="glossary-block">
+                <p><strong>比較</strong> **「留学ビザ」との違い:** 「留学ビザ」は勉強のための在留資格ですが、「特定技能」は働くことを目的とした資格です。</p>
+              </div>
+              <div class="glossary-block">
+                <a href="#ref-6" class="note-backref">本文へ戻る</a>
+              </div>
+            </li>
+            <li id="glossary-7" class="glossary-entry">
+              <h4>*7 <ruby>育成<rt>いくせい</rt></ruby>就労制度</h4>
+              <div class="glossary-block">
+                <p><strong>意味</strong> 外国人が働きながら日本語力や仕事の技能を高め、その後の就労につなげることを目的にした制度です。</p>
+              </div>
+              <div class="glossary-block">
+                <p><strong>例文</strong></p>
+                <ul>
+                <li>育成就労制度では、現場で経験を積みながら学ぶことが期待されています。</li>
+                <li>新しい育成就労制度について企業の関心が高まっています。</li>
+                </ul>
+              </div>
+              <div class="glossary-block">
+                <p><strong>比較</strong> **「特定技能」との違い:** 「特定技能」は在留資格の名前ですが、「育成就労制度」はその前段階も含めた育成・就労の仕組みを指します。</p>
+              </div>
+              <div class="glossary-block">
+                <a href="#ref-7" class="note-backref">本文へ戻る</a>
+              </div>
+            </li>
+            <li id="glossary-8" class="glossary-entry">
+              <h4>*8 <ruby>建前<rt>たてまえ</rt></ruby></h4>
+              <div class="glossary-block">
+                <p><strong>意味</strong> 本音とは別に、公の場で表向きに示す考え方や説明を指す言葉です。</p>
+              </div>
+              <div class="glossary-block">
+                <p><strong>例文</strong></p>
+                <ul>
+                <li>建前では自由参加と言っていたけれど、実際には全員が出席していました。</li>
+                <li>会社の建前と現場の本音が違うことは珍しくありません。</li>
+                </ul>
+              </div>
+              <div class="glossary-block">
+                <p><strong>比較</strong> **「本音」との違い:** 「本音」は心の中の本当の気持ちで、「建前」は人前で示す表向きの立場です。</p>
+              </div>
+              <div class="glossary-block">
+                <a href="#ref-8" class="note-backref">本文へ戻る</a>
+              </div>
+            </li>
+            <li id="glossary-9" class="glossary-entry">
+              <h4>*9 <ruby>複線<rt>ふくせん</rt></ruby><ruby>型<rt>がた</rt></ruby>教育</h4>
+              <div class="glossary-block">
+                <p><strong>意味</strong> 学ぶ人たちが早い段階で異なる進路に分かれ、それぞれの目的に合った教育コースへ進む制度を指します。</p>
+              </div>
+              <div class="glossary-block">
+                <p><strong>例文</strong></p>
+                <ul>
+                <li>複線型教育では、若いうちから職業訓練に進む人もいます。</li>
+                <li>国によっては複線型教育が社会に根づいています。</li>
+                </ul>
+              </div>
+              <div class="glossary-block">
+                <p><strong>比較</strong> **「単線型教育」との違い:** 「単線型教育」は多くの人が同じ流れで学校教育を受ける形ですが、「複線型教育」は途中で進路が分かれます。</p>
+              </div>
+              <div class="glossary-block">
+                <a href="#ref-9" class="note-backref">本文へ戻る</a>
+              </div>
+            </li>
+            <li id="glossary-10" class="glossary-entry">
+              <h4>*10 〜ざるを<ruby>得<rt>え</rt></ruby>ない</h4>
+              <div class="glossary-block">
+                <p><strong>意味</strong> 本当はそうしたくなくても、他に方法がなくてそうするしかない、という硬めの表現です。</p>
+              </div>
+              <div class="glossary-block">
+                <p><strong>例文</strong></p>
+                <ul>
+                <li>電車が止まったので、タクシーを使わざるを得ませんでした。</li>
+                <li>人手が足りず、残業せざるを得ない日もあります。</li>
+                </ul>
+              </div>
+              <div class="glossary-block">
+                <p><strong>比較</strong> **「〜しかない」との違い:** どちらも他に方法がないことを表しますが、「〜ざるを得ない」の方がより硬く、書き言葉や説明でよく使われます。</p>
+              </div>
+              <div class="glossary-block">
+                <a href="#ref-10" class="note-backref">本文へ戻る</a>
+              </div>
+            </li>
+          </ol>
+        </section>
+      </article>
+    </div>
+  </main>
+</body>
+</html>

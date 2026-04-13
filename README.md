@@ -19,6 +19,11 @@
    - [Running the Agent from the Terminal](#53-running-the-agent-from-the-terminal)
    - [Running the Agent with ADK Web](#54-running-the-agent-with-adk-web)
 6. [Understanding the ADK Project Structure](#6-understanding-the-adk-project-structure)
+   - [Minimal Project Structure](#61-minimal-project-structure-hello-world)
+   - [Complete Project Structure](#62-complete-project-structure-production-ready)
+   - [What Are Agent Skills?](#64-what-are-agent-skills)
+   - [What Are MCP Server Tools?](#65-what-are-mcp-server-tools)
+   - [Memory and Persistent Sessions](#66-memory-and-persistent-sessions)
 7. [How It All Works Together: The Agent Execution Flow](#7-how-it-all-works-together-the-agent-execution-flow)
 8. [Agentic Workflow Design Patterns](#8-agentic-workflow-design-patterns)
    - [Pattern 1: LLM Agent (Single Agent)](#pattern-1-llm-agent-single-agent)
@@ -445,9 +450,11 @@ graph LR
 
 ## 6. Understanding the ADK Project Structure
 
-ADK uses a specific folder structure so that the `adk web` and `adk run` commands can automatically discover your agents.
+ADK uses a specific folder structure so that the `adk web` and `adk run` commands can automatically discover your agents. As your agent grows more capable, you can add optional components like **Skills**, **MCP Server Tools**, and **persistent memory** to extend its abilities.
 
-### This Project's Structure
+### 6.1 Minimal Project Structure (Hello World)
+
+This is what our tutorial project looks like — the simplest possible ADK agent:
 
 ```
 JPTranscriptADK/                  ← Project root
@@ -461,17 +468,274 @@ JPTranscriptADK/                  ← Project root
     └── .env                      ← Agent-specific environment variables
 ```
 
-### File-by-File Explanation
+### 6.2 Complete Project Structure (Production-Ready)
 
-| File | Required? | Purpose |
+As your agent grows, the folder structure expands to include skills, MCP tools, and data storage. Here is a complete, production-ready layout with all optional components labeled:
+
+```
+my_agent_project/
+├── .env                          ← [REQUIRED] Project-wide environment variables
+├── .venv/                        ← [RECOMMENDED] Python virtual environment
+│
+├── hello_world/                  ← [REQUIRED] Your agent package
+│   ├── __init__.py               ← [REQUIRED] Package init (from . import agent)
+│   ├── agent.py                  ← [REQUIRED] Agent definition + root_agent variable
+│   ├── tools.py                  ← [OPTIONAL] Custom Python tool functions
+│   ├── .env                      ← [OPTIONAL] Agent-specific env vars
+│   │
+│   ├── skills/                   ← [OPTIONAL] Agent Skills directory
+│   │   ├── weather_lookup/
+│   │   │   ├── SKILL.md          ←   Skill manifest + instructions
+│   │   │   └── references/       ←   Reference data files
+│   │   │       └── cities.md
+│   │   └── code_reviewer/
+│   │       ├── SKILL.md
+│   │       └── references/
+│   │           └── style_guide.md
+│   │
+│   ├── mcp_servers/              ← [OPTIONAL] MCP server configurations
+│   │   └── filesystem_server.py  ←   MCP server connection setup
+│   │
+│   └── data/                     ← [OPTIONAL] Persistent storage / RAG data
+│       ├── sessions.db           ←   SQLite database for session persistence
+│       └── knowledge_base/       ←   Documents for RAG retrieval
+│           └── company_faq.md
+│
+├── research_agent/               ← [OPTIONAL] Additional agent packages
+│   ├── __init__.py
+│   └── agent.py
+│
+└── code_reviewer/                ← [OPTIONAL] More agents, side by side
+    ├── __init__.py
+    └── agent.py
+```
+
+### 6.3 File-by-File Explanation
+
+| File / Directory | Required? | Purpose |
 |:---|:---|:---|
-| `hello_world/__init__.py` | **Yes** | Contains `from . import agent`. This tells Python (and ADK) to load `agent.py` when the package is imported. Without this file, `adk web` cannot find your agent. |
-| `hello_world/agent.py` | **Yes** | The core file. Must define a variable called `root_agent` (or the agent specified in your config). This is where you define the agent, its tools, and its system prompt. |
-| `hello_world/.env` | Optional | Agent-specific environment variables. For example, API keys or model names that only this agent uses. |
-| `.env` (root) | Optional | Project-wide environment variables shared across all agents. Good for `OLLAMA_API_BASE`. |
-| `.venv/` | Recommended | Your isolated Python environment. Created by `python3 -m venv .venv`. |
+| `__init__.py` | **Yes** | Contains `from . import agent`. Without this, `adk web` cannot find your agent. |
+| `agent.py` | **Yes** | Defines `root_agent` — the main agent, its tools, skills, and system prompt. |
+| `.env` (agent) | Optional | Agent-specific environment variables (model name, API keys). |
+| `.env` (root) | Optional | Project-wide variables shared across all agents (e.g., `OLLAMA_API_BASE`). |
+| `.venv/` | Recommended | Isolated Python environment. Created by `python3 -m venv .venv`. |
+| `tools.py` | Optional | Separate file for tool functions. Keeps `agent.py` clean as your tools grow. |
+| `skills/` | Optional | Directory-based Agent Skills. Each subdirectory contains a `SKILL.md` and optional reference files. |
+| `mcp_servers/` | Optional | Configuration files for connecting to MCP (Model Context Protocol) servers. |
+| `data/` | Optional | Persistent storage: SQLite database for sessions, documents for RAG, or knowledge base files. |
 
-### Scaling Up: A Multi-Agent Project
+---
+
+### 6.4 What Are Agent Skills?
+
+**In plain English:** A Skill is a folder of instructions and reference documents that teaches your agent *how to do something specific* — without bloating its main system prompt.
+
+Think of it this way: instead of writing a massive 10-page job description for your employee, you give them a short job title and keep detailed procedure manuals in a filing cabinet. When a relevant task comes up, the employee walks to the cabinet and reads only the manual they need.
+
+#### How Skills Work (Progressive Disclosure)
+
+The ADK loads skill knowledge in three stages to save memory:
+
+```mermaid
+graph LR
+    L1["📋 L1: Metadata<br/>(name + description)<br/>Always loaded"] --> L2["📖 L2: Instructions<br/>(SKILL.md body)<br/>Loaded on demand"]
+    L2 --> L3["📁 L3: Resources<br/>(references/ files)<br/>Loaded when needed"]
+    
+    style L1 fill:#dbeafe,stroke:#3b82f6
+    style L2 fill:#fef3c7,stroke:#f59e0b
+    style L3 fill:#d1fae5,stroke:#10b981
+```
+
+| Level | What It Contains | When It's Loaded | Why |
+|:---|:---|:---|:---|
+| **L1 — Metadata** | Skill name and description (YAML header in SKILL.md) | Always, at startup | So the agent knows this skill *exists* and can decide when to use it |
+| **L2 — Instructions** | The full Markdown body of SKILL.md | On demand, when the agent decides the skill is relevant | Saves context window space — only loads details when needed |
+| **L3 — Resources** | Additional files in `references/` | On demand, when the instructions tell the agent to read them | For large reference data (style guides, FAQ documents, checklists) |
+
+#### Skill Directory Structure
+
+```
+skills/
+└── weather_lookup/
+    ├── SKILL.md              ← Required: manifest + instructions
+    └── references/           ← Optional: supplementary data
+        └── cities.md
+```
+
+#### What a SKILL.md File Looks Like
+
+```markdown
+---
+name: weather_lookup
+description: A skill that provides current weather information for any city.
+---
+
+# Instructions
+When asked about the weather:
+1. Use the `load_skill_resource` tool to read `references/cities.md` for a list of supported cities.
+2. Match the user's requested city to the list.
+3. Return the weather data in a clear, friendly format.
+```
+
+#### Adding Skills to Your Agent
+
+```python
+import pathlib
+from google.adk.skills import load_skill_from_dir
+from google.adk.tools.skill_toolset import SkillToolset
+
+# 1. Load a skill from its directory
+weather_skill = load_skill_from_dir(
+    pathlib.Path(__file__).parent / "skills" / "weather_lookup"
+)
+
+# 2. Wrap it in a SkillToolset
+skill_toolset = SkillToolset(skills=[weather_skill])
+
+# 3. Add the toolset to your agent
+root_agent = Agent(
+    model=local_model,
+    name="assistant",
+    instruction="You are a helpful assistant. Load skills when you need specialized knowledge.",
+    tools=[skill_toolset]  # The agent now has access to the skill
+)
+```
+
+> **What happens at runtime?** The `SkillToolset` automatically gives your agent three internal tools: `list_skills` (see all available skills), `load_skill` (read the SKILL.md instructions), and `load_skill_resource` (read files from `references/`). The agent calls these tools autonomously when it decides it needs the knowledge.
+
+---
+
+### 6.5 What Are MCP Server Tools?
+
+**In plain English:** MCP (Model Context Protocol) is an open standard that lets your agent connect to *external services* — like file systems, databases, GitHub, or any API — through a single, uniform interface. Instead of writing custom Python code for every external service, you plug in an MCP server and your agent instantly gains new capabilities.
+
+Think of it like USB: before USB, every device needed its own special cable and port. MCP is the "USB standard" for AI agents — one connection protocol that works with hundreds of different services.
+
+```mermaid
+graph LR
+    Agent["🤖 Your Agent"] --> MCP["🔌 MCP Protocol"]
+    MCP --> FS["📁 File System Server"]
+    MCP --> DB["🗄️ Database Server"]
+    MCP --> GH["🐙 GitHub Server"]
+    MCP --> Custom["⚙️ Your Custom Server"]
+    
+    style Agent fill:#dbeafe,stroke:#3b82f6
+    style MCP fill:#fce7f3,stroke:#ec4899
+```
+
+#### How MCP Works in Your Project
+
+1. An **MCP Server** is a small program that exposes a set of tools (read files, query databases, etc.) using the MCP protocol.
+2. Your agent connects to the server via a **transport** channel (usually `stdio` for local servers, or `sse`/`streamable-http` for remote ones).
+3. At startup, ADK asks the server: "What tools do you offer?" The server responds with a list.
+4. ADK converts these into tools the agent can call — just like regular Python function tools.
+
+#### Example: Connecting a File System MCP Server
+
+```python
+from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
+from google.adk.tools.mcp_tool.mcp_session_manager import SseServerParams
+
+# Connect to a local filesystem MCP server
+file_tools = MCPToolset(
+    connection_params=StdioServerParameters(
+        command='npx',
+        args=['-y', '@modelcontextprotocol/server-filesystem', './data'],
+    )
+)
+
+# Add to the agent alongside any regular tools
+root_agent = Agent(
+    model=local_model,
+    name="file_assistant",
+    instruction="You can read and search local files. Use the file tools to help users.",
+    tools=[file_tools]  # MCP tools appear as regular tools to the agent
+)
+```
+
+#### Available MCP Servers (Community)
+
+The MCP ecosystem is rapidly growing. Here are some popular servers you can plug in:
+
+| MCP Server | What It Does | Install Command |
+|:---|:---|:---|
+| **Filesystem** | Read, write, and search local files | `npx @modelcontextprotocol/server-filesystem` |
+| **GitHub** | Browse repos, read code, create issues | `npx @modelcontextprotocol/server-github` |
+| **PostgreSQL** | Query SQL databases | `npx @modelcontextprotocol/server-postgres` |
+| **Google Search** | Search the web | `npx @modelcontextprotocol/server-google-search` |
+| **Custom** | Build your own using Python (FastMCP) or Node.js | See [MCP docs](https://modelcontextprotocol.io/) |
+
+---
+
+### 6.6 Memory and Persistent Sessions
+
+By default, your agent forgets everything when the program stops. ADK provides two layers of memory to fix this:
+
+#### Short-Term Memory: Sessions
+
+A **Session** is a single conversation thread. Within one session, the agent remembers every message, tool call, and result.
+
+```python
+# Create a session — the agent remembers everything within it
+session = await app.async_create_session(user_id="user_01")
+
+# Both messages share the same session, so the agent remembers the first one
+await app.async_stream_query(user_id="user_01", session_id=session.id,
+    message="My favorite language is Python.")
+
+await app.async_stream_query(user_id="user_01", session_id=session.id,
+    message="What's my favorite language?")
+# Agent answers: "Python."
+```
+
+By default, sessions are stored **in memory** (lost when the program stops). For production, persist them to a database:
+
+```python
+from google.adk.sessions import DatabaseSessionService
+
+# Store sessions permanently in a local SQLite file
+session_service = DatabaseSessionService(db_url="sqlite:///data/sessions.db")
+```
+
+#### Long-Term Memory: Cross-Session Recall
+
+Long-term memory lets the agent remember important facts across *completely different conversations*:
+
+```python
+from google.adk.memory import InMemoryMemoryService
+
+memory_service = InMemoryMemoryService()
+
+# After a meaningful conversation, save key facts to long-term memory
+await memory_service.add_session_to_memory(session)
+
+# In a future session, the agent can recall: "This user prefers Python."
+```
+
+#### Memory Architecture at a Glance
+
+```mermaid
+graph TD
+    A["💬 Current Conversation"] --> B["📝 Session State<br/>(Short-Term Memory)"]
+    B --> C{"Conversation ends"}
+    C -- "Worth remembering?" --> D["🧠 Long-Term Memory<br/>(Cross-Session)"]
+    C -- "Routine interaction" --> E["🗑️ Discarded"]
+    D --> F["📂 Storage Backend<br/>(SQLite, PostgreSQL, etc.)"]
+    
+    style B fill:#dbeafe,stroke:#3b82f6
+    style D fill:#fef3c7,stroke:#f59e0b
+    style F fill:#d1fae5,stroke:#10b981
+```
+
+| Memory Type | Persists? | Scope | Use Case |
+|:---|:---|:---|:---|
+| **In-Memory Session** | Until program stops | Single conversation | Development and testing |
+| **Database Session** | Permanently | Single conversation | Production apps that need chat history |
+| **Long-Term Memory** | Permanently | Across all conversations | Remembering user preferences, past decisions |
+
+---
+
+### 6.7 Scaling Up: A Multi-Agent Project
 
 As your project grows, you can add more agent packages side by side. Each one appears as a separate option in `adk web`:
 
@@ -496,7 +760,7 @@ my_project/
     └── .env
 ```
 
-### The Naming Rule
+### 6.8 The Naming Rule
 
 The ADK enforces one critical naming convention:
 

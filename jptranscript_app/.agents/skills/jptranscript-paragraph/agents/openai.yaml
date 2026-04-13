@@ -1,0 +1,4 @@
+interface:
+  display_name: "JP Transcript Paragraph"
+  short_description: "Restructure Japanese transcripts in Markdown"
+  default_prompt: "Use $jptranscript-paragraph to restructure this Japanese transcript into clear Markdown sections without changing any wording."

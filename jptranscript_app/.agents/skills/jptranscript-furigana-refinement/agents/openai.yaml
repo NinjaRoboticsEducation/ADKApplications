@@ -1,0 +1,4 @@
+interface:
+  display_name: "JP Furigana Refinement"
+  short_description: "Reduce furigana clutter for learners"
+  default_prompt: "Use $jptranscript-furigana-refinement to simplify furigana by removing it from common words and keeping it only on the first appearance of other words."

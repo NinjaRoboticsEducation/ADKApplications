@@ -1,0 +1,4 @@
+interface:
+  display_name: "JP Phrase Glossary"
+  short_description: "Annotate difficult Japanese patterns clearly"
+  default_prompt: "Use $jptranscript-phase-glossary to mark difficult Japanese phrases with numbered notes and add a learner-friendly glossary appendix without changing the original text."

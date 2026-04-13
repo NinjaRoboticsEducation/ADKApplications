@@ -1,0 +1,4 @@
+interface:
+  display_name: "JP Transcript HTML"
+  short_description: "Turn transcript text into polished HTML"
+  default_prompt: "Use $jptranscript-html to turn this Japanese text or Markdown into a single polished self-contained HTML file with semantic structure, embedded CSS, ruby, and glossary links."

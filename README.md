@@ -457,7 +457,7 @@ ADK uses a specific folder structure so that the `adk web` and `adk run` command
 This is what our tutorial project looks like — the simplest possible ADK agent:
 
 ```
-MyProjectRoot/                  ← Project root
+My_Project_Root/                  ← Project root
 ├── .env                          ← Root environment variables
 ├── .venv/                        ← Python virtual environment (not committed to git)
 ├── README.md                     ← This file

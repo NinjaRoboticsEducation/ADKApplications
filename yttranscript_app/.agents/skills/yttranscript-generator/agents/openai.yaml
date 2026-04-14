@@ -1,0 +1,7 @@
+interface:
+  display_name: "YTtranscript-generator"
+  short_description: "Complete timestamped YouTube transcripts"
+  default_prompt: "Use $yttranscript-generator to create a complete timestamped transcript from this YouTube link for shadowing practice."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,7 @@
+interface:
+  display_name: "YTtranscript-optimizer"
+  short_description: "Structure transcripts for shadowing study"
+  default_prompt: "Use $yttranscript-optimizer to reorganize this raw transcript into titled sections and add a short takeaway summary without changing the original transcript content."
+
+policy:
+  allow_implicit_invocation: true

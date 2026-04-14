@@ -1,0 +1,7 @@
+interface:
+  display_name: "YTHTML-optimizer"
+  short_description: "Optimize shadowing transcript HTML"
+  default_prompt: "Use $ythtml-optimizer to turn this optimized transcript and YouTube link into a synchronized shadowing HTML page with ruby timestamps and dictionary lookup."
+
+policy:
+  allow_implicit_invocation: true

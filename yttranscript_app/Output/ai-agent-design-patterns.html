@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI agent design patterns</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --page: #f7f4ee;
+      --panel: rgba(255, 255, 255, 0.92);
+      --ink: #1f1d18;
+      --muted: #6d655a;
+      --accent: #c56a2d;
+      --accent-soft: rgba(197, 106, 45, 0.14);
+      --line: rgba(31, 29, 24, 0.12);
+      --shadow: 0 18px 44px rgba(49, 38, 23, 0.14);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #fffaf3 0%, var(--page) 55%, #efe6d9 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    a { color: var(--accent); }
+    .shell {
+      width: min(1320px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+    }
+    .hero, .panel, .takeaways, .transcript-section, .dictionary-popup {
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+    .hero {
+      border-radius: 28px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .eyebrow {
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 10px;
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 3vw, 3.4rem);
+      line-height: 1.1;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 20px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(320px, 0.95fr) minmax(0, 1.15fr);
+      gap: 24px;
+      align-items: start;
+    }
+    .panel {
+      position: sticky;
+      top: 20px;
+      border-radius: 24px;
+      padding: 18px;
+    }
+    .player-shell {
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border-radius: 18px;
+      background: #0f1115;
+      margin-bottom: 14px;
+    }
+    .player-shell iframe,
+    .player-shell #player,
+    .player-shell .player-fallback {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+    .player-fallback {
+      display: grid;
+      align-content: center;
+      gap: 14px;
+      padding: 20px;
+      color: #f4eadc;
+      background: linear-gradient(180deg, rgba(8, 10, 14, 0.92), rgba(20, 24, 30, 0.96));
+    }
+    .player-fallback p {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .player-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .player-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff7ec;
+      text-decoration: none;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    .player-link:hover {
+      border-color: rgba(255, 255, 255, 0.32);
+    }
+    .control-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .runtime-warning {
+      display: none;
+      margin: 0 0 14px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(197, 106, 45, 0.28);
+      background: rgba(255, 242, 226, 0.95);
+      color: #5c4531;
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+    .runtime-warning.is-visible {
+      display: block;
+    }
+    .runtime-warning code {
+      font-family: "Noto Sans Mono", monospace;
+      font-size: 0.92em;
+    }
+    .follow-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .follow-toggle input { accent-color: var(--accent); }
+    .transcript-stack {
+      display: grid;
+      gap: 18px;
+    }
+    .takeaways,
+    .transcript-section {
+      border-radius: 24px;
+      padding: 24px;
+    }
+    .takeaways h2,
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 1.15rem;
+      letter-spacing: 0.02em;
+    }
+    .takeaways ul {
+      margin: 0;
+      padding-left: 20px;
+      display: grid;
+      gap: 8px;
+    }
+    .cue-list {
+      display: grid;
+      gap: 10px;
+    }
+    .cue {
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid transparent;
+      background: rgba(255, 250, 243, 0.7);
+      transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+      cursor: pointer;
+    }
+    .cue:hover,
+    .cue:focus-visible {
+      border-color: rgba(197, 106, 45, 0.26);
+      outline: none;
+      transform: translateY(-1px);
+    }
+    .cue.is-active {
+      background: linear-gradient(135deg, rgba(255, 239, 219, 0.96), rgba(255, 247, 238, 0.98));
+      border-color: rgba(197, 106, 45, 0.48);
+      box-shadow: 0 10px 24px rgba(197, 106, 45, 0.14);
+    }
+    ruby {
+      display: inline-block;
+      ruby-position: under;
+      font-size: 1.02rem;
+    }
+    rt {
+      display: block;
+      font-size: 0.4em;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    .dict-word {
+      display: inline;
+      color: inherit;
+      border-bottom: 1px dotted rgba(197, 106, 45, 0.45);
+      cursor: help;
+    }
+    .dict-word:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .dictionary-popup {
+      position: fixed;
+      z-index: 1000;
+      width: min(320px, calc(100vw - 24px));
+      border-radius: 20px;
+      padding: 16px;
+      display: none;
+    }
+    .dictionary-popup.is-visible { display: block; }
+    .dictionary-popup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .dictionary-popup h3 {
+      margin: 0;
+      font-size: 1rem;
+    }
+    .dictionary-popup button {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .dictionary-popup p { margin: 0.35rem 0; }
+    .status-message {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin: 12px 0 0;
+    }
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+      .panel { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <p class="eyebrow">Shadowing Study Page</p>
+      <h1>AI agent design patterns</h1>
+      <div class="meta">
+        <span>Source video: <a href="https://youtu.be/GDm_uH6VxPY?si=ZNpH-LQI-3rVNNGr">https://youtu.be/GDm_uH6VxPY?si=ZNpH-LQI-3rVNNGr</a></span>
+        <span>Click a subtitle line to seek the video</span>
+        <span>Select or click an English word for a quick definition</span>
+      </div>
+    </header>
+    <div class="layout">
+      <aside class="panel">
+        <div class="player-shell"><div id="player"></div></div>
+        <div class="runtime-warning" id="runtime-warning" hidden></div>
+        <div class="control-row">
+          <div id="sync-status">Loading synchronized playback...</div>
+          <label class="follow-toggle"><input id="auto-follow" type="checkbox" checked>Auto-follow</label>
+        </div>
+        <p class="status-message">If playback synchronization is unavailable, the transcript remains readable and cue click-to-seek will fall back to opening the video on YouTube at the selected timestamp.</p>
+      </aside>
+      <main class="transcript-stack" id="transcript-root">
+        <aside class="takeaways" aria-labelledby="takeaways-title"><h2 id="takeaways-title">Key Takeaways</h2><ul><li>The video introduces a practical progression from single-agent systems to sequential and parallel multi-agent workflows.</li><li>Single agents are easy to build and flexible, but they become less reliable when prompts have to encode too much logic.</li><li>Sequential agents trade flexibility for control by forcing a fixed order and passing results through shared session state.</li><li>Parallel agents reduce latency for independent subtasks, but they usually need an aggregation step and can increase cost.</li><li>The next episode will expand into more advanced coordination patterns like critique loops, coordinator routing, and agents used as tools.</li></ul></aside>
+        <section class="transcript-section"><h2 class="section-title">Section 1: Episode Scope and Pattern Roadmap</h2><div class="cue-list"><div class="cue" id="cue-00000" data-start="4.480" data-end="6.879" tabindex="0"><ruby><span class="dict-word" data-word="hi">Hi</span> <span class="dict-word" data-word="everyone">everyone</span>, <span class="dict-word" data-word="welcome">welcome</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="agentic">agentic</span><rt>[00:00:04.480 --&gt; 00:00:06.879]</rt></ruby></div><div class="cue" id="cue-00001" data-start="6.879" data-end="8.960" tabindex="0"><ruby><span class="dict-word" data-word="pattern">pattern</span> [<span class="dict-word" data-word="music">music</span>] <span class="dict-word" data-word="series">series</span>. <span class="dict-word" data-word="so">So</span> <span class="dict-word" data-word="if">if</span> <span class="dict-word" data-word="you">you</span><rt>[00:00:06.879 --&gt; 00:00:08.960]</rt></ruby></div><div class="cue" id="cue-00002" data-start="8.960" data-end="11.599" tabindex="0"><ruby><span class="dict-word" data-word="building">building</span> <span class="dict-word" data-word="with">with</span> <span class="dict-word" data-word="ai">AI</span>, <span class="dict-word" data-word="you">you</span> <span class="dict-word" data-word="probably">probably</span> <span class="dict-word" data-word="wonder">wonder</span><rt>[00:00:08.960 --&gt; 00:00:11.599]</rt></ruby></div><div class="cue" id="cue-00003" data-start="11.599" data-end="15.040" tabindex="0"><ruby><span class="dict-word" data-word="how">how</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="really">really</span> <span class="dict-word" data-word="design">design</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="agentic">agentic</span> <span class="dict-word" data-word="system">system</span>.<rt>[00:00:11.599 --&gt; 00:00:15.040]</rt></ruby></div><div class="cue" id="cue-00004" data-start="15.040" data-end="17.760" tabindex="0"><ruby><span class="dict-word" data-word="sometimes">Sometimes</span> <span class="dict-word" data-word="you">you</span> <span class="dict-word" data-word="need">need</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="single">single</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="and">and</span><rt>[00:00:15.040 --&gt; 00:00:17.760]</rt></ruby></div><div class="cue" id="cue-00005" data-start="17.760" data-end="20.000" tabindex="0"><ruby><span class="dict-word" data-word="other">other</span> <span class="dict-word" data-word="times">times</span> <span class="dict-word" data-word="you">you</span> <span class="dict-word" data-word="need">need</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="whole">whole</span> <span class="dict-word" data-word="team">team</span> <span class="dict-word" data-word="of">of</span><rt>[00:00:17.760 --&gt; 00:00:20.000]</rt></ruby></div><div class="cue" id="cue-00006" data-start="20.000" data-end="22.720" tabindex="0"><ruby><span class="dict-word" data-word="them">them</span> <span class="dict-word" data-word="working">working</span> <span class="dict-word" data-word="together">together</span>. <span class="dict-word" data-word="and">And</span> <span class="dict-word" data-word="today">today</span> <span class="dict-word" data-word="we">we</span> <span class="dict-word" data-word="will">will</span><rt>[00:00:20.000 --&gt; 00:00:22.720]</rt></ruby></div><div class="cue" id="cue-00007" data-start="22.720" data-end="25.840" tabindex="0"><ruby><span class="dict-word" data-word="diving">diving</span> <span class="dict-word" data-word="into">into</span> <span class="dict-word" data-word="ai">AI</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="design">design</span> <span class="dict-word" data-word="patterns">patterns</span>.<rt>[00:00:22.720 --&gt; 00:00:25.840]</rt></ruby></div><div class="cue" id="cue-00008" data-start="25.840" data-end="27.599" tabindex="0"><ruby><span class="dict-word" data-word="and">And</span> <span class="dict-word" data-word="each">each</span> <span class="dict-word" data-word="pattern">pattern</span> <span class="dict-word" data-word="we&#x27;re">we&#x27;re</span> <span class="dict-word" data-word="going">going</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="provide">provide</span><rt>[00:00:25.840 --&gt; 00:00:27.599]</rt></ruby></div><div class="cue" id="cue-00009" data-start="27.599" data-end="30.240" tabindex="0"><ruby><span class="dict-word" data-word="you">you</span> <span class="dict-word" data-word="with">with</span> <span class="dict-word" data-word="practical">practical</span> <span class="dict-word" data-word="example">example</span> <span class="dict-word" data-word="of">of</span> <span class="dict-word" data-word="code">code</span>. <span class="dict-word" data-word="and">And</span><rt>[00:00:27.599 --&gt; 00:00:30.240]</rt></ruby></div><div class="cue" id="cue-00010" data-start="30.240" data-end="31.760" tabindex="0"><ruby><span class="dict-word" data-word="we&#x27;re">we&#x27;re</span> <span class="dict-word" data-word="also">also</span> <span class="dict-word" data-word="going">going</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="walk">walk</span> <span class="dict-word" data-word="through">through</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="live">live</span><rt>[00:00:30.240 --&gt; 00:00:31.760]</rt></ruby></div><div class="cue" id="cue-00011" data-start="31.760" data-end="34.480" tabindex="0"><ruby><span class="dict-word" data-word="demo">demo</span>. <span class="dict-word" data-word="and">And</span> <span class="dict-word" data-word="by">by</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="end">end</span> <span class="dict-word" data-word="of">of</span> <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="agendic">agendic</span><rt>[00:00:31.760 --&gt; 00:00:34.480]</rt></ruby></div><div class="cue" id="cue-00012" data-start="34.480" data-end="37.120" tabindex="0"><ruby><span class="dict-word" data-word="pattern">pattern</span> <span class="dict-word" data-word="series">series</span>, <span class="dict-word" data-word="you">you</span> <span class="dict-word" data-word="will">will</span> <span class="dict-word" data-word="learn">learn</span> <span class="dict-word" data-word="how">how</span> <span class="dict-word" data-word="to">to</span><rt>[00:00:34.480 --&gt; 00:00:37.120]</rt></ruby></div><div class="cue" id="cue-00013" data-start="37.120" data-end="39.840" tabindex="0"><ruby><span class="dict-word" data-word="build">build</span> <span class="dict-word" data-word="agentic">agentic</span> <span class="dict-word" data-word="solution">solution</span> <span class="dict-word" data-word="from">from</span> <span class="dict-word" data-word="single">single</span> <span class="dict-word" data-word="agent">agent</span><rt>[00:00:37.120 --&gt; 00:00:39.840]</rt></ruby></div><div class="cue" id="cue-00014" data-start="39.840" data-end="41.920" tabindex="0"><ruby><span class="dict-word" data-word="pattern">pattern</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="different">different</span> <span class="dict-word" data-word="multi">multi</span>- <span class="dict-word" data-word="aent">aent</span><rt>[00:00:39.840 --&gt; 00:00:41.920]</rt></ruby></div><div class="cue" id="cue-00015" data-start="41.920" data-end="44.160" tabindex="0"><ruby><span class="dict-word" data-word="pattern">pattern</span>. <span class="dict-word" data-word="and">And</span> <span class="dict-word" data-word="for">for</span> <span class="dict-word" data-word="today&#x27;s">today&#x27;s</span> <span class="dict-word" data-word="episode">episode</span>, <span class="dict-word" data-word="we">we</span><rt>[00:00:41.920 --&gt; 00:00:44.160]</rt></ruby></div><div class="cue" id="cue-00016" data-start="44.160" data-end="46.399" tabindex="0"><ruby><span class="dict-word" data-word="will">will</span> <span class="dict-word" data-word="focus">focus</span> <span class="dict-word" data-word="on">on</span> <span class="dict-word" data-word="practical">practical</span> <span class="dict-word" data-word="examples">examples</span> <span class="dict-word" data-word="of">of</span><rt>[00:00:44.160 --&gt; 00:00:46.399]</rt></ruby></div><div class="cue" id="cue-00017" data-start="46.399" data-end="49.360" tabindex="0"><ruby><span class="dict-word" data-word="single">single</span> <span class="dict-word" data-word="agent">agent</span>, <span class="dict-word" data-word="sequential">sequential</span> <span class="dict-word" data-word="agent">agent</span>, <span class="dict-word" data-word="and">and</span><rt>[00:00:46.399 --&gt; 00:00:49.360]</rt></ruby></div><div class="cue" id="cue-00018" data-start="49.360" data-end="51.920" tabindex="0"><ruby><span class="dict-word" data-word="parallel">parallel</span> <span class="dict-word" data-word="agent">agent</span>. <span class="dict-word" data-word="for">For</span> <span class="dict-word" data-word="next">next</span> <span class="dict-word" data-word="episode">episode</span>, <span class="dict-word" data-word="we&#x27;re">we&#x27;re</span><rt>[00:00:49.360 --&gt; 00:00:51.920]</rt></ruby></div><div class="cue" id="cue-00019" data-start="51.920" data-end="54.559" tabindex="0"><ruby><span class="dict-word" data-word="gonna">gonna</span> <span class="dict-word" data-word="cover">cover</span> <span class="dict-word" data-word="orchestrator">orchestrator</span> <span class="dict-word" data-word="pattern">pattern</span>, <span class="dict-word" data-word="review">review</span><rt>[00:00:51.920 --&gt; 00:00:54.559]</rt></ruby></div><div class="cue" id="cue-00020" data-start="54.559" data-end="57.360" tabindex="0"><ruby><span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="critique">critique</span> <span class="dict-word" data-word="pattern">pattern</span> <span class="dict-word" data-word="with">with</span> <span class="dict-word" data-word="loop">loop</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="and">and</span><rt>[00:00:54.559 --&gt; 00:00:57.360]</rt></ruby></div><div class="cue" id="cue-00021" data-start="57.360" data-end="61.039" tabindex="0"><ruby><span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="as">as</span> <span class="dict-word" data-word="tool">tool</span>. <span class="dict-word" data-word="all">All</span> <span class="dict-word" data-word="right">right</span>, <span class="dict-word" data-word="let&#x27;s">let&#x27;s</span> <span class="dict-word" data-word="dive">dive</span> <span class="dict-word" data-word="in">in</span>.<rt>[00:00:57.360 --&gt; 00:01:01.039]</rt></ruby></div></div></section><section class="transcript-section"><h2 class="section-title">Section 2: Single Agent Trip Planning Setup</h2><div class="cue-list"><div class="cue" id="cue-00022" data-start="61.039" data-end="63.920" tabindex="0"><ruby><span class="dict-word" data-word="so">So</span> <span class="dict-word" data-word="let&#x27;s">let&#x27;s</span> <span class="dict-word" data-word="begin">begin</span> <span class="dict-word" data-word="with">with</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="most">most</span> <span class="dict-word" data-word="fundamental">fundamental</span><rt>[00:01:01.039 --&gt; 00:01:03.920]</rt></ruby></div><div class="cue" id="cue-00023" data-start="63.920" data-end="66.960" tabindex="0"><ruby><span class="dict-word" data-word="pattern">pattern</span>, <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="single">single</span> <span class="dict-word" data-word="agent">agent</span>. <span class="dict-word" data-word="imagine">Imagine</span> <span class="dict-word" data-word="you">you</span><rt>[00:01:03.920 --&gt; 00:01:06.960]</rt></ruby></div><div class="cue" id="cue-00024" data-start="66.960" data-end="69.360" tabindex="0"><ruby><span class="dict-word" data-word="want">want</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="plan">plan</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="trip">trip</span>. <span class="dict-word" data-word="so">So</span> <span class="dict-word" data-word="with">with</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="single">single</span><rt>[00:01:06.960 --&gt; 00:01:09.360]</rt></ruby></div><div class="cue" id="cue-00025" data-start="69.360" data-end="71.840" tabindex="0"><ruby><span class="dict-word" data-word="agent">agent</span>, <span class="dict-word" data-word="you">you</span> <span class="dict-word" data-word="want">want</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="give">give</span> <span class="dict-word" data-word="it">it</span> <span class="dict-word" data-word="instruction">instruction</span><rt>[00:01:09.360 --&gt; 00:01:11.840]</rt></ruby></div><div class="cue" id="cue-00026" data-start="71.840" data-end="74.560" tabindex="0"><ruby><span class="dict-word" data-word="on">on</span> <span class="dict-word" data-word="how">how</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="use">use</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="tool">tool</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="we">we</span> <span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="have">have</span> <span class="dict-word" data-word="a">a</span><rt>[00:01:11.840 --&gt; 00:01:14.560]</rt></ruby></div><div class="cue" id="cue-00027" data-start="74.560" data-end="76.560" tabindex="0"><ruby><span class="dict-word" data-word="set">set</span> <span class="dict-word" data-word="of">of</span> <span class="dict-word" data-word="tool">tool</span> <span class="dict-word" data-word="like">like</span> <span class="dict-word" data-word="how">how</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="check">check</span> <span class="dict-word" data-word="the">the</span><rt>[00:01:14.560 --&gt; 00:01:16.560]</rt></ruby></div><div class="cue" id="cue-00028" data-start="76.560" data-end="79.200" tabindex="0"><ruby><span class="dict-word" data-word="weather">weather</span>, <span class="dict-word" data-word="check">check</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="traffic">traffic</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="schedule">schedule</span>.<rt>[00:01:16.560 --&gt; 00:01:19.200]</rt></ruby></div><div class="cue" id="cue-00029" data-start="79.200" data-end="81.520" tabindex="0"><ruby><span class="dict-word" data-word="but">But</span> <span class="dict-word" data-word="for">for</span> <span class="dict-word" data-word="our">our</span> <span class="dict-word" data-word="example">example</span> <span class="dict-word" data-word="today">today</span>, <span class="dict-word" data-word="we">we</span> <span class="dict-word" data-word="will">will</span><rt>[00:01:19.200 --&gt; 00:01:21.520]</rt></ruby></div><div class="cue" id="cue-00030" data-start="81.520" data-end="84.080" tabindex="0"><ruby><span class="dict-word" data-word="simplify">simplify</span> <span class="dict-word" data-word="things">things</span> <span class="dict-word" data-word="with">with</span> <span class="dict-word" data-word="only">only</span> <span class="dict-word" data-word="google">Google</span> <span class="dict-word" data-word="search">search</span><rt>[00:01:21.520 --&gt; 00:01:24.080]</rt></ruby></div><div class="cue" id="cue-00031" data-start="84.080" data-end="86.799" tabindex="0"><ruby><span class="dict-word" data-word="tool">tool</span>. <span class="dict-word" data-word="so">So</span> <span class="dict-word" data-word="you">you</span> <span class="dict-word" data-word="will">will</span> <span class="dict-word" data-word="write">write</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="comprehensive">comprehensive</span><rt>[00:01:24.080 --&gt; 00:01:26.799]</rt></ruby></div><div class="cue" id="cue-00032" data-start="86.799" data-end="89.600" tabindex="0"><ruby><span class="dict-word" data-word="prompt">prompt</span> <span class="dict-word" data-word="telling">telling</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="how">how</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="plan">plan</span> <span class="dict-word" data-word="the">the</span><rt>[00:01:26.799 --&gt; 00:01:29.600]</rt></ruby></div><div class="cue" id="cue-00033" data-start="89.600" data-end="92.159" tabindex="0"><ruby><span class="dict-word" data-word="trip">trip</span> <span class="dict-word" data-word="using">using</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="search">search</span> <span class="dict-word" data-word="tool">tool</span>. <span class="dict-word" data-word="so">So</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="agent">agent</span><rt>[00:01:29.600 --&gt; 00:01:32.159]</rt></ruby></div><div class="cue" id="cue-00034" data-start="92.159" data-end="94.240" tabindex="0"><ruby><span class="dict-word" data-word="then">then</span> <span class="dict-word" data-word="relies">relies</span> <span class="dict-word" data-word="on">on</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="model&#x27;s">model&#x27;s</span> <span class="dict-word" data-word="reasoning">reasoning</span><rt>[00:01:32.159 --&gt; 00:01:34.240]</rt></ruby></div><div class="cue" id="cue-00035" data-start="94.240" data-end="96.880" tabindex="0"><ruby><span class="dict-word" data-word="capability">capability</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="figure">figure</span> <span class="dict-word" data-word="out">out</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="sequence">sequence</span> <span class="dict-word" data-word="of">of</span><rt>[00:01:34.240 --&gt; 00:01:36.880]</rt></ruby></div><div class="cue" id="cue-00036" data-start="96.880" data-end="99.840" tabindex="0"><ruby><span class="dict-word" data-word="steps">steps</span>. <span class="dict-word" data-word="as">As</span> <span class="dict-word" data-word="you">you</span> <span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="see">see</span> <span class="dict-word" data-word="from">from</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="screen">screen</span>,<rt>[00:01:36.880 --&gt; 00:01:39.840]</rt></ruby></div><div class="cue" id="cue-00037" data-start="99.840" data-end="101.439" tabindex="0"><ruby><span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="code">code</span> <span class="dict-word" data-word="for">for</span> <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="very">very</span><rt>[00:01:39.840 --&gt; 00:01:41.439]</rt></ruby></div><div class="cue" id="cue-00038" data-start="101.439" data-end="103.439" tabindex="0"><ruby><span class="dict-word" data-word="straightforward">straightforward</span> <span class="dict-word" data-word="with">with</span> <span class="dict-word" data-word="adk">ADK</span> <span class="dict-word" data-word="agent">agent</span><rt>[00:01:41.439 --&gt; 00:01:43.439]</rt></ruby></div><div class="cue" id="cue-00039" data-start="103.439" data-end="105.680" tabindex="0"><ruby><span class="dict-word" data-word="development">development</span> <span class="dict-word" data-word="kit">kit</span>. <span class="dict-word" data-word="and">And</span> <span class="dict-word" data-word="let&#x27;s">let&#x27;s</span> <span class="dict-word" data-word="test">test</span> <span class="dict-word" data-word="it">it</span> <span class="dict-word" data-word="with">with</span><rt>[00:01:43.439 --&gt; 00:01:45.680]</rt></ruby></div><div class="cue" id="cue-00040" data-start="105.680" data-end="110.000" tabindex="0"><ruby><span class="dict-word" data-word="adk">ADK</span> <span class="dict-word" data-word="web">web</span> <span class="dict-word" data-word="ui">UI</span> <span class="dict-word" data-word="by">by</span> <span class="dict-word" data-word="typing">typing</span> <span class="dict-word" data-word="adkvab">ADKVAB</span>. <span class="dict-word" data-word="so">So</span> <span class="dict-word" data-word="if">if</span> <span class="dict-word" data-word="i">I</span><rt>[00:01:45.680 --&gt; 00:01:50.000]</rt></ruby></div><div class="cue" id="cue-00041" data-start="110.000" data-end="113.439" tabindex="0"><ruby><span class="dict-word" data-word="type">type</span> <span class="dict-word" data-word="plan">plan</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="trip">trip</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="san">San</span> <span class="dict-word" data-word="francisco">Francisco</span>, <span class="dict-word" data-word="we">we</span><rt>[00:01:50.000 --&gt; 00:01:53.439]</rt></ruby></div><div class="cue" id="cue-00042" data-start="113.439" data-end="116.320" tabindex="0"><ruby><span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="see">see</span> <span class="dict-word" data-word="in">in</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="tracing">tracing</span> <span class="dict-word" data-word="that">that</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="is">is</span><rt>[00:01:53.439 --&gt; 00:01:56.320]</rt></ruby></div><div class="cue" id="cue-00043" data-start="116.320" data-end="118.640" tabindex="0"><ruby><span class="dict-word" data-word="using">using</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="search">search</span> <span class="dict-word" data-word="tool">tool</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="gather">gather</span> <span class="dict-word" data-word="all">all</span> <span class="dict-word" data-word="the">the</span><rt>[00:01:56.320 --&gt; 00:01:58.640]</rt></ruby></div><div class="cue" id="cue-00044" data-start="118.640" data-end="121.360" tabindex="0"><ruby><span class="dict-word" data-word="necessary">necessary</span> <span class="dict-word" data-word="information">information</span> <span class="dict-word" data-word="in">in</span> <span class="dict-word" data-word="just">just</span> <span class="dict-word" data-word="one">one</span> <span class="dict-word" data-word="go">go</span>. <span class="dict-word" data-word="we">We</span><rt>[00:01:58.640 --&gt; 00:02:01.360]</rt></ruby></div><div class="cue" id="cue-00045" data-start="121.360" data-end="123.759" tabindex="0"><ruby><span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="see">see</span> <span class="dict-word" data-word="how">how</span> <span class="dict-word" data-word="it">it</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="using">using</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="tool">tool</span> <span class="dict-word" data-word="from">from</span><rt>[00:02:01.360 --&gt; 00:02:03.759]</rt></ruby></div><div class="cue" id="cue-00046" data-start="123.759" data-end="126.479" tabindex="0"><ruby><span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="tracing">tracing</span> <span class="dict-word" data-word="tab">tab</span> <span class="dict-word" data-word="over">over</span> <span class="dict-word" data-word="here">here</span>. <span class="dict-word" data-word="however">However</span>, <span class="dict-word" data-word="this">this</span><rt>[00:02:03.759 --&gt; 00:02:06.479]</rt></ruby></div></div></section><section class="transcript-section"><h2 class="section-title">Section 3: Where Single Agents Become Unreliable</h2><div class="cue-list"><div class="cue" id="cue-00047" data-start="126.479" data-end="128.879" tabindex="0"><ruby><span class="dict-word" data-word="works">works</span> <span class="dict-word" data-word="for">for</span> <span class="dict-word" data-word="single">single</span> <span class="dict-word" data-word="task">task</span>. <span class="dict-word" data-word="but">But</span> <span class="dict-word" data-word="as">as</span> <span class="dict-word" data-word="you">you</span> <span class="dict-word" data-word="have">have</span><rt>[00:02:06.479 --&gt; 00:02:08.879]</rt></ruby></div><div class="cue" id="cue-00048" data-start="128.879" data-end="130.879" tabindex="0"><ruby><span class="dict-word" data-word="more">more</span> <span class="dict-word" data-word="tools">tools</span>, <span class="dict-word" data-word="all">all</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="tasks">tasks</span> <span class="dict-word" data-word="are">are</span> <span class="dict-word" data-word="getting">getting</span><rt>[00:02:08.879 --&gt; 00:02:10.879]</rt></ruby></div><div class="cue" id="cue-00049" data-start="130.879" data-end="133.920" tabindex="0"><ruby><span class="dict-word" data-word="more">more</span> <span class="dict-word" data-word="complex">complex</span>. <span class="dict-word" data-word="for">For</span> <span class="dict-word" data-word="example">example</span>, <span class="dict-word" data-word="if">if</span> <span class="dict-word" data-word="i">I</span> <span class="dict-word" data-word="have">have</span> <span class="dict-word" data-word="a">a</span><rt>[00:02:10.879 --&gt; 00:02:13.920]</rt></ruby></div><div class="cue" id="cue-00050" data-start="133.920" data-end="136.560" tabindex="0"><ruby><span class="dict-word" data-word="request">request</span> <span class="dict-word" data-word="finding">finding</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="sushi">sushi</span> <span class="dict-word" data-word="in">in</span> <span class="dict-word" data-word="san">San</span> <span class="dict-word" data-word="francisco">Francisco</span><rt>[00:02:13.920 --&gt; 00:02:16.560]</rt></ruby></div><div class="cue" id="cue-00051" data-start="136.560" data-end="138.640" tabindex="0"><ruby><span class="dict-word" data-word="that&#x27;s">that&#x27;s</span> <span class="dict-word" data-word="open">open</span> <span class="dict-word" data-word="late">late</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="finding">finding</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="fattest">fattest</span><rt>[00:02:16.560 --&gt; 00:02:18.640]</rt></ruby></div><div class="cue" id="cue-00052" data-start="138.640" data-end="140.879" tabindex="0"><ruby><span class="dict-word" data-word="way">way</span> <span class="dict-word" data-word="getting">getting</span> <span class="dict-word" data-word="there">there</span>. <span class="dict-word" data-word="so">So</span> <span class="dict-word" data-word="if">if</span> <span class="dict-word" data-word="i">I</span> <span class="dict-word" data-word="build">build</span> <span class="dict-word" data-word="this">this</span><rt>[00:02:18.640 --&gt; 00:02:20.879]</rt></ruby></div><div class="cue" id="cue-00053" data-start="140.879" data-end="143.280" tabindex="0"><ruby><span class="dict-word" data-word="with">with</span> <span class="dict-word" data-word="single">single</span> <span class="dict-word" data-word="agent">agent</span>, <span class="dict-word" data-word="we">we</span> <span class="dict-word" data-word="need">need</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="define">define</span> <span class="dict-word" data-word="the">the</span><rt>[00:02:20.879 --&gt; 00:02:23.280]</rt></ruby></div><div class="cue" id="cue-00054" data-start="143.280" data-end="146.000" tabindex="0"><ruby><span class="dict-word" data-word="logic">logic</span> <span class="dict-word" data-word="in">in</span> <span class="dict-word" data-word="system">system</span> <span class="dict-word" data-word="instruction">instruction</span> <span class="dict-word" data-word="with">with</span> <span class="dict-word" data-word="this">this</span><rt>[00:02:23.280 --&gt; 00:02:26.000]</rt></ruby></div><div class="cue" id="cue-00055" data-start="146.000" data-end="149.520" tabindex="0"><ruby><span class="dict-word" data-word="massive">massive</span> <span class="dict-word" data-word="prom">prom</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="behavior">behavior</span> <span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="become">become</span><rt>[00:02:26.000 --&gt; 00:02:29.520]</rt></ruby></div><div class="cue" id="cue-00056" data-start="149.520" data-end="152.560" tabindex="0"><ruby><span class="dict-word" data-word="very">very</span> <span class="dict-word" data-word="unreliable">unreliable</span>. <span class="dict-word" data-word="since">Since</span> <span class="dict-word" data-word="ai">AI</span> <span class="dict-word" data-word="is">is</span><rt>[00:02:29.520 --&gt; 00:02:32.560]</rt></ruby></div><div class="cue" id="cue-00057" data-start="152.560" data-end="155.120" tabindex="0"><ruby><span class="dict-word" data-word="nondeterministic">nondeterministic</span>, <span class="dict-word" data-word="you">you</span> <span class="dict-word" data-word="cannot">cannot</span> <span class="dict-word" data-word="always">always</span><rt>[00:02:32.560 --&gt; 00:02:35.120]</rt></ruby></div><div class="cue" id="cue-00058" data-start="155.120" data-end="157.040" tabindex="0"><ruby><span class="dict-word" data-word="guarantee">guarantee</span> <span class="dict-word" data-word="that">that</span> <span class="dict-word" data-word="you">you</span> <span class="dict-word" data-word="will">will</span> <span class="dict-word" data-word="follow">follow</span> <span class="dict-word" data-word="your">your</span><rt>[00:02:35.120 --&gt; 00:02:37.040]</rt></ruby></div><div class="cue" id="cue-00059" data-start="157.040" data-end="160.160" tabindex="0"><ruby><span class="dict-word" data-word="multistep">multistep</span> <span class="dict-word" data-word="logic">logic</span> <span class="dict-word" data-word="perfectly">perfectly</span> <span class="dict-word" data-word="every">every</span> <span class="dict-word" data-word="time">time</span>. <span class="dict-word" data-word="so">So</span><rt>[00:02:37.040 --&gt; 00:02:40.160]</rt></ruby></div><div class="cue" id="cue-00060" data-start="160.160" data-end="163.680" tabindex="0"><ruby><span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="single">single</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="lack">lack</span> <span class="dict-word" data-word="of">of</span> <span class="dict-word" data-word="control">control</span> <span class="dict-word" data-word="if">if</span> <span class="dict-word" data-word="is">is</span><rt>[00:02:40.160 --&gt; 00:02:43.680]</rt></ruby></div><div class="cue" id="cue-00061" data-start="163.680" data-end="167.040" tabindex="0"><ruby><span class="dict-word" data-word="its">its</span> <span class="dict-word" data-word="main">main</span> <span class="dict-word" data-word="weakness">weakness</span> <span class="dict-word" data-word="with">with</span> <span class="dict-word" data-word="single">single</span> <span class="dict-word" data-word="agent">agent</span><rt>[00:02:43.680 --&gt; 00:02:47.040]</rt></ruby></div><div class="cue" id="cue-00062" data-start="167.040" data-end="169.360" tabindex="0"><ruby><span class="dict-word" data-word="pattern">pattern</span>. <span class="dict-word" data-word="the">The</span> <span class="dict-word" data-word="benefit">benefit</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="it">it</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="very">very</span><rt>[00:02:47.040 --&gt; 00:02:49.360]</rt></ruby></div><div class="cue" id="cue-00063" data-start="169.360" data-end="172.239" tabindex="0"><ruby><span class="dict-word" data-word="simple">simple</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="implement">implement</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="great">great</span> <span class="dict-word" data-word="for">for</span><rt>[00:02:49.360 --&gt; 00:02:52.239]</rt></ruby></div><div class="cue" id="cue-00064" data-start="172.239" data-end="174.560" tabindex="0"><ruby><span class="dict-word" data-word="straightforward">straightforward</span> <span class="dict-word" data-word="multi-step">multi-step</span> <span class="dict-word" data-word="tasks">tasks</span>.<rt>[00:02:52.239 --&gt; 00:02:54.560]</rt></ruby></div><div class="cue" id="cue-00065" data-start="174.560" data-end="178.080" tabindex="0"><ruby><span class="dict-word" data-word="however">However</span>, <span class="dict-word" data-word="it">it</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="less">less</span> <span class="dict-word" data-word="reliable">reliable</span> <span class="dict-word" data-word="for">for</span> <span class="dict-word" data-word="complex">complex</span><rt>[00:02:54.560 --&gt; 00:02:58.080]</rt></ruby></div><div class="cue" id="cue-00066" data-start="178.080" data-end="180.959" tabindex="0"><ruby><span class="dict-word" data-word="workflow">workflow</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="harder">harder</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="control">control</span> <span class="dict-word" data-word="and">and</span><rt>[00:02:58.080 --&gt; 00:03:00.959]</rt></ruby></div><div class="cue" id="cue-00067" data-start="180.959" data-end="185.120" tabindex="0"><ruby><span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="fill">fill</span> <span class="dict-word" data-word="as">as</span> <span class="dict-word" data-word="tasks">tasks</span> <span class="dict-word" data-word="becoming">becoming</span> <span class="dict-word" data-word="more">more</span> <span class="dict-word" data-word="complex">complex</span>.<rt>[00:03:00.959 --&gt; 00:03:05.120]</rt></ruby></div><div class="cue" id="cue-00068" data-start="185.120" data-end="187.200" tabindex="0"><ruby><span class="dict-word" data-word="now">Now</span>, <span class="dict-word" data-word="let&#x27;s">let&#x27;s</span> <span class="dict-word" data-word="get">get</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="our">our</span> <span class="dict-word" data-word="second">second</span> <span class="dict-word" data-word="part">part</span> <span class="dict-word" data-word="of">of</span><rt>[00:03:05.120 --&gt; 00:03:07.200]</rt></ruby></div><div class="cue" id="cue-00069" data-start="187.200" data-end="189.120" tabindex="0"><ruby><span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="video">video</span> <span class="dict-word" data-word="which">which</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="sequential">sequential</span><rt>[00:03:07.200 --&gt; 00:03:09.120]</rt></ruby></div></div></section><section class="transcript-section"><h2 class="section-title">Section 4: Sequential Agents and Shared Session State</h2><div class="cue-list"><div class="cue" id="cue-00070" data-start="189.120" data-end="191.440" tabindex="0"><ruby><span class="dict-word" data-word="agent">agent</span>. <span class="dict-word" data-word="so">So</span>, <span class="dict-word" data-word="with">with</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="task">task</span> <span class="dict-word" data-word="we">we</span> <span class="dict-word" data-word="covered">covered</span><rt>[00:03:09.120 --&gt; 00:03:11.440]</rt></ruby></div><div class="cue" id="cue-00071" data-start="191.440" data-end="194.560" tabindex="0"><ruby><span class="dict-word" data-word="earlier">earlier</span>, <span class="dict-word" data-word="how">how</span> <span class="dict-word" data-word="do">do</span> <span class="dict-word" data-word="we">we</span> <span class="dict-word" data-word="adding">adding</span> <span class="dict-word" data-word="more">more</span> <span class="dict-word" data-word="control">control</span>?<rt>[00:03:11.440 --&gt; 00:03:14.560]</rt></ruby></div><div class="cue" id="cue-00072" data-start="194.560" data-end="196.720" tabindex="0"><ruby><span class="dict-word" data-word="this">This</span> <span class="dict-word" data-word="bring">bring</span> <span class="dict-word" data-word="us">us</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="our">our</span> <span class="dict-word" data-word="first">first</span> <span class="dict-word" data-word="motion">motion</span><rt>[00:03:14.560 --&gt; 00:03:16.720]</rt></ruby></div><div class="cue" id="cue-00073" data-start="196.720" data-end="199.360" tabindex="0"><ruby><span class="dict-word" data-word="pattern">pattern</span>. <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="sequential">sequential</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="this">this</span><rt>[00:03:16.720 --&gt; 00:03:19.360]</rt></ruby></div><div class="cue" id="cue-00074" data-start="199.360" data-end="201.920" tabindex="0"><ruby><span class="dict-word" data-word="pattern">pattern</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="for">for</span> <span class="dict-word" data-word="highly">highly</span> <span class="dict-word" data-word="structured">structured</span><rt>[00:03:19.360 --&gt; 00:03:21.920]</rt></ruby></div><div class="cue" id="cue-00075" data-start="201.920" data-end="204.319" tabindex="0"><ruby><span class="dict-word" data-word="repeatable">repeatable</span> <span class="dict-word" data-word="task">task</span> <span class="dict-word" data-word="because">because</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="order">order</span> <span class="dict-word" data-word="of">of</span> <span class="dict-word" data-word="the">the</span><rt>[00:03:21.920 --&gt; 00:03:24.319]</rt></ruby></div><div class="cue" id="cue-00076" data-start="204.319" data-end="207.280" tabindex="0"><ruby><span class="dict-word" data-word="operation">operation</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="fixed">fixed</span>. <span class="dict-word" data-word="so">So</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="output">output</span> <span class="dict-word" data-word="of">of</span> <span class="dict-word" data-word="one">one</span><rt>[00:03:24.319 --&gt; 00:03:27.280]</rt></ruby></div><div class="cue" id="cue-00077" data-start="207.280" data-end="210.400" tabindex="0"><ruby><span class="dict-word" data-word="sub">sub</span> <span class="dict-word" data-word="aent">aent</span> <span class="dict-word" data-word="become">become</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="direct">direct</span> <span class="dict-word" data-word="input">input</span> <span class="dict-word" data-word="for">for</span> <span class="dict-word" data-word="the">the</span><rt>[00:03:27.280 --&gt; 00:03:30.400]</rt></ruby></div><div class="cue" id="cue-00078" data-start="210.400" data-end="212.879" tabindex="0"><ruby><span class="dict-word" data-word="next">next</span> <span class="dict-word" data-word="sub">sub</span> <span class="dict-word" data-word="aent">aent</span>. <span class="dict-word" data-word="it&#x27;s">It&#x27;s</span> <span class="dict-word" data-word="like">like</span> <span class="dict-word" data-word="an">an</span> <span class="dict-word" data-word="assembly">assembly</span><rt>[00:03:30.400 --&gt; 00:03:32.879]</rt></ruby></div><div class="cue" id="cue-00079" data-start="212.879" data-end="215.680" tabindex="0"><ruby><span class="dict-word" data-word="line">line</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="for">for</span> <span class="dict-word" data-word="our">our</span> <span class="dict-word" data-word="trip">trip</span> <span class="dict-word" data-word="we">we</span> <span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="break">break</span> <span class="dict-word" data-word="down">down</span><rt>[00:03:32.879 --&gt; 00:03:35.680]</rt></ruby></div><div class="cue" id="cue-00080" data-start="215.680" data-end="218.319" tabindex="0"><ruby><span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="two">two</span> <span class="dict-word" data-word="specialized">specialized</span> <span class="dict-word" data-word="agent">agent</span>. <span class="dict-word" data-word="so">So</span> <span class="dict-word" data-word="we">we</span> <span class="dict-word" data-word="have">have</span><rt>[00:03:35.680 --&gt; 00:03:38.319]</rt></ruby></div><div class="cue" id="cue-00081" data-start="218.319" data-end="221.120" tabindex="0"><ruby><span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="first">first</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="foot">foot</span> <span class="dict-word" data-word="finding">finding</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="the">the</span><rt>[00:03:38.319 --&gt; 00:03:41.120]</rt></ruby></div><div class="cue" id="cue-00082" data-start="221.120" data-end="223.599" tabindex="0"><ruby><span class="dict-word" data-word="second">second</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="transportation">transportation</span> <span class="dict-word" data-word="agent">agent</span>. <span class="dict-word" data-word="this">This</span><rt>[00:03:41.120 --&gt; 00:03:43.599]</rt></ruby></div><div class="cue" id="cue-00083" data-start="223.599" data-end="226.400" tabindex="0"><ruby><span class="dict-word" data-word="sequential">sequential</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="ensures">ensures</span> <span class="dict-word" data-word="that">that</span> <span class="dict-word" data-word="we">we</span> <span class="dict-word" data-word="always">always</span><rt>[00:03:43.599 --&gt; 00:03:46.400]</rt></ruby></div><div class="cue" id="cue-00084" data-start="226.400" data-end="228.640" tabindex="0"><ruby><span class="dict-word" data-word="run">run</span> <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="food">food</span> <span class="dict-word" data-word="finding">finding</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="first">first</span> <span class="dict-word" data-word="and">and</span><rt>[00:03:46.400 --&gt; 00:03:48.640]</rt></ruby></div><div class="cue" id="cue-00085" data-start="228.640" data-end="231.360" tabindex="0"><ruby><span class="dict-word" data-word="then">then</span> <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="transportation">transportation</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="next">next</span>. <span class="dict-word" data-word="so">So</span><rt>[00:03:48.640 --&gt; 00:03:51.360]</rt></ruby></div><div class="cue" id="cue-00086" data-start="231.360" data-end="234.239" tabindex="0"><ruby><span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="gives">gives</span> <span class="dict-word" data-word="us">us</span> <span class="dict-word" data-word="predictable">predictable</span> <span class="dict-word" data-word="reliable">reliable</span><rt>[00:03:51.360 --&gt; 00:03:54.239]</rt></ruby></div><div class="cue" id="cue-00087" data-start="234.239" data-end="236.239" tabindex="0"><ruby><span class="dict-word" data-word="execution">execution</span>. <span class="dict-word" data-word="and">And</span> <span class="dict-word" data-word="you">you</span> <span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="take">take</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="look">look</span> <span class="dict-word" data-word="at">at</span><rt>[00:03:54.239 --&gt; 00:03:56.239]</rt></ruby></div><div class="cue" id="cue-00088" data-start="236.239" data-end="238.640" tabindex="0"><ruby><span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="screen">screen</span> <span class="dict-word" data-word="for">for</span> <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="code">code</span> <span class="dict-word" data-word="example">example</span> <span class="dict-word" data-word="of">of</span> <span class="dict-word" data-word="how">how</span><rt>[00:03:56.239 --&gt; 00:03:58.640]</rt></ruby></div><div class="cue" id="cue-00089" data-start="238.640" data-end="242.959" tabindex="0"><ruby><span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="write">write</span> <span class="dict-word" data-word="it">it</span> <span class="dict-word" data-word="in">in</span> <span class="dict-word" data-word="sequential">sequential</span> <span class="dict-word" data-word="agent">agent</span>.<rt>[00:03:58.640 --&gt; 00:04:02.959]</rt></ruby></div><div class="cue" id="cue-00090" data-start="242.959" data-end="245.280" tabindex="0"><ruby><span class="dict-word" data-word="all">All</span> <span class="dict-word" data-word="right">right</span>, <span class="dict-word" data-word="let&#x27;s">let&#x27;s</span> <span class="dict-word" data-word="try">try</span> <span class="dict-word" data-word="it">it</span> <span class="dict-word" data-word="out">out</span> <span class="dict-word" data-word="in">in</span> <span class="dict-word" data-word="adk">ADK</span> <span class="dict-word" data-word="web">web</span><rt>[00:04:02.959 --&gt; 00:04:05.280]</rt></ruby></div><div class="cue" id="cue-00091" data-start="245.280" data-end="248.080" tabindex="0"><ruby><span class="dict-word" data-word="ui">UI</span>.<rt>[00:04:05.280 --&gt; 00:04:08.080]</rt></ruby></div><div class="cue" id="cue-00092" data-start="248.080" data-end="250.239" tabindex="0"><ruby><span class="dict-word" data-word="and">And</span> <span class="dict-word" data-word="you">you</span> <span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="look">look</span> <span class="dict-word" data-word="at">at</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="tracing">tracing</span> <span class="dict-word" data-word="tab">tab</span>. <span class="dict-word" data-word="you">You</span><rt>[00:04:08.080 --&gt; 00:04:10.239]</rt></ruby></div><div class="cue" id="cue-00093" data-start="250.239" data-end="251.840" tabindex="0"><ruby><span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="see">see</span> <span class="dict-word" data-word="that">that</span> <span class="dict-word" data-word="it&#x27;s">it&#x27;s</span> <span class="dict-word" data-word="executed">executed</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="food">food</span><rt>[00:04:10.239 --&gt; 00:04:11.840]</rt></ruby></div><div class="cue" id="cue-00094" data-start="251.840" data-end="254.080" tabindex="0"><ruby><span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="first">first</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="then">then</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="transportation">transportation</span><rt>[00:04:11.840 --&gt; 00:04:14.080]</rt></ruby></div><div class="cue" id="cue-00095" data-start="254.080" data-end="257.280" tabindex="0"><ruby><span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="next">next</span>. <span class="dict-word" data-word="perfect">Perfect</span>. <span class="dict-word" data-word="uh">Uh</span> <span class="dict-word" data-word="so">so</span> <span class="dict-word" data-word="how">how</span> <span class="dict-word" data-word="do">do</span> <span class="dict-word" data-word="they">they</span><rt>[00:04:14.080 --&gt; 00:04:17.280]</rt></ruby></div><div class="cue" id="cue-00096" data-start="257.280" data-end="259.600" tabindex="0"><ruby><span class="dict-word" data-word="communicate">communicate</span> <span class="dict-word" data-word="with">with</span> <span class="dict-word" data-word="each">each</span> <span class="dict-word" data-word="other">other</span>? <span class="dict-word" data-word="so">So</span> <span class="dict-word" data-word="they">they</span><rt>[00:04:17.280 --&gt; 00:04:19.600]</rt></ruby></div><div class="cue" id="cue-00097" data-start="259.600" data-end="262.000" tabindex="0"><ruby><span class="dict-word" data-word="share">share</span> <span class="dict-word" data-word="information">information</span> <span class="dict-word" data-word="through">through</span> <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="shared">shared</span><rt>[00:04:19.600 --&gt; 00:04:22.000]</rt></ruby></div><div class="cue" id="cue-00098" data-start="262.000" data-end="264.960" tabindex="0"><ruby><span class="dict-word" data-word="session">session</span> <span class="dict-word" data-word="state">state</span> <span class="dict-word" data-word="which">which</span> <span class="dict-word" data-word="act">act</span> <span class="dict-word" data-word="like">like</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="shared">shared</span><rt>[00:04:22.000 --&gt; 00:04:24.960]</rt></ruby></div><div class="cue" id="cue-00099" data-start="264.960" data-end="267.199" tabindex="0"><ruby><span class="dict-word" data-word="scratch">scratch</span> <span class="dict-word" data-word="pad">pad</span>. <span class="dict-word" data-word="you">You</span> <span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="check">check</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="session">session</span><rt>[00:04:24.960 --&gt; 00:04:27.199]</rt></ruby></div><div class="cue" id="cue-00100" data-start="267.199" data-end="269.840" tabindex="0"><ruby><span class="dict-word" data-word="state">state</span> <span class="dict-word" data-word="value">value</span> <span class="dict-word" data-word="at">at</span> <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="tab">tab</span>. <span class="dict-word" data-word="and">And</span> <span class="dict-word" data-word="once">once</span> <span class="dict-word" data-word="the">the</span><rt>[00:04:27.199 --&gt; 00:04:29.840]</rt></ruby></div><div class="cue" id="cue-00101" data-start="269.840" data-end="272.400" tabindex="0"><ruby><span class="dict-word" data-word="first">first</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="writes">writes</span> <span class="dict-word" data-word="its">its</span> <span class="dict-word" data-word="finding">finding</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="then">then</span><rt>[00:04:29.840 --&gt; 00:04:32.400]</rt></ruby></div><div class="cue" id="cue-00102" data-start="272.400" data-end="274.960" tabindex="0"><ruby><span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="second">second</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="reads">reads</span> <span class="dict-word" data-word="it">it</span> <span class="dict-word" data-word="from">from</span> <span class="dict-word" data-word="it">it</span> <span class="dict-word" data-word="by">by</span><rt>[00:04:32.400 --&gt; 00:04:34.960]</rt></ruby></div><div class="cue" id="cue-00103" data-start="274.960" data-end="277.360" tabindex="0"><ruby><span class="dict-word" data-word="using">using</span> <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="curly">curly</span> <span class="dict-word" data-word="braces">braces</span> <span class="dict-word" data-word="in">in</span> <span class="dict-word" data-word="its">its</span> <span class="dict-word" data-word="system">system</span><rt>[00:04:34.960 --&gt; 00:04:37.360]</rt></ruby></div><div class="cue" id="cue-00104" data-start="277.360" data-end="280.639" tabindex="0"><ruby><span class="dict-word" data-word="prompt">prompt</span>. <span class="dict-word" data-word="so">So</span> <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="form">form</span> <span class="dict-word" data-word="of">of</span> <span class="dict-word" data-word="short-term">short-term</span><rt>[00:04:37.360 --&gt; 00:04:40.639]</rt></ruby></div><div class="cue" id="cue-00105" data-start="280.639" data-end="283.280" tabindex="0"><ruby><span class="dict-word" data-word="memory">memory</span> <span class="dict-word" data-word="for">for</span> <span class="dict-word" data-word="your">your</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="system">system</span>. <span class="dict-word" data-word="and">And</span> <span class="dict-word" data-word="the">the</span><rt>[00:04:40.639 --&gt; 00:04:43.280]</rt></ruby></div><div class="cue" id="cue-00106" data-start="283.280" data-end="286.400" tabindex="0"><ruby><span class="dict-word" data-word="advantages">advantages</span> <span class="dict-word" data-word="of">of</span> <span class="dict-word" data-word="sequential">sequential</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="that">that</span><rt>[00:04:43.280 --&gt; 00:04:46.400]</rt></ruby></div><div class="cue" id="cue-00107" data-start="286.400" data-end="289.120" tabindex="0"><ruby><span class="dict-word" data-word="it">it</span> <span class="dict-word" data-word="has">has</span> <span class="dict-word" data-word="high">high</span> <span class="dict-word" data-word="degree">degree</span> <span class="dict-word" data-word="of">of</span> <span class="dict-word" data-word="control">control</span> <span class="dict-word" data-word="and">and</span><rt>[00:04:46.400 --&gt; 00:04:49.120]</rt></ruby></div><div class="cue" id="cue-00108" data-start="289.120" data-end="292.240" tabindex="0"><ruby><span class="dict-word" data-word="reliability">reliability</span>. <span class="dict-word" data-word="it">It</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="more">more</span> <span class="dict-word" data-word="predictable">predictable</span> <span class="dict-word" data-word="than">than</span><rt>[00:04:49.120 --&gt; 00:04:52.240]</rt></ruby></div><div class="cue" id="cue-00109" data-start="292.240" data-end="294.800" tabindex="0"><ruby><span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="single">single</span> <span class="dict-word" data-word="agent">agent</span>, <span class="dict-word" data-word="but">but</span> <span class="dict-word" data-word="it">it</span> <span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="be">be</span> <span class="dict-word" data-word="very">very</span><rt>[00:04:52.240 --&gt; 00:04:54.800]</rt></ruby></div><div class="cue" id="cue-00110" data-start="294.800" data-end="297.600" tabindex="0"><ruby><span class="dict-word" data-word="inflexible">inflexible</span>. <span class="dict-word" data-word="this">This</span> <span class="dict-word" data-word="rigid">rigid</span> <span class="dict-word" data-word="predefined">predefined</span><rt>[00:04:54.800 --&gt; 00:04:57.600]</rt></ruby></div><div class="cue" id="cue-00111" data-start="297.600" data-end="299.759" tabindex="0"><ruby><span class="dict-word" data-word="structure">structure</span> <span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="adapt">adapt</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="dynamic">dynamic</span><rt>[00:04:57.600 --&gt; 00:04:59.759]</rt></ruby></div><div class="cue" id="cue-00112" data-start="299.759" data-end="302.560" tabindex="0"><ruby><span class="dict-word" data-word="situations">situations</span>. <span class="dict-word" data-word="now">Now</span> <span class="dict-word" data-word="let&#x27;s">let&#x27;s</span> <span class="dict-word" data-word="go">go</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="third">third</span><rt>[00:04:59.759 --&gt; 00:05:02.560]</rt></ruby></div><div class="cue" id="cue-00113" data-start="302.560" data-end="305.520" tabindex="0"><ruby><span class="dict-word" data-word="part">part</span> <span class="dict-word" data-word="of">of</span> <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="video">video</span>, <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="parallel">parallel</span> <span class="dict-word" data-word="agent">agent</span>.<rt>[00:05:02.560 --&gt; 00:05:05.520]</rt></ruby></div></div></section><section class="transcript-section"><h2 class="section-title">Section 5: Parallel Agents for Independent Searches</h2><div class="cue-list"><div class="cue" id="cue-00114" data-start="305.520" data-end="308.639" tabindex="0"><ruby><span class="dict-word" data-word="so">So</span> <span class="dict-word" data-word="what">what</span> <span class="dict-word" data-word="if">if</span> <span class="dict-word" data-word="some">some</span> <span class="dict-word" data-word="tasks">tasks</span> <span class="dict-word" data-word="don&#x27;t">don&#x27;t</span> <span class="dict-word" data-word="need">need</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="be">be</span><rt>[00:05:05.520 --&gt; 00:05:08.639]</rt></ruby></div><div class="cue" id="cue-00115" data-start="308.639" data-end="311.120" tabindex="0"><ruby><span class="dict-word" data-word="happen">happen</span> <span class="dict-word" data-word="in">in</span> <span class="dict-word" data-word="order">order</span>? <span class="dict-word" data-word="let&#x27;s">Let&#x27;s</span> <span class="dict-word" data-word="say">say</span> <span class="dict-word" data-word="if">if</span> <span class="dict-word" data-word="i">I</span> <span class="dict-word" data-word="want">want</span> <span class="dict-word" data-word="to">to</span><rt>[00:05:08.639 --&gt; 00:05:11.120]</rt></ruby></div><div class="cue" id="cue-00116" data-start="311.120" data-end="313.440" tabindex="0"><ruby><span class="dict-word" data-word="plan">plan</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="full">full</span> <span class="dict-word" data-word="trip">trip</span> <span class="dict-word" data-word="need">need</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="find">find</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="good">good</span><rt>[00:05:11.120 --&gt; 00:05:13.440]</rt></ruby></div><div class="cue" id="cue-00117" data-start="313.440" data-end="315.919" tabindex="0"><ruby><span class="dict-word" data-word="museum">museum</span>, <span class="dict-word" data-word="find">find</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="good">good</span> <span class="dict-word" data-word="concert">concert</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="then">then</span> <span class="dict-word" data-word="a">a</span><rt>[00:05:13.440 --&gt; 00:05:15.919]</rt></ruby></div><div class="cue" id="cue-00118" data-start="315.919" data-end="317.919" tabindex="0"><ruby><span class="dict-word" data-word="good">good</span> <span class="dict-word" data-word="restaurant">restaurant</span>. <span class="dict-word" data-word="if">If</span> <span class="dict-word" data-word="i">I</span> <span class="dict-word" data-word="doing">doing</span> <span class="dict-word" data-word="them">them</span> <span class="dict-word" data-word="in">in</span><rt>[00:05:15.919 --&gt; 00:05:17.919]</rt></ruby></div><div class="cue" id="cue-00119" data-start="317.919" data-end="320.639" tabindex="0"><ruby><span class="dict-word" data-word="sequential">sequential</span> <span class="dict-word" data-word="order">order</span>, <span class="dict-word" data-word="it">it</span> <span class="dict-word" data-word="will">will</span> <span class="dict-word" data-word="be">be</span> <span class="dict-word" data-word="slow">slow</span>. <span class="dict-word" data-word="this">This</span><rt>[00:05:17.919 --&gt; 00:05:20.639]</rt></ruby></div><div class="cue" id="cue-00120" data-start="320.639" data-end="322.720" tabindex="0"><ruby><span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="where">where</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="parallel">parallel</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="pattern">pattern</span><rt>[00:05:20.639 --&gt; 00:05:22.720]</rt></ruby></div><div class="cue" id="cue-00121" data-start="322.720" data-end="325.600" tabindex="0"><ruby><span class="dict-word" data-word="really">really</span> <span class="dict-word" data-word="shines">shines</span>. <span class="dict-word" data-word="it">It</span> <span class="dict-word" data-word="allows">allows</span> <span class="dict-word" data-word="multiple">multiple</span><rt>[00:05:22.720 --&gt; 00:05:25.600]</rt></ruby></div><div class="cue" id="cue-00122" data-start="325.600" data-end="328.479" tabindex="0"><ruby><span class="dict-word" data-word="specialized">specialized</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="run">run</span> <span class="dict-word" data-word="independently">independently</span><rt>[00:05:25.600 --&gt; 00:05:28.479]</rt></ruby></div><div class="cue" id="cue-00123" data-start="328.479" data-end="330.880" tabindex="0"><ruby><span class="dict-word" data-word="at">at</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="same">same</span> <span class="dict-word" data-word="time">time</span>. <span class="dict-word" data-word="we">We</span> <span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="have">have</span> <span class="dict-word" data-word="three">three</span><rt>[00:05:28.479 --&gt; 00:05:30.880]</rt></ruby></div><div class="cue" id="cue-00124" data-start="330.880" data-end="334.400" tabindex="0"><ruby><span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="museum">museum</span> <span class="dict-word" data-word="finder">finder</span>, <span class="dict-word" data-word="concert">concert</span> <span class="dict-word" data-word="finder">finder</span>,<rt>[00:05:30.880 --&gt; 00:05:34.400]</rt></ruby></div><div class="cue" id="cue-00125" data-start="334.400" data-end="336.320" tabindex="0"><ruby><span class="dict-word" data-word="restaurant">restaurant</span> <span class="dict-word" data-word="finder">finder</span>, <span class="dict-word" data-word="all">all</span> <span class="dict-word" data-word="searching">searching</span><rt>[00:05:34.400 --&gt; 00:05:36.320]</rt></ruby></div><div class="cue" id="cue-00126" data-start="336.320" data-end="339.360" tabindex="0"><ruby><span class="dict-word" data-word="concurrently">concurrently</span>. <span class="dict-word" data-word="as">As</span> <span class="dict-word" data-word="you">you</span> <span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="see">see</span>, <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="will">will</span><rt>[00:05:36.320 --&gt; 00:05:39.360]</rt></ruby></div><div class="cue" id="cue-00127" data-start="339.360" data-end="341.759" tabindex="0"><ruby><span class="dict-word" data-word="be">be</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="lot">lot</span> <span class="dict-word" data-word="faster">faster</span> <span class="dict-word" data-word="compared">compared</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="doing">doing</span> <span class="dict-word" data-word="them">them</span><rt>[00:05:39.360 --&gt; 00:05:41.759]</rt></ruby></div><div class="cue" id="cue-00128" data-start="341.759" data-end="344.400" tabindex="0"><ruby><span class="dict-word" data-word="in">in</span> <span class="dict-word" data-word="sequential">sequential</span> <span class="dict-word" data-word="order">order</span>. <span class="dict-word" data-word="of">Of</span> <span class="dict-word" data-word="course">course</span>, <span class="dict-word" data-word="after">after</span><rt>[00:05:41.759 --&gt; 00:05:44.400]</rt></ruby></div><div class="cue" id="cue-00129" data-start="344.400" data-end="346.800" tabindex="0"><ruby><span class="dict-word" data-word="they">they</span> <span class="dict-word" data-word="all">all</span> <span class="dict-word" data-word="find">find</span> <span class="dict-word" data-word="something">something</span>, <span class="dict-word" data-word="we">we</span> <span class="dict-word" data-word="need">need</span> <span class="dict-word" data-word="to">to</span><rt>[00:05:44.400 --&gt; 00:05:46.800]</rt></ruby></div><div class="cue" id="cue-00130" data-start="346.800" data-end="349.280" tabindex="0"><ruby><span class="dict-word" data-word="bring">bring</span> <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="results">results</span> <span class="dict-word" data-word="together">together</span>. <span class="dict-word" data-word="so">So</span>, <span class="dict-word" data-word="a">a</span><rt>[00:05:46.800 --&gt; 00:05:49.280]</rt></ruby></div><div class="cue" id="cue-00131" data-start="349.280" data-end="352.560" tabindex="0"><ruby><span class="dict-word" data-word="common">common</span> <span class="dict-word" data-word="approach">approach</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="combine">combine</span> <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="with">with</span> <span class="dict-word" data-word="a">a</span><rt>[00:05:49.280 --&gt; 00:05:52.560]</rt></ruby></div><div class="cue" id="cue-00132" data-start="352.560" data-end="355.199" tabindex="0"><ruby><span class="dict-word" data-word="sequential">sequential</span> <span class="dict-word" data-word="agent">agent</span>. <span class="dict-word" data-word="so">So</span> <span class="dict-word" data-word="first">first</span> <span class="dict-word" data-word="we">we</span> <span class="dict-word" data-word="will">will</span> <span class="dict-word" data-word="run">run</span><rt>[00:05:52.560 --&gt; 00:05:55.199]</rt></ruby></div><div class="cue" id="cue-00133" data-start="355.199" data-end="358.080" tabindex="0"><ruby><span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="search">search</span> <span class="dict-word" data-word="in">in</span> <span class="dict-word" data-word="parallel">parallel</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="then">then</span> <span class="dict-word" data-word="second">second</span><rt>[00:05:55.199 --&gt; 00:05:58.080]</rt></ruby></div><div class="cue" id="cue-00134" data-start="358.080" data-end="360.800" tabindex="0"><ruby><span class="dict-word" data-word="we">we</span> <span class="dict-word" data-word="will">will</span> <span class="dict-word" data-word="run">run</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="final">final</span> <span class="dict-word" data-word="aggregator">aggregator</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="to">to</span><rt>[00:05:58.080 --&gt; 00:06:00.800]</rt></ruby></div><div class="cue" id="cue-00135" data-start="360.800" data-end="363.680" tabindex="0"><ruby><span class="dict-word" data-word="synthesize">synthesize</span> <span class="dict-word" data-word="all">all</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="results">results</span> <span class="dict-word" data-word="in">in</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="single">single</span><rt>[00:06:00.800 --&gt; 00:06:03.680]</rt></ruby></div><div class="cue" id="cue-00136" data-start="363.680" data-end="366.080" tabindex="0"><ruby><span class="dict-word" data-word="trip">trip</span> <span class="dict-word" data-word="plan">plan</span>. <span class="dict-word" data-word="and">And</span> <span class="dict-word" data-word="here&#x27;s">here&#x27;s</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="code">code</span> <span class="dict-word" data-word="on">on</span><rt>[00:06:03.680 --&gt; 00:06:06.080]</rt></ruby></div><div class="cue" id="cue-00137" data-start="366.080" data-end="370.039" tabindex="0"><ruby><span class="dict-word" data-word="how">how</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="put">put</span> <span class="dict-word" data-word="together">together</span> <span class="dict-word" data-word="them">them</span>.<rt>[00:06:06.080 --&gt; 00:06:10.039]</rt></ruby></div></div></section><section class="transcript-section"><h2 class="section-title">Section 6: Aggregation, Latency, and Cost Tradeoffs</h2><div class="cue-list"><div class="cue" id="cue-00138" data-start="371.600" data-end="374.880" tabindex="0"><ruby><span class="dict-word" data-word="all">All</span> <span class="dict-word" data-word="right">right</span>, <span class="dict-word" data-word="let&#x27;s">let&#x27;s</span> <span class="dict-word" data-word="test">test</span> <span class="dict-word" data-word="adk">ADK</span> <span class="dict-word" data-word="web">web</span> <span class="dict-word" data-word="ui">UI</span>. <span class="dict-word" data-word="after">After</span><rt>[00:06:11.600 --&gt; 00:06:14.880]</rt></ruby></div><div class="cue" id="cue-00139" data-start="374.880" data-end="377.199" tabindex="0"><ruby><span class="dict-word" data-word="we">we</span> <span class="dict-word" data-word="type">type</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="question">question</span> <span class="dict-word" data-word="from">from</span> <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="tracing">tracing</span><rt>[00:06:14.880 --&gt; 00:06:17.199]</rt></ruby></div><div class="cue" id="cue-00140" data-start="377.199" data-end="380.319" tabindex="0"><ruby><span class="dict-word" data-word="tab">tab</span>, <span class="dict-word" data-word="we">we</span> <span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="see">see</span> <span class="dict-word" data-word="three">three</span> <span class="dict-word" data-word="searching">searching</span> <span class="dict-word" data-word="agents">agents</span><rt>[00:06:17.199 --&gt; 00:06:20.319]</rt></ruby></div><div class="cue" id="cue-00141" data-start="380.319" data-end="382.560" tabindex="0"><ruby><span class="dict-word" data-word="kick">kick</span> <span class="dict-word" data-word="off">off</span> <span class="dict-word" data-word="all">all</span> <span class="dict-word" data-word="at">at</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="same">same</span> <span class="dict-word" data-word="time">time</span>. <span class="dict-word" data-word="so">So</span> <span class="dict-word" data-word="once">once</span><rt>[00:06:20.319 --&gt; 00:06:22.560]</rt></ruby></div><div class="cue" id="cue-00142" data-start="382.560" data-end="384.400" tabindex="0"><ruby><span class="dict-word" data-word="they&#x27;re">they&#x27;re</span> <span class="dict-word" data-word="done">done</span>, <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="results">results</span> <span class="dict-word" data-word="are">are</span> <span class="dict-word" data-word="returned">returned</span><rt>[00:06:22.560 --&gt; 00:06:24.400]</rt></ruby></div><div class="cue" id="cue-00143" data-start="384.400" data-end="386.319" tabindex="0"><ruby><span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="session">session</span> <span class="dict-word" data-word="state">state</span> <span class="dict-word" data-word="as">as</span> <span class="dict-word" data-word="you">you</span> <span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="see">see</span> <span class="dict-word" data-word="from">from</span><rt>[00:06:24.400 --&gt; 00:06:26.319]</rt></ruby></div><div class="cue" id="cue-00144" data-start="386.319" data-end="389.199" tabindex="0"><ruby><span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="tab">tab</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="then">then</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="final">final</span> <span class="dict-word" data-word="summarizing">summarizing</span><rt>[00:06:26.319 --&gt; 00:06:29.199]</rt></ruby></div><div class="cue" id="cue-00145" data-start="389.199" data-end="392.960" tabindex="0"><ruby><span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="reset">reset</span> <span class="dict-word" data-word="state">state</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="generate">generate</span> <span class="dict-word" data-word="our">our</span> <span class="dict-word" data-word="plan">plan</span><rt>[00:06:29.199 --&gt; 00:06:32.960]</rt></ruby></div><div class="cue" id="cue-00146" data-start="392.960" data-end="395.280" tabindex="0"><ruby><span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="logic">logic</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="defined">defined</span> <span class="dict-word" data-word="in">in</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="system">system</span><rt>[00:06:32.960 --&gt; 00:06:35.280]</rt></ruby></div><div class="cue" id="cue-00147" data-start="395.280" data-end="398.319" tabindex="0"><ruby><span class="dict-word" data-word="prompt">prompt</span> <span class="dict-word" data-word="over">over</span> <span class="dict-word" data-word="here">here</span>. <span class="dict-word" data-word="as">As</span> <span class="dict-word" data-word="you">you</span> <span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="see">see</span> <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="is">is</span><rt>[00:06:35.280 --&gt; 00:06:38.319]</rt></ruby></div><div class="cue" id="cue-00148" data-start="398.319" data-end="401.039" tabindex="0"><ruby><span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="great">great</span> <span class="dict-word" data-word="way">way</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="reduce">reduce</span> <span class="dict-word" data-word="latency">latency</span> <span class="dict-word" data-word="for">for</span> <span class="dict-word" data-word="task">task</span><rt>[00:06:38.319 --&gt; 00:06:41.039]</rt></ruby></div><div class="cue" id="cue-00149" data-start="401.039" data-end="403.520" tabindex="0"><ruby><span class="dict-word" data-word="that">that</span> <span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="be">be</span> <span class="dict-word" data-word="broken">broken</span> <span class="dict-word" data-word="down">down</span> <span class="dict-word" data-word="into">into</span> <span class="dict-word" data-word="independent">independent</span><rt>[00:06:41.039 --&gt; 00:06:43.520]</rt></ruby></div><div class="cue" id="cue-00150" data-start="403.520" data-end="406.000" tabindex="0"><ruby><span class="dict-word" data-word="subtask">subtask</span>. <span class="dict-word" data-word="so">So</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="benefit">benefit</span> <span class="dict-word" data-word="of">of</span> <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="design">design</span><rt>[00:06:43.520 --&gt; 00:06:46.000]</rt></ruby></div><div class="cue" id="cue-00151" data-start="406.000" data-end="408.400" tabindex="0"><ruby><span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="very">very</span> <span class="dict-word" data-word="obvious">obvious</span> <span class="dict-word" data-word="that">that</span> <span class="dict-word" data-word="it">it</span> <span class="dict-word" data-word="significantly">significantly</span><rt>[00:06:46.000 --&gt; 00:06:48.400]</rt></ruby></div><div class="cue" id="cue-00152" data-start="408.400" data-end="410.880" tabindex="0"><ruby><span class="dict-word" data-word="reduce">reduce</span> <span class="dict-word" data-word="latency">latency</span> <span class="dict-word" data-word="by">by</span> <span class="dict-word" data-word="running">running</span> <span class="dict-word" data-word="tasks">tasks</span> <span class="dict-word" data-word="at">at</span> <span class="dict-word" data-word="the">the</span><rt>[00:06:48.400 --&gt; 00:06:50.880]</rt></ruby></div><div class="cue" id="cue-00153" data-start="410.880" data-end="413.840" tabindex="0"><ruby><span class="dict-word" data-word="same">same</span> <span class="dict-word" data-word="time">time</span>. <span class="dict-word" data-word="however">However</span>, <span class="dict-word" data-word="it">it</span> <span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="have">have</span> <span class="dict-word" data-word="higher">higher</span><rt>[00:06:50.880 --&gt; 00:06:53.840]</rt></ruby></div><div class="cue" id="cue-00154" data-start="413.840" data-end="416.400" tabindex="0"><ruby><span class="dict-word" data-word="initial">initial</span> <span class="dict-word" data-word="cost">cost</span> <span class="dict-word" data-word="because">because</span> <span class="dict-word" data-word="it">it</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="running">running</span><rt>[00:06:53.840 --&gt; 00:06:56.400]</rt></ruby></div><div class="cue" id="cue-00155" data-start="416.400" data-end="419.120" tabindex="0"><ruby><span class="dict-word" data-word="multiple">multiple</span> <span class="dict-word" data-word="agents">agents</span> <span class="dict-word" data-word="all">all</span> <span class="dict-word" data-word="at">at</span> <span class="dict-word" data-word="once">once</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="in">in</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="lot">lot</span><rt>[00:06:56.400 --&gt; 00:06:59.120]</rt></ruby></div><div class="cue" id="cue-00156" data-start="419.120" data-end="421.840" tabindex="0"><ruby><span class="dict-word" data-word="of">of</span> <span class="dict-word" data-word="use">use</span> <span class="dict-word" data-word="case">case</span> <span class="dict-word" data-word="it">it</span> <span class="dict-word" data-word="requires">requires</span> <span class="dict-word" data-word="gather">gather</span> <span class="dict-word" data-word="or">or</span><rt>[00:06:59.120 --&gt; 00:07:01.840]</rt></ruby></div><div class="cue" id="cue-00157" data-start="421.840" data-end="424.400" tabindex="0"><ruby><span class="dict-word" data-word="synthesize">synthesize</span> <span class="dict-word" data-word="step">step</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="combine">combine</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="result">result</span><rt>[00:07:01.840 --&gt; 00:07:04.400]</rt></ruby></div><div class="cue" id="cue-00158" data-start="424.400" data-end="427.039" tabindex="0"><ruby><span class="dict-word" data-word="which">which</span> <span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="add">add</span> <span class="dict-word" data-word="complexity">complexity</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="our">our</span> <span class="dict-word" data-word="design">design</span>.<rt>[00:07:04.400 --&gt; 00:07:07.039]</rt></ruby></div></div></section><section class="transcript-section"><h2 class="section-title">Section 7: Recap and Preview of Advanced Patterns</h2><div class="cue-list"><div class="cue" id="cue-00159" data-start="427.039" data-end="429.120" tabindex="0"><ruby><span class="dict-word" data-word="all">All</span> <span class="dict-word" data-word="right">right</span>, <span class="dict-word" data-word="let&#x27;s">let&#x27;s</span> <span class="dict-word" data-word="recap">recap</span> <span class="dict-word" data-word="what">what</span> <span class="dict-word" data-word="we">we</span> <span class="dict-word" data-word="covered">covered</span><rt>[00:07:07.039 --&gt; 00:07:09.120]</rt></ruby></div><div class="cue" id="cue-00160" data-start="429.120" data-end="431.680" tabindex="0"><ruby><span class="dict-word" data-word="so">so</span> <span class="dict-word" data-word="far">far</span>. <span class="dict-word" data-word="so">So</span> <span class="dict-word" data-word="we">we</span> <span class="dict-word" data-word="covered">covered</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="single">single</span> <span class="dict-word" data-word="agent">agent</span>.<rt>[00:07:09.120 --&gt; 00:07:11.680]</rt></ruby></div><div class="cue" id="cue-00161" data-start="431.680" data-end="433.919" tabindex="0"><ruby><span class="dict-word" data-word="it">It</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="simple">simple</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="implement">implement</span>. <span class="dict-word" data-word="it">It</span> <span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="be">be</span><rt>[00:07:11.680 --&gt; 00:07:13.919]</rt></ruby></div><div class="cue" id="cue-00162" data-start="433.919" data-end="436.160" tabindex="0"><ruby><span class="dict-word" data-word="very">very</span> <span class="dict-word" data-word="flexible">flexible</span> <span class="dict-word" data-word="but">but</span> <span class="dict-word" data-word="it">it</span> <span class="dict-word" data-word="lacks">lacks</span> <span class="dict-word" data-word="certain">certain</span><rt>[00:07:13.919 --&gt; 00:07:16.160]</rt></ruby></div><div class="cue" id="cue-00163" data-start="436.160" data-end="438.639" tabindex="0"><ruby><span class="dict-word" data-word="control">control</span> <span class="dict-word" data-word="over">over</span> <span class="dict-word" data-word="this">this</span> <span class="dict-word" data-word="whole">whole</span> <span class="dict-word" data-word="system">system</span>. <span class="dict-word" data-word="we">We</span> <span class="dict-word" data-word="also">also</span><rt>[00:07:16.160 --&gt; 00:07:18.639]</rt></ruby></div><div class="cue" id="cue-00164" data-start="438.639" data-end="440.720" tabindex="0"><ruby><span class="dict-word" data-word="cover">cover</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="sequential">sequential</span> <span class="dict-word" data-word="agent">agent</span>. <span class="dict-word" data-word="it">It</span> <span class="dict-word" data-word="add">add</span> <span class="dict-word" data-word="a">a</span><rt>[00:07:18.639 --&gt; 00:07:20.720]</rt></ruby></div><div class="cue" id="cue-00165" data-start="440.720" data-end="442.800" tabindex="0"><ruby><span class="dict-word" data-word="certain">certain</span> <span class="dict-word" data-word="level">level</span> <span class="dict-word" data-word="of">of</span> <span class="dict-word" data-word="control">control</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="make">make</span> <span class="dict-word" data-word="the">the</span><rt>[00:07:20.720 --&gt; 00:07:22.800]</rt></ruby></div><div class="cue" id="cue-00166" data-start="442.800" data-end="445.680" tabindex="0"><ruby><span class="dict-word" data-word="system">system</span> <span class="dict-word" data-word="more">more</span> <span class="dict-word" data-word="reliable">reliable</span> <span class="dict-word" data-word="but">but</span> <span class="dict-word" data-word="it">it</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="not">not</span> <span class="dict-word" data-word="very">very</span><rt>[00:07:22.800 --&gt; 00:07:25.680]</rt></ruby></div><div class="cue" id="cue-00167" data-start="445.680" data-end="447.919" tabindex="0"><ruby><span class="dict-word" data-word="flexible">flexible</span>. <span class="dict-word" data-word="and">And</span> <span class="dict-word" data-word="lastly">lastly</span> <span class="dict-word" data-word="we">we</span> <span class="dict-word" data-word="covered">covered</span> <span class="dict-word" data-word="the">the</span><rt>[00:07:25.680 --&gt; 00:07:27.919]</rt></ruby></div><div class="cue" id="cue-00168" data-start="447.919" data-end="450.960" tabindex="0"><ruby><span class="dict-word" data-word="parallel">parallel</span> <span class="dict-word" data-word="agent">agent</span>. <span class="dict-word" data-word="it">It</span> <span class="dict-word" data-word="is">is</span> <span class="dict-word" data-word="fast">fast</span>, <span class="dict-word" data-word="efficient">efficient</span><rt>[00:07:27.919 --&gt; 00:07:30.960]</rt></ruby></div><div class="cue" id="cue-00169" data-start="450.960" data-end="453.360" tabindex="0"><ruby><span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="great">great</span> <span class="dict-word" data-word="for">for</span> <span class="dict-word" data-word="independent">independent</span> <span class="dict-word" data-word="task">task</span> <span class="dict-word" data-word="but">but</span> <span class="dict-word" data-word="it">it</span><rt>[00:07:30.960 --&gt; 00:07:33.360]</rt></ruby></div><div class="cue" id="cue-00170" data-start="453.360" data-end="455.360" tabindex="0"><ruby><span class="dict-word" data-word="can">can</span> <span class="dict-word" data-word="add">add</span> <span class="dict-word" data-word="cost">cost</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="complexity">complexity</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="your">your</span><rt>[00:07:33.360 --&gt; 00:07:35.360]</rt></ruby></div><div class="cue" id="cue-00171" data-start="455.360" data-end="457.440" tabindex="0"><ruby><span class="dict-word" data-word="system">system</span>. <span class="dict-word" data-word="with">With</span> <span class="dict-word" data-word="those">those</span> <span class="dict-word" data-word="pattern">pattern</span> <span class="dict-word" data-word="you">you</span> <span class="dict-word" data-word="can">can</span><rt>[00:07:35.360 --&gt; 00:07:37.440]</rt></ruby></div><div class="cue" id="cue-00172" data-start="457.440" data-end="459.919" tabindex="0"><ruby><span class="dict-word" data-word="already">already</span> <span class="dict-word" data-word="build">build</span> <span class="dict-word" data-word="some">some</span> <span class="dict-word" data-word="powerful">powerful</span> <span class="dict-word" data-word="workflow">workflow</span>.<rt>[00:07:37.440 --&gt; 00:07:39.919]</rt></ruby></div><div class="cue" id="cue-00173" data-start="459.919" data-end="461.680" tabindex="0"><ruby><span class="dict-word" data-word="and">And</span> <span class="dict-word" data-word="in">in</span> <span class="dict-word" data-word="our">our</span> <span class="dict-word" data-word="next">next</span> <span class="dict-word" data-word="video">video</span> <span class="dict-word" data-word="we&#x27;re">we&#x27;re</span> <span class="dict-word" data-word="going">going</span> <span class="dict-word" data-word="to">to</span><rt>[00:07:39.919 --&gt; 00:07:41.680]</rt></ruby></div><div class="cue" id="cue-00174" data-start="461.680" data-end="464.160" tabindex="0"><ruby><span class="dict-word" data-word="level">level</span> <span class="dict-word" data-word="up">up</span> <span class="dict-word" data-word="with">with</span> <span class="dict-word" data-word="more">more</span> <span class="dict-word" data-word="advanced">advanced</span> <span class="dict-word" data-word="pattern">pattern</span> <span class="dict-word" data-word="for">for</span><rt>[00:07:41.680 --&gt; 00:07:44.160]</rt></ruby></div><div class="cue" id="cue-00175" data-start="464.160" data-end="466.639" tabindex="0"><ruby><span class="dict-word" data-word="handling">handling</span> <span class="dict-word" data-word="even">even</span> <span class="dict-word" data-word="more">more</span> <span class="dict-word" data-word="complex">complex</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="dynamic">dynamic</span><rt>[00:07:44.160 --&gt; 00:07:46.639]</rt></ruby></div><div class="cue" id="cue-00176" data-start="466.639" data-end="469.039" tabindex="0"><ruby><span class="dict-word" data-word="problem">problem</span>. <span class="dict-word" data-word="we">We</span> <span class="dict-word" data-word="will">will</span> <span class="dict-word" data-word="explore">explore</span> <span class="dict-word" data-word="cases">cases</span> <span class="dict-word" data-word="with">with</span><rt>[00:07:46.639 --&gt; 00:07:49.039]</rt></ruby></div><div class="cue" id="cue-00177" data-start="469.039" data-end="471.039" tabindex="0"><ruby><span class="dict-word" data-word="different">different</span> <span class="dict-word" data-word="practical">practical</span> <span class="dict-word" data-word="examples">examples</span> <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="the">the</span><rt>[00:07:49.039 --&gt; 00:07:51.039]</rt></ruby></div><div class="cue" id="cue-00178" data-start="471.039" data-end="472.400" tabindex="0"><ruby><span class="dict-word" data-word="pattern">pattern</span> <span class="dict-word" data-word="we&#x27;re">we&#x27;re</span> <span class="dict-word" data-word="going">going</span> <span class="dict-word" data-word="to">to</span> <span class="dict-word" data-word="cover">cover</span> <span class="dict-word" data-word="next">next</span><rt>[00:07:51.039 --&gt; 00:07:52.400]</rt></ruby></div><div class="cue" id="cue-00179" data-start="472.400" data-end="474.400" tabindex="0"><ruby><span class="dict-word" data-word="episode">episode</span> <span class="dict-word" data-word="including">including</span> <span class="dict-word" data-word="uh">uh</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="loop">loop</span> <span class="dict-word" data-word="and">and</span><rt>[00:07:52.400 --&gt; 00:07:54.400]</rt></ruby></div><div class="cue" id="cue-00180" data-start="474.400" data-end="476.800" tabindex="0"><ruby><span class="dict-word" data-word="critique">critique</span> <span class="dict-word" data-word="pattern">pattern</span> <span class="dict-word" data-word="for">for</span> <span class="dict-word" data-word="selfcorrection">selfcorrection</span>, <span class="dict-word" data-word="the">the</span><rt>[00:07:54.400 --&gt; 00:07:56.800]</rt></ruby></div><div class="cue" id="cue-00181" data-start="476.800" data-end="478.810" tabindex="0"><ruby><span class="dict-word" data-word="coordinator">coordinator</span> <span class="dict-word" data-word="pattern">pattern</span> <span class="dict-word" data-word="for">for</span> <span class="dict-word" data-word="dynamic">dynamic</span> <span class="dict-word" data-word="routing">routing</span><rt>[00:07:56.800 --&gt; 00:07:58.810]</rt></ruby></div><div class="cue" id="cue-00182" data-start="478.810" data-end="480.960" tabindex="0"><ruby>[<span class="dict-word" data-word="music">music</span>] <span class="dict-word" data-word="and">and</span> <span class="dict-word" data-word="also">also</span> <span class="dict-word" data-word="the">the</span> <span class="dict-word" data-word="powerful">powerful</span> <span class="dict-word" data-word="concept">concept</span> <span class="dict-word" data-word="of">of</span><rt>[00:07:58.810 --&gt; 00:08:00.960]</rt></ruby></div><div class="cue" id="cue-00183" data-start="480.960" data-end="483.759" tabindex="0"><ruby><span class="dict-word" data-word="using">using</span> <span class="dict-word" data-word="agent">agent</span> <span class="dict-word" data-word="as">as</span> <span class="dict-word" data-word="a">a</span> <span class="dict-word" data-word="tool">tool</span>. <span class="dict-word" data-word="all">All</span> <span class="dict-word" data-word="right">right</span>, <span class="dict-word" data-word="i">I</span> <span class="dict-word" data-word="will">will</span><rt>[00:08:00.960 --&gt; 00:08:03.759]</rt></ruby></div><div class="cue" id="cue-00184" data-start="483.759" data-end="487.280" tabindex="0"><ruby><span class="dict-word" data-word="see">see</span> <span class="dict-word" data-word="you">you</span> <span class="dict-word" data-word="in">in</span> [<span class="dict-word" data-word="music">music</span>] <span class="dict-word" data-word="next">next</span> <span class="dict-word" data-word="video">video</span>. <span class="dict-word" data-word="bye">Bye</span>.<rt>[00:08:03.759 --&gt; 00:08:07.280]</rt></ruby></div><div class="cue" id="cue-00185" data-start="490.600" data-end="492.620" tabindex="0"><ruby>&gt;&gt; [<span class="dict-word" data-word="music">music</span>]<rt>[00:08:10.600 --&gt; 00:08:12.620]</rt></ruby></div></div></section>
+      </main>
+    </div>
+  </div>
+  <div class="dictionary-popup" id="dictionary-popup" role="dialog" aria-live="polite" aria-modal="false">
+    <div class="dictionary-popup-header">
+      <h3 id="dictionary-word">Dictionary</h3>
+      <button type="button" id="dictionary-close" aria-label="Close definition">Close</button>
+    </div>
+    <div id="dictionary-body"><p>Select or click an English word to see its definition.</p></div>
+  </div>
+  <script>
+    const VIDEO_ID = 'GDm_uH6VxPY';
+    const SOURCE_VIDEO_URL = 'https://youtu.be/GDm_uH6VxPY?si=ZNpH-LQI-3rVNNGr';
+    const cues = Array.from(document.querySelectorAll('.cue[data-start][data-end]')).map(function (element, index) {
+      return {
+        element: element,
+        index: index,
+        start: Number(element.dataset.start),
+        end: Number(element.dataset.end)
+      };
+    }).sort(function (a, b) { return a.start - b.start; });
+    const syncStatus = document.getElementById('sync-status');
+    const autoFollow = document.getElementById('auto-follow');
+    const runtimeWarning = document.getElementById('runtime-warning');
+    const popup = document.getElementById('dictionary-popup');
+    const popupWord = document.getElementById('dictionary-word');
+    const popupBody = document.getElementById('dictionary-body');
+    const definitionCache = new Map();
+    let player = null;
+    let activeCueIndex = -1;
+    let pollHandle = null;
+    let youtubeReady = false;
+    const IS_FILE_PROTOCOL = window.location.protocol === 'file:';
+    const PAGE_ORIGIN = (!IS_FILE_PROTOCOL && window.location.origin && window.location.origin !== 'null') ? window.location.origin : '';
+    const PAGE_HREF = !IS_FILE_PROTOCOL ? window.location.href : '';
+    const fallbackTimer = window.setTimeout(showFallbackPlayer, 5000);
+
+    function setStatus(message) {
+      syncStatus.textContent = message;
+    }
+
+    function buildEmbedUrl(enableJsApi) {
+      const params = new URLSearchParams();
+      params.set('playsinline', '1');
+      params.set('rel', '0');
+      if (enableJsApi) {
+        params.set('enablejsapi', '1');
+      }
+      if (PAGE_ORIGIN) {
+        params.set('origin', PAGE_ORIGIN);
+      }
+      if (PAGE_HREF) {
+        params.set('widget_referrer', PAGE_HREF);
+      }
+      return 'https://www.youtube.com/embed/' + encodeURIComponent(VIDEO_ID) + '?' + params.toString();
+    }
+
+    function buildTimestampedWatchUrl(seconds) {
+      const target = new URL(SOURCE_VIDEO_URL);
+      target.searchParams.set('t', String(Math.max(0, Math.floor(seconds))));
+      return target.toString();
+    }
+
+    function showRuntimeWarning(message) {
+      runtimeWarning.hidden = false;
+      runtimeWarning.classList.add('is-visible');
+      runtimeWarning.innerHTML = message;
+    }
+
+    function showFileModeGuidance() {
+      showRuntimeWarning(
+        'This page is opened as a local <code>file://</code>. YouTube blocks embedded playback in that context because the request has no HTTP referrer, which triggers error 153. Serve this file over <code>http://127.0.0.1</code> or another HTTP(S) origin to restore synchronized playback. Example: <code>python3 -m http.server 8000</code> then open this page through localhost.'
+      );
+    }
+
+    function renderPlayerFallback(message) {
+      const container = document.getElementById('player');
+      container.innerHTML = '';
+      const panel = document.createElement('div');
+      panel.className = 'player-fallback';
+      panel.innerHTML = '<p>' + message + '</p>' +
+        '<div class="player-actions">' +
+        '<a class="player-link" href="' + SOURCE_VIDEO_URL + '" target="_blank" rel="noopener">Open on YouTube</a>' +
+        '</div>';
+      container.appendChild(panel);
+    }
+
+    function findCueIndex(currentTime) {
+      let low = 0;
+      let high = cues.length - 1;
+      let candidate = -1;
+      while (low <= high) {
+        const mid = Math.floor((low + high) / 2);
+        if (cues[mid].start <= currentTime) {
+          candidate = mid;
+          low = mid + 1;
+        } else {
+          high = mid - 1;
+        }
+      }
+      if (candidate === -1) {
+        return -1;
+      }
+      const cue = cues[candidate];
+      if (currentTime <= cue.end + 0.08) {
+        return candidate;
+      }
+      return -1;
+    }
+
+    function updateActiveCue(index) {
+      if (index === activeCueIndex) {
+        return;
+      }
+      if (activeCueIndex >= 0 && cues[activeCueIndex]) {
+        cues[activeCueIndex].element.classList.remove('is-active');
+      }
+      activeCueIndex = index;
+      if (index >= 0 && cues[index]) {
+        cues[index].element.classList.add('is-active');
+        if (autoFollow.checked) {
+          cues[index].element.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      }
+    }
+
+    function syncFromPlayer() {
+      if (!player || typeof player.getCurrentTime !== 'function') {
+        return;
+      }
+      updateActiveCue(findCueIndex(player.getCurrentTime()));
+    }
+
+    function startPolling() {
+      if (pollHandle !== null) {
+        return;
+      }
+      pollHandle = window.setInterval(syncFromPlayer, 120);
+    }
+
+    function showFallbackPlayer() {
+      if (youtubeReady) {
+        return;
+      }
+      if (IS_FILE_PROTOCOL) {
+        showFileModeGuidance();
+        renderPlayerFallback('Embedded playback is disabled in local file mode. Use the localhost preview guidance above, or open the source video on YouTube.');
+        setStatus('Embedded playback is unavailable in file mode. Cue clicks will open YouTube at the matching timestamp.');
+        return;
+      }
+      const container = document.getElementById('player');
+      container.innerHTML = '';
+      const iframe = document.createElement('iframe');
+      iframe.src = buildEmbedUrl(false);
+      iframe.title = 'YouTube video player';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.allowFullscreen = true;
+      container.appendChild(iframe);
+      setStatus('Playback loaded, but automatic synchronization is unavailable because the YouTube API did not initialize. Cue clicks will still seek via YouTube links if needed.');
+    }
+
+    function seekToCue(cue) {
+      if (!cue) {
+        return;
+      }
+      updateActiveCue(cue.index);
+      if (!player || typeof player.seekTo !== 'function') {
+        window.open(buildTimestampedWatchUrl(cue.start), '_blank', 'noopener');
+        return;
+      }
+      player.seekTo(Math.max(cue.start, 0), true);
+      if (typeof player.playVideo === 'function') {
+        player.playVideo();
+      }
+    }
+
+    cues.forEach(function (cue) {
+      cue.element.addEventListener('click', function () { seekToCue(cue); });
+      cue.element.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          seekToCue(cue);
+        }
+      });
+    });
+
+    function showPopupAt(rect) {
+      const maxLeft = window.innerWidth - popup.offsetWidth - 12;
+      const left = Math.max(12, Math.min(rect.left, maxLeft));
+      const top = Math.max(12, rect.bottom + 12);
+      popup.style.left = left + 'px';
+      popup.style.top = Math.min(top, window.innerHeight - popup.offsetHeight - 12) + 'px';
+      popup.classList.add('is-visible');
+    }
+
+    function renderDefinition(word, result) {
+      popupWord.textContent = word;
+      popupBody.innerHTML = result;
+    }
+
+    function summarizeEntry(entry) {
+      const meanings = Array.isArray(entry.meanings) ? entry.meanings : [];
+      const firstMeaning = meanings[0] || {};
+      const partOfSpeech = firstMeaning.partOfSpeech ? '<p><strong>' + firstMeaning.partOfSpeech + '</strong></p>' : '';
+      const definitions = Array.isArray(firstMeaning.definitions) ? firstMeaning.definitions : [];
+      const firstDefinition = definitions[0] || {};
+      const definitionText = firstDefinition.definition ? '<p>' + firstDefinition.definition + '</p>' : '<p>Definition unavailable.</p>';
+      const exampleText = firstDefinition.example ? '<p><em>Example: ' + firstDefinition.example + '</em></p>' : '';
+      return partOfSpeech + definitionText + exampleText;
+    }
+
+    async function lookupWord(word, rect) {
+      const normalized = word.toLowerCase();
+      popupWord.textContent = normalized;
+      popupBody.innerHTML = '<p>Loading definition...</p>';
+      popup.classList.add('is-visible');
+      showPopupAt(rect);
+      if (!definitionCache.has(normalized)) {
+        const request = fetch('https://api.dictionaryapi.dev/api/v2/entries/en/' + encodeURIComponent(normalized))
+          .then(function (response) {
+            if (!response.ok) {
+              throw new Error('Dictionary service unavailable');
+            }
+            return response.json();
+          })
+          .then(function (payload) {
+            if (!Array.isArray(payload) || !payload.length) {
+              return '<p>No dictionary entry was available for this word.</p>';
+            }
+            return summarizeEntry(payload[0]);
+          })
+          .catch(function () {
+            return '<p>Definition unavailable right now. Please try again later.</p>';
+          });
+        definitionCache.set(normalized, request);
+      }
+      const htmlResult = await definitionCache.get(normalized);
+      renderDefinition(normalized, htmlResult);
+      showPopupAt(rect);
+    }
+
+    document.getElementById('transcript-root').addEventListener('click', function (event) {
+      const word = event.target.closest('.dict-word');
+      if (!word) {
+        return;
+      }
+      lookupWord(word.dataset.word, word.getBoundingClientRect());
+    });
+
+    document.getElementById('transcript-root').addEventListener('mouseup', function () {
+      const selection = window.getSelection();
+      if (!selection || selection.isCollapsed || !selection.rangeCount) {
+        return;
+      }
+      const text = selection.toString().trim();
+      if (!/^[A-Za-z]+(?:['-][A-Za-z]+)*$/.test(text)) {
+        return;
+      }
+      const rect = selection.getRangeAt(0).getBoundingClientRect();
+      lookupWord(text, rect);
+    });
+
+    document.getElementById('dictionary-close').addEventListener('click', function () {
+      popup.classList.remove('is-visible');
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!popup.contains(event.target) && !event.target.closest('.dict-word')) {
+        popup.classList.remove('is-visible');
+      }
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        popup.classList.remove('is-visible');
+      }
+    });
+
+    window.onYouTubeIframeAPIReady = function () {
+      if (IS_FILE_PROTOCOL) {
+        showFallbackPlayer();
+        return;
+      }
+      youtubeReady = true;
+      window.clearTimeout(fallbackTimer);
+      player = new window.YT.Player('player', {
+        videoId: VIDEO_ID,
+        playerVars: {
+          playsinline: 1,
+          rel: 0,
+          origin: PAGE_ORIGIN,
+          widget_referrer: PAGE_HREF
+        },
+        events: {
+          onReady: function () {
+            setStatus('Playback synchronized. Active subtitle highlighting is ready.');
+            startPolling();
+            syncFromPlayer();
+          },
+          onStateChange: function () {
+            startPolling();
+            syncFromPlayer();
+          },
+          onError: function (event) {
+            if (event && event.data === 153) {
+              showFileModeGuidance();
+              showFallbackPlayer();
+              setStatus('YouTube blocked embedded playback because the page was missing an HTTP referrer or equivalent client identity.');
+              return;
+            }
+            setStatus('Playback failed to synchronize. The transcript remains fully readable.');
+          }
+        }
+      });
+    };
+
+    if (IS_FILE_PROTOCOL) {
+      showFallbackPlayer();
+    } else {
+      const apiScript = document.createElement('script');
+      apiScript.src = 'https://www.youtube.com/iframe_api';
+      apiScript.async = true;
+      apiScript.onerror = showFallbackPlayer;
+      document.head.appendChild(apiScript);
+    }
+  </script>
+</body>
+</html>

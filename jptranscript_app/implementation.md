@@ -1,873 +1,1134 @@
-# JP Transcript ADK — Implementation Plan
+# JP Transcript ADK — Product Requirements Document (PRD)
 
-> **Status**: Approved  
-> **Target Platform**: macOS · Apple M2 Max · 32 GB RAM  
-> **LLM**: Customized `gemma4:26b` via Ollama  
-> **Framework**: Google ADK (Agent Development Kit)  
-> **Interface**: `adk web` (http://localhost:8000)
-
----
-
-## Table of Contents
-
-- [1. Overview](#1-overview)
-- [2. Resolved Design Decisions](#2-resolved-design-decisions)
-- [3. Architecture](#3-architecture)
-- [4. Skill-to-Agent Mapping](#4-skill-to-agent-mapping)
-- [5. Long Text Handling Strategy](#5-long-text-handling-strategy)
-- [6. Quality Assurance — LoopAgent Validators](#6-quality-assurance--loopagent-validators)
-- [7. Error Handling](#7-error-handling)
-- [8. Project File Structure](#8-project-file-structure)
-- [9. Implementation Phases](#9-implementation-phases)
-- [10. Verification Plan](#10-verification-plan)
+> **Status**: Active PRD for all future development  
+> **Last Updated**: April 14, 2026  
+> **Product**: `jptranscript_app`  
+> **Primary Goal**: Reliably convert long Japanese transcript content into learner-friendly HTML on a local machine using Google ADK and a local Gemma model.
 
 ---
 
-## 1. Overview
+## 1. Document Purpose
 
-This document describes the complete plan for transforming the existing `jptranscript_app` workflow — a 7-step sequential pipeline that converts raw Japanese podcast/YouTube transcripts into polished, learner-friendly HTML — from a cloud-LLM-driven system into a **fully local AI agent** application.
+This document is the canonical Product Requirements Document for `jptranscript_app`.
 
-### Current System
+It replaces the earlier implementation plan where needed and incorporates:
 
-- Pipeline orchestrated by cloud LLMs (OpenAI/Claude) via Codex
-- Each step guided by a SKILL.md prompt document under `.agents/skills/`
-- 7 mandatory sequential steps: Optimization → Paragraph → Furigana → Furigana Refinement → Glossary → HTML → Beautification
-- Input: raw Japanese transcript text or `.txt` file
-- Output: single self-contained HTML file
+- the original product intent
+- the current code audit findings
+- the runtime limitations observed on the local machine
+- updated platform guidance for Google ADK, Ollama, and Gemma
 
-### Target System
+Future development should treat this document as the source of truth for:
 
-- **Google ADK** as the agent framework
-- **Ollama** as the local model server
-- **Gemma 4 26B** (customized) as the LLM brain running on Apple M2 Max (32 GB)
-- **ADK Web** (`adk web`) as the user-facing chat interface
-- **`fugashi` + `unidic-lite`** for reliable Japanese morphological analysis
-- Same 7-step pipeline, but with deterministic Python tools handling mechanical steps
+- system architecture
+- workflow design
+- error handling
+- performance expectations
+- testing scope
+- phased implementation priorities
 
----
-
-## 2. Resolved Design Decisions
-
-| Decision | Resolution |
-|:---|:---|
-| **LLM model** | Customized `gemma4:26b` via Ollama (`gemma4-agent` profile with `num_ctx=8192`, `temperature=0.2`) |
-| **Hardware** | Apple M2 Max, 32 GB RAM |
-| **Agent pattern** | `SequentialAgent` (base) + `LoopAgent` (quality validation on LLM-dependent steps) |
-| **Furigana tooling** | `fugashi` + `unidic-lite` (MeCab-based), installed in project `.venv` |
-| **Input method** | Both: pasted text via ADK Web chat **and** file reading from a local directory |
-| **Output directory** | Existing `jptranscript_app/Output/` |
-| **Beautification** | Pre-built CSS template (not LLM-generated CSS) |
-| **Virtual environment** | Project-root `.venv` |
+If existing code or older notes conflict with this PRD, this PRD wins.
 
 ---
 
-## 3. Architecture
+## 2. Product Goal
 
-### Design Pattern: SequentialAgent + LoopAgent
+`jptranscript_app` must transform raw Japanese transcript content into a polished, learner-friendly HTML document while running locally on consumer hardware.
 
-The pipeline maps to ADK's `SequentialAgent`. To ensure output quality, **LLM-dependent steps** (Tiers 1 and 2) are wrapped in a `LoopAgent` that pairs the processing agent with a validator agent. The validator checks objective quality metrics and calls `exit_loop` when satisfied or provides feedback for the next iteration.
+The system must handle:
 
-**Deterministic steps** (Tier 3) do not need loops — Python tools produce correct results on the first pass.
+- pasted Japanese transcript text
+- local `.txt` transcript files
+- long-form content that exceeds the safe prompt budget of a single local model call
 
-### Three-Tier Classification
+The output must remain:
 
-| Tier | Steps | LLM Role | Python Tool Role | Loop |
-|:---|:---|:---|:---|:---|
-| **Tier 1 — LLM-Primary** | 1 (Optimization), 2 (Paragraph), 5 (Glossary) | Primary text processor | Chunking, validation, I/O | LoopAgent (max 3) |
-| **Tier 2 — Hybrid** | 3 (Furigana) | Reviews automated output | Primary processor (MeCab) | LoopAgent (max 2) |
-| **Tier 3 — Tool-Primary** | 4 (Refinement), 6 (HTML), 7 (Beautify) | Calls tool, passes through | Full processor | None |
-
-### Pipeline Diagram
-
-```
-SequentialAgent("jptranscript_pipeline")
-│
-├── LoopAgent("step1_optimization_loop", max_iterations=3)
-│   ├── optimization_agent          ← LlmAgent (Tier 1)
-│   └── optimization_validator      ← LlmAgent + validate_optimization tool + exit_loop
-│
-├── LoopAgent("step2_paragraph_loop", max_iterations=3)
-│   ├── paragraph_agent             ← LlmAgent (Tier 1)
-│   └── paragraph_validator         ← LlmAgent + validate_paragraph tool + exit_loop
-│
-├── LoopAgent("step3_furigana_loop", max_iterations=2)
-│   ├── furigana_agent              ← LlmAgent (Tier 2) + auto_add_furigana tool
-│   └── furigana_validator          ← LlmAgent + validate_furigana tool + exit_loop
-│
-├── refinement_agent                ← LlmAgent (Tier 3) + refine_furigana tool
-│
-├── LoopAgent("step5_glossary_loop", max_iterations=3)
-│   ├── glossary_agent              ← LlmAgent (Tier 1)
-│   └── glossary_validator          ← LlmAgent + validate_glossary tool + exit_loop
-│
-├── html_agent                      ← LlmAgent (Tier 3) + convert_to_html tool
-│
-└── beautify_agent                  ← LlmAgent (Tier 3) + apply_design_template + save_html_file
-```
-
-### Data Flow Between Agents
-
-State is shared via `output_key` on each agent and read via `{state_variable}` in subsequent agent instructions.
-
-```
-User input (raw transcript)
-    │
-    ▼
-{user_input} ──→ optimization_agent ──→ {step1_output}
-                                            │
-                                            ▼
-                  paragraph_agent    ──→ {step2_output}
-                                            │
-                                            ▼
-                  furigana_agent      ──→ {step3_output}
-                                            │
-                                            ▼
-                  refinement_agent   ──→ {step4_output}
-                                            │
-                                            ▼
-                  glossary_agent     ──→ {step5_output}
-                                            │
-                                            ▼
-                  html_agent         ──→ {step6_output}
-                                            │
-                                            ▼
-                  beautify_agent     ──→ {final_html}
-                                            │
-                                            ▼
-                                     Output/*.html file
-```
+- content-complete
+- structurally readable
+- furigana-enhanced
+- glossary-linked
+- printable
+- safe to render in a browser
 
 ---
 
-## 4. Skill-to-Agent Mapping
+## 3. Product Context
 
-### Step 1 — Optimization Agent (Tier 1)
+### 3.1 Existing User Value
 
-| Attribute | Value |
-|:---|:---|
-| **Current skill** | `$jptranscript-optimization` |
-| **ADK agent** | `optimization_agent` (LlmAgent) |
-| **Instruction** | Condensed optimization rules (~400 tokens): remove timestamps, fix spacing, remove semantically empty fillers, minimal corrections |
-| **Tools** | `process_optimization_chunks` — chunks long input, calls Ollama per chunk, reassembles |
-| **Output key** | `step1_output` |
-| **Wrapped in** | `LoopAgent("step1_optimization_loop", max_iterations=3)` |
-| **Validator** | `optimization_validator` — calls `validate_optimization` tool (checks character ratio, speaker labels), calls `exit_loop` if OK |
+The existing workflow aims to turn raw podcast or YouTube transcripts into a single self-contained study document by applying seven sequential transformations:
 
-### Step 2 — Paragraph Agent (Tier 1)
+1. Optimization
+2. Paragraph structuring
+3. Full furigana
+4. Furigana refinement
+5. Phrase glossary
+6. HTML generation
+7. Beautification
 
-| Attribute | Value |
-|:---|:---|
-| **Current skill** | `$jptranscript-paragraph` |
-| **ADK agent** | `paragraph_agent` (LlmAgent) |
-| **Instruction** | Condensed paragraph rules (~400 tokens): insert breaks at topic shifts, add H2 subtitles, format dialogue with bold names, add table of contents |
-| **Tools** | `process_paragraph_chunks` — chunks `{step1_output}`, processes, reassembles |
-| **Output key** | `step2_output` |
-| **Wrapped in** | `LoopAgent("step2_paragraph_loop", max_iterations=3)` |
-| **Validator** | `paragraph_validator` — calls `validate_paragraph` (checks headings present, content preserved), calls `exit_loop` if OK |
+That product direction is still correct.
 
-### Step 3 — Furigana Agent (Tier 2 — Hybrid)
+### 3.2 Why the Current Build Is Not Robust Enough
 
-| Attribute | Value |
-|:---|:---|
-| **Current skill** | `$jptranscript-furigana` |
-| **ADK agent** | `furigana_agent` (LlmAgent) |
-| **Instruction** | "Use the auto_add_furigana tool to add furigana readings to all kanji in the input. Review the result for obvious reading errors in context. Return the furigana-annotated text." |
-| **Tools** | `auto_add_furigana` — Python tool using `fugashi` + `unidic-lite` for morphological analysis, inserts `漢字（かんじ）` format |
-| **Output key** | `step3_output` |
-| **Wrapped in** | `LoopAgent("step3_furigana_loop", max_iterations=2)` |
-| **Validator** | `furigana_validator` — calls `validate_furigana` (checks coverage: % of kanji with readings), calls `exit_loop` if coverage > 90% |
+The current codebase passes its small unit tests, but the architecture is not safe for long inputs. The key issue is that the present design sends large intermediate outputs back through `LlmAgent` instructions, which defeats the intended chunking strategy and wastes scarce local context budget.
 
-### Step 4 — Furigana Refinement Agent (Tier 3 — Tool-Primary)
-
-| Attribute | Value |
-|:---|:---|
-| **Current skill** | `$jptranscript-furigana-refinement` |
-| **ADK agent** | `refinement_agent` (LlmAgent) |
-| **Instruction** | "Use the refine_furigana tool on the text from the previous step. Pass through the result without changes." |
-| **Tools** | `refine_furigana` — Pure Python: (1) remove furigana from common-word list, (2) keep furigana only on first 3 appearances of other words |
-| **Output key** | `step4_output` |
-| **No LoopAgent** | Deterministic — always correct on first pass |
-
-### Step 5 — Glossary Agent (Tier 1)
-
-| Attribute | Value |
-|:---|:---|
-| **Current skill** | `$jptranscript-phase-glossary` |
-| **ADK agent** | `glossary_agent` (LlmAgent) |
-| **Instruction** | Condensed glossary rules (~500 tokens): identify difficult words/phrases/patterns, insert `*N` markers, generate glossary appendix with 意味, 例文, 比較 |
-| **Tools** | `process_glossary_chunks` — chunks text, calls Ollama per chunk, merges annotations with sequential numbering |
-| **Output key** | `step5_output` |
-| **Wrapped in** | `LoopAgent("step5_glossary_loop", max_iterations=3)` |
-| **Validator** | `glossary_validator` — calls `validate_glossary` (checks marker↔entry alignment, sequential numbering), calls `exit_loop` if OK |
-
-### Step 6 — HTML Generator Agent (Tier 3 — Tool-Primary)
-
-| Attribute | Value |
-|:---|:---|
-| **Current skill** | `$jptranscript-html` |
-| **ADK agent** | `html_agent` (LlmAgent) |
-| **Instruction** | "Use the convert_to_html tool to convert the text from the previous step into a complete HTML5 document. Pass through the result." |
-| **Tools** | `convert_to_html` — Pure Python: Markdown → HTML, `漢字（かんじ）` → `<ruby>`, `*N` → `<a href="#glossary-N">`, glossary → `<section>` with backlinks |
-| **Output key** | `step6_output` |
-| **No LoopAgent** | Deterministic |
-
-### Step 7 — Beautification Agent (Tier 3 — Tool-Primary)
-
-| Attribute | Value |
-|:---|:---|
-| **Current skill** | `$frontend-design` |
-| **ADK agent** | `beautify_agent` (LlmAgent) |
-| **Instruction** | "Use the apply_design_template tool to add professional styling to the HTML. Then use save_html_file to write the final file. Report the file path to the user." |
-| **Tools** | `apply_design_template` (injects CSS from `templates/default_style.css`), `save_html_file` (writes to `Output/`) |
-| **Output key** | `final_html` |
-| **No LoopAgent** | Deterministic |
+As a result, the current build is not yet a reliable long-transcript processor. It is a prototype that demonstrates components, not a production-ready local pipeline.
 
 ---
 
-## 5. Long Text Handling Strategy
+## 4. Scope
 
-### Problem
+### 4.1 In Scope
 
-Gemma 4 with `num_ctx=8192` has a ~8192 token context window. A typical Japanese podcast transcript ranges from 3000 to 10000+ characters (~4000–15000 tokens). System prompts consume another ~500–1000 tokens.
+- End-to-end local transcript processing
+- Google ADK-based orchestration
+- Ollama-hosted Gemma model calls
+- Robust long-text chunking and recomposition
+- Deterministic processing where LLMs are unnecessary
+- Intermediate artifact persistence and resumability
+- HTML safety and rendering correctness
+- Local performance optimization for limited memory and compute
 
-### Solution: Adaptive Chunk Processing
+### 4.2 Out of Scope
 
-For Tier 1 steps (Steps 1, 2, 5), a Python tool function handles chunking:
+- Cloud inference as a primary execution path
+- Multi-user server deployment
+- OCR, audio transcription, or subtitle extraction
+- Full CMS or database-backed content management
+- Fancy generative design exploration for the final HTML
 
-```
-Full Transcript (~5000 chars)
-        │
-        ▼
- ┌─────────────────┐
- │  Chunk Splitter  │  Target: ~1500 chars/chunk
- │  (boundary-aware)│  Split at: speaker turns, paragraphs, headings
- └────┬────┬────┬───┘
-      │    │    │
-      ▼    ▼    ▼
-   Chunk  Chunk  Chunk
-    1      2      3
-      │    │    │
-      ▼    ▼    ▼
-  ┌──────────────┐
-  │ Ollama API   │  Each chunk: system prompt + chunk → processed chunk
-  │ (per chunk)  │  Via litellm.completion() direct call
-  └──────────────┘
-      │    │    │
-      ▼    ▼    ▼
-   Result Result Result
-    1      2      3
-      │    │    │
-      ▼    ▼    ▼
- ┌─────────────────┐
- │   Reassembler   │
- └─────────────────┘
-        │
-        ▼
-  Processed Text (full)
-```
-
-### Chunking Rules
-
-| Rule | Details |
-|:---|:---|
-| **Target chunk size** | ~1500 Japanese characters (~2000–3000 tokens) |
-| **Split boundaries** | Speaker turns (`Name：`), double newlines, Markdown headings (`## `) |
-| **Never split** | Mid-sentence (no splitting at `、`, only at `。` or newlines) |
-| **Overlap context** | ~200 characters from previous chunk appended (marked, not processed) for coherence |
-| **Context budget** | System prompt (~500 tok) + input (~2500 tok) + output (~4000 tok) ≈ 7000 tokens |
-| **Fallback** | If no natural boundary found, split at nearest `。` within target range |
-
-### Step-Specific Chunking Notes
-
-| Step | Chunking Consideration |
-|:---|:---|
-| Step 1 (Optimization) | Chunk by speaker turns. Each chunk is independent. |
-| Step 2 (Paragraph) | Chunk by speaker blocks. Cross-chunk topic detection: the tool includes the last heading from the previous chunk as context. |
-| Step 3 (Furigana) | No chunking needed — `fugashi` processes full text in memory. LLM review can be chunked if needed. |
-| Step 4 (Refinement) | No chunking needed — pure Python, processes full text. |
-| Step 5 (Glossary) | Chunk by sections (after Step 2 created headings). Global marker numbering maintained by the tool across chunks. |
-| Step 6 (HTML) | No chunking needed — pure Python conversion. |
-| Step 7 (Beautify) | No chunking needed — template injection. |
+The product is a local-first transcript transformation tool, not a general document platform.
 
 ---
 
-## 6. Quality Assurance — LoopAgent Validators
+## 5. Source Inputs and Documentation Assumptions
 
-Each Tier 1 step is wrapped in a `LoopAgent` containing:
-1. The **processor agent** (does the work)
-2. A **validator agent** (checks quality, calls `exit_loop` or provides feedback)
+The current project contains:
 
-### Validator Agent Pattern
+- app implementation notes in [implementation.md](./implementation.md)
+- a repo-level setup guide in [../README.md](../README.md)
 
-```python
-from google.adk.agents import LlmAgent
-from google.adk.tools import exit_loop
+Important note:
 
-validator_agent = LlmAgent(
-    model=local_model,
-    name="step_N_validator",
-    instruction="""
-    Use the validate_step_N tool to check the quality of the current output.
-    The tool returns a validation report with pass/fail metrics.
-    
-    If all checks pass: call exit_loop to proceed to the next step.
-    If any check fails: explain what went wrong and what needs to be fixed
-    so the processor agent can try again.
-    """,
-    tools=[validate_step_N, exit_loop],
-)
-```
+- `jptranscript_app/README.md` does not currently exist.
+- Until one is added, the repo root `README.md` should be treated as the setup and platform reference for this app.
 
-### Validation Checks Per Step
-
-#### Step 1 — Optimization Validation
-
-| Check | Method | Threshold |
-|:---|:---|:---|
-| Content completeness | `len(output) / len(input)` character ratio | Must be > 0.70 |
-| Speaker label preservation | Regex count of `Name：` patterns | Must match input count |
-| No added content | Output character count | Must be ≤ input character count |
-| No empty output | `len(output.strip())` | Must be > 0 |
-
-#### Step 2 — Paragraph Validation
-
-| Check | Method | Threshold |
-|:---|:---|:---|
-| Headings present | Count `## ` patterns | Must be ≥ 1 |
-| Content preserved | Character count ratio (excluding Markdown markup) | Must be > 0.95 |
-| Table of contents | Check for `**目次**` pattern | Must be present |
-| Bold speaker names | Count `**Name**：` patterns | Must match input speaker count |
-
-#### Step 3 — Furigana Validation
-
-| Check | Method | Threshold |
-|:---|:---|:---|
-| Furigana coverage | Count kanji words with `（reading）` / total kanji words | Must be > 0.90 |
-| Format correctness | All readings use full-width parentheses `（）` | 100% |
-| Content preserved | Base text (without furigana) matches input | Character diff < 1% |
-
-#### Step 5 — Glossary Validation
-
-| Check | Method | Threshold |
-|:---|:---|:---|
-| Marker-entry alignment | Count `*N` markers = count glossary entries | Must match |
-| Sequential numbering | Markers are `*1, *2, *3, ...` in order | Must be sequential |
-| Glossary structure | Each entry has `意味`, `例文`, `比較` | 100% |
-| Separator present | `---` exists between body and glossary | Must be present |
-| Content preserved | Body text (without markers) ≈ input text | Character diff < 2% |
+This PRD assumes future documentation cleanup may add an app-local README, but that is not a blocker for implementation.
 
 ---
 
-## 7. Error Handling
+## 6. Target Users and Use Cases
 
-| Failure Mode | Detection | Recovery |
-|:---|:---|:---|
-| **Ollama not running** | Connection error on first API call | Agent returns message: "Ollama is not running. Please start with `ollama serve`." |
-| **Model not found** | `ollama list` check in startup tool | Agent returns message: "Model gemma4-agent not found. Run the Modelfile creation steps from README.md." |
-| **Context overflow** | Chunk produces truncated or empty output | Reduce chunk size by 30% and retry (up to 2 retries) |
-| **Garbled output** | Validation fails: character ratio far outside threshold | Retry within LoopAgent (up to max_iterations). If still fails, pass through original text with a warning. |
-| **Missing furigana** | Post-Step-3 validation: coverage < 90% | LoopAgent retries. Fallback: MeCab output is already reliable; skip LLM review. |
-| **LLM won't call tool** | No tool call detected in agent response | Instruction reinforcement (strong wording: "You MUST call the tool"). |
-| **Glossary numbering mismatch** | Validator detects misaligned markers/entries | LoopAgent retries with explicit feedback about the mismatch. |
-| **HTML malformation** | Python HTML converter validates its own output | Use Python fallback converter — deterministic, always produces valid HTML. |
-| **File write failure** | `save_html_file` returns error | Agent reports the error. User checks Output/ directory permissions. |
+### 6.1 Primary User
 
----
+A single developer or learner running the app locally on a Mac workstation, typically pasting or loading Japanese transcript text and expecting a finished HTML study document.
 
-## 8. Project File Structure
+### 6.2 Primary Use Cases
 
-```
-ADKApplications/                         ← Project root
-├── .env                                 ← OLLAMA_API_BASE="http://localhost:11434"
-├── .venv/                               ← Python virtual environment
-├── README.md                            ← Tutorial documentation
-│
-├── hello_world/                         ← Existing reference agent
-│   ├── __init__.py
-│   └── agent.py
-│
-└── jptranscript_app/                    ← [NEW] ADK agent package
-    ├── __init__.py                      ← from . import agent
-    ├── agent.py                         ← Root SequentialAgent + model config
-    ├── .env                             ← Agent-specific env vars
-    ├── implementation.md                ← This document
-    │
-    ├── agents/                          ← Sub-agent definitions
-    │   ├── __init__.py
-    │   ├── optimization.py              ← Step 1 (Tier 1) processor + validator
-    │   ├── paragraph.py                 ← Step 2 (Tier 1) processor + validator
-    │   ├── furigana.py                  ← Step 3 (Tier 2) processor + validator
-    │   ├── furigana_refinement.py       ← Step 4 (Tier 3) — tool only
-    │   ├── glossary.py                  ← Step 5 (Tier 1) processor + validator
-    │   ├── html_generator.py            ← Step 6 (Tier 3) — tool only
-    │   └── beautifier.py               ← Step 7 (Tier 3) — tool only
-    │
-    ├── tools/                           ← Python tool functions
-    │   ├── __init__.py
-    │   ├── text_processing.py           ← Chunking, validation, file I/O
-    │   ├── furigana_tools.py            ← MeCab-based furigana + refinement
-    │   ├── html_converter.py            ← Markdown → HTML + ruby + glossary
-    │   └── beautifier_tools.py          ← CSS template injection
-    │
-    ├── prompts/                         ← Condensed system prompts for Gemma 4
-    │   ├── optimization.md              ← ~400 tokens (from ~1200 token SKILL.md)
-    │   ├── paragraph.md                 ← ~400 tokens
-    │   ├── furigana_review.md           ← ~200 tokens (review-only prompt)
-    │   ├── glossary.md                  ← ~500 tokens
-    │   └── tool_caller.md               ← ~100 tokens (generic "call the tool" prompt)
-    │
-    ├── templates/                       ← Static assets
-    │   └── default_style.css            ← Pre-built CSS for HTML output
-    │
-    ├── tests/                           ← Test suite
-    │   ├── __init__.py
-    │   ├── test_text_processing.py
-    │   ├── test_furigana_tools.py
-    │   ├── test_html_converter.py
-    │   └── test_integration.py
-    │
-    ├── Output/                          ← Generated HTML files (existing)
-    │
-    └── .agents/                         ← Existing skills (preserved for reference)
-        └── skills/
-            └── (existing SKILL.md files)
-```
+1. Paste a short Japanese transcript and receive an HTML study document.
+2. Load a long transcript file and process it without manual splitting.
+3. Preserve speaker turns and meaning while improving readability.
+4. Add furigana and glossary support for intermediate learners.
+5. Save a print-friendly HTML file for later study.
+
+### 6.3 Non-Functional User Expectation
+
+The user should not need to understand chunking, state management, or model limits. Long content must “just work,” or fail clearly with resumable recovery.
 
 ---
 
-## 9. Implementation Phases
+## 7. Product Success Criteria
 
-### Phase 1 — Foundation (Estimated: ~1 hour)
+The product is considered successful when all of the following are true:
 
-**Goal**: Set up the project structure, dependencies, and Ollama model.
+### 7.1 Functional Success
 
-#### 1.1 Create the Modelfile for gemma4-agent (if not already done)
+- The system accepts pasted text and `.txt` file input.
+- The system completes all seven transformation stages in order.
+- The final output is a single valid HTML file.
+- Long transcripts are processed without manual user chunking.
 
-```bash
-cat << 'EOF' > Modelfile
-FROM gemma4:26b
-PARAMETER num_ctx 8192
-PARAMETER temperature 0.2
-EOF
-ollama create gemma4-agent -f Modelfile
-```
+### 7.2 Content Quality Success
 
-#### 1.2 Install Python dependencies in project `.venv`
+- Base transcript meaning is preserved.
+- Speaker labels are preserved where present.
+- Structural formatting improves readability without deleting content.
+- Furigana is broadly correct and refinement reduces clutter.
+- Glossary markers match glossary entries.
+- HTML links and backlinks are valid.
 
-```bash
-cd /path/to/ADKApplications
-source .venv/bin/activate
-pip install google-adk litellm fugashi unidic-lite
-```
+### 7.3 Reliability Success
 
-#### 1.3 Create project scaffold
+- A failed chunk does not force the entire job to restart.
+- Deterministic stages do not depend on LLM behavior.
+- Long inputs do not overflow model context before chunking occurs.
+- Invalid HTML or unsafe HTML is not produced silently.
 
-Create the following files:
+### 7.4 Performance Success
 
-- `jptranscript_app/__init__.py` — `from . import agent`
-- `jptranscript_app/.env` — agent-specific env vars
-- `jptranscript_app/agents/__init__.py` — empty
-- `jptranscript_app/tools/__init__.py` — empty
-- `jptranscript_app/prompts/` — directory
-- `jptranscript_app/templates/` — directory
-- `jptranscript_app/tests/__init__.py` — empty
+On the target local machine, the app should process a typical long transcript without freezing the machine or exhausting GPU memory.
 
-#### 1.4 Create minimal `agent.py` skeleton
+Exact benchmark targets will be validated later, but the design must prioritize:
 
-```python
-import os
-from google.adk.agents import SequentialAgent
-from google.adk.models.lite_llm import LiteLlm
-from google.auth.credentials import AnonymousCredentials
-import vertexai
-
-# Authentication bypass for local-only use
-vertexai.init(
-    project="local-dummy-project",
-    location="us-central1",
-    credentials=AnonymousCredentials()
-)
-
-# Connect to Ollama via LiteLlm
-local_model = LiteLlm(model="ollama_chat/gemma4-agent")
-
-# Placeholder — will be replaced in Phase 3
-root_agent = SequentialAgent(
-    name="jptranscript_pipeline",
-    description=(
-        "Transforms raw Japanese podcast or YouTube transcript text "
-        "into a refined, learner-friendly HTML document through a "
-        "7-step sequential pipeline."
-    ),
-    sub_agents=[]  # To be populated in Phase 3
-)
-```
-
-#### 1.5 Verify ADK discovery
-
-```bash
-adk web  # Should show jptranscript_app in the dropdown
-```
-
-**Deliverables**: Working project scaffold, `adk web` recognizes the agent, dependencies installed.
+- bounded memory growth
+- resumable chunk processing
+- no unnecessary full-document LLM passes
 
 ---
 
-### Phase 2 — Tool Development (Estimated: ~3 hours)
+## 8. Constraints
 
-**Goal**: Implement all Python tool functions that the agents will rely on.
+### 8.1 Hardware Constraint
 
-#### 2.1 `tools/text_processing.py`
+Target machine:
 
-Core utilities used across multiple steps.
+- Apple M2 Max
+- 32 GB RAM
 
-**Functions to implement**:
+The product must be designed for limited local resources. Large-context inference is possible, but expensive.
 
-| Function | Purpose | Used By |
-|:---|:---|:---|
-| `read_transcript_file(file_path: str) -> str` | Reads a .txt file from a given path relative to `jptranscript_app/` | Input handling |
-| `chunk_text(text: str, max_chars: int = 1500) -> list[str]` | Splits text at natural boundaries (speaker turns, paragraphs, headings). Returns list of chunks. | Steps 1, 2, 5 |
-| `reassemble_chunks(chunks: list[str]) -> str` | Joins processed chunks back into a single text | Steps 1, 2, 5 |
-| `process_text_chunks(text: str, system_prompt: str, model: str = "ollama_chat/gemma4-agent") -> str` | Orchestrates: chunk → call Ollama per chunk → reassemble. Uses `litellm.completion()` directly. | Steps 1, 2, 5 |
-| `validate_optimization(input_text: str, output_text: str) -> dict` | Returns validation report: character ratio, speaker count, etc. | Step 1 validator |
-| `validate_paragraph(input_text: str, output_text: str) -> dict` | Returns validation report: heading count, TOC presence, etc. | Step 2 validator |
-| `validate_glossary(text: str) -> dict` | Returns validation report: marker-entry alignment, numbering, etc. | Step 5 validator |
-| `save_html_file(html_content: str, topic_slug: str = "") -> str` | Writes HTML to `Output/`, returns file path. Auto-generates filename from topic. Appends numeric suffix if file exists. | Step 7 |
+### 8.2 Model Constraint
 
-#### 2.2 `tools/furigana_tools.py`
+The active local model is Gemma via Ollama.
 
-Japanese morphological analysis and furigana logic.
+Observed local state:
 
-**Functions to implement**:
+- `gemma4-agent` is available locally
+- current active context allocation observed in `ollama ps`: `8192`
 
-| Function | Purpose | Used By |
-|:---|:---|:---|
-| `auto_add_furigana(text: str) -> str` | Uses `fugashi` to tokenize, extracts readings, inserts `漢字（かんじ）` format. Handles compound words, okurigana, mixed kanji-kana. Skips kana-only tokens. | Step 3 |
-| `validate_furigana(text: str) -> dict` | Counts kanji words with/without furigana. Returns coverage percentage. | Step 3 validator |
-| `refine_furigana(text: str) -> str` | Pure Python implementation of the full refinement algorithm: (1) remove furigana from common-word list (80+ entries), (2) keep furigana on first 3 appearances of other words, (3) handle stem matching for inflected forms | Step 4 |
+Important platform facts gathered during research:
 
-**Common-word list**: Implemented as a Python set/dict containing all entries from the SKILL.md:
-```python
-COMMON_WORDS = {
-    ("日本", "にほん"), ("私", "わたし"), ("行", "い"), ("中", "なか"),
-    ("方", "かた"), ("方", "ほう"), ("思", "おも"), #... (80+ entries)
+- Ollama documentation recommends at least `64000` tokens for tasks like agents, coding tools, and web-search-style workloads.
+- Ollama documentation also shows context length should be tuned based on available VRAM and verified with `ollama ps`.
+- Ollama’s `gemma4:26b` library page advertises a `256K` maximum context window.
+- Gemma 4 official product pages emphasize function calling and agentic workflows.
+
+This means:
+
+- large context is available in theory
+- large context is not free in practice
+- architecture must not rely on “just increase context” as the main fix
+
+### 8.3 Framework Constraint
+
+Google ADK supports:
+
+- workflow agents
+- app-level state management
+- `output_key`
+- App-level features such as context caching, context compression, and resumability
+
+However, ADK state templating injects state values into agent instructions. If large transcript bodies are stored in session state and referenced in instructions, long content can still overflow the model context before any tool call happens.
+
+This is a critical design constraint for this product.
+
+### 8.4 Runtime Constraint
+
+The legacy local Python environment was `3.9.6`, which caused unsupported-version warnings in current ADK dependencies.
+
+The supported runtime baseline for this product is now:
+
+- Python `3.10+`
+- verified locally on Python `3.12.12`
+
+Future development must preserve Python `3.10+` compatibility. Falling back to Python `3.9` is out of scope.
+
+---
+
+## 9. Current-State Audit Summary
+
+The existing code audit found the following product-level problems.
+
+### 9.1 Architectural Problems
+
+1. The current chunking strategy is neutralized by state templating because long intermediate outputs are injected into `LlmAgent` instructions.
+2. Deterministic stages still use `LlmAgent`, forcing unnecessary model calls on large payloads.
+3. The system stores and forwards full text where it should store references or small summaries.
+
+### 9.2 Correctness Problems
+
+1. `refine_furigana()` uses a regex that captures surrounding sentence text instead of only the annotated token in many real cases.
+2. `process_text_chunks()` injects chunk labels like `[Processing chunk X of Y]` into model input, and those labels can leak into final output.
+3. The documented overlap strategy is not implemented even though an overlap constant exists.
+4. `validate_glossary()` can pass malformed glossary sections missing required fields.
+5. The TOC HTML conversion can leave `<nav>` unclosed.
+
+### 9.3 Safety Problems
+
+1. HTML generation does not properly escape arbitrary transcript content before embedding it in HTML.
+2. File reading accepts path traversal such as `../`.
+3. Error strings are returned as if they were valid content instead of using explicit failure paths.
+
+### 9.4 Product Mismatch Problems
+
+1. Documentation and implementation disagree on output location.
+2. The scratch end-to-end script is broken.
+3. The existing tests are too narrow and do not cover long-content behavior or browser safety.
+
+This PRD is written to correct those failures directly.
+
+---
+
+## 10. Product Principles
+
+All future work must follow these principles.
+
+### 10.1 Principle: Do Not Send Whole Documents to the Model Unless Strictly Necessary
+
+Large transcript bodies must not be injected into agent instructions for convenience.
+
+Instead:
+
+- keep large text in artifacts or working files
+- store only references and metadata in state
+- pass chunk-sized text into LLM calls deliberately
+
+### 10.2 Principle: Use Deterministic Code for Deterministic Tasks
+
+If a task can be reliably solved in Python, do not route it through Gemma.
+
+This applies especially to:
+
+- furigana refinement
+- HTML conversion
+- HTML beautification
+- validation
+- chunk bookkeeping
+- file persistence
+
+### 10.3 Principle: Prefer Hierarchical Processing Over Giant Single Passes
+
+Long documents must be processed using:
+
+- map steps on bounded chunks
+- reduce steps for global consistency
+- repair passes only where validation indicates a problem
+
+### 10.4 Principle: Fail Chunk-Local, Recover Globally
+
+One failed chunk must not invalidate the entire job.
+
+### 10.5 Principle: Preserve Content, Add Structure
+
+The product should enhance readability and learning support without silently deleting transcript meaning.
+
+---
+
+## 11. Target System Architecture
+
+## 11.1 High-Level Architecture
+
+The target product will use:
+
+- **Google ADK App** as the application container
+- **a custom orchestrator agent** or equivalent dynamic workflow control
+- **chunk workers** for LLM-dependent stages
+- **pure Python processors** for deterministic stages
+- **artifact-backed intermediate outputs**
+- **validator and repair loops** that operate on chunk outputs, not full raw transcript injections
+
+### 11.2 Required Architectural Change
+
+The current `SequentialAgent` plus `LlmAgent` chain is not sufficient for robust long-document handling because:
+
+- it encourages full state templating into prompts
+- it uses the model even for tool-only behavior
+- it lacks explicit artifact-aware orchestration
+
+Therefore, the next production architecture must use a **custom ADK orchestration layer** for stage control.
+
+### 11.3 App-Level Requirements
+
+The product should define an ADK `App`, not just a root agent, so future builds can use:
+
+- resumability
+- app-level configuration
+- event compaction or context compression where appropriate
+- centralized runtime features
+
+### 11.4 State Design Rule
+
+`session.state` must store only small, serializable data such as:
+
+- current job id
+- stage name
+- chunk manifest metadata
+- validation summaries
+- paths or artifact keys
+
+It must not store the full transcript body for later instruction templating.
+
+### 11.5 Artifact Design Rule
+
+Large stage outputs must live in artifacts or working files.
+
+Recommended working structure:
+
+```text
+jptranscript_app/
+├── Output/
+├── Work/
+│   └── <job_id>/
+│       ├── manifest.json
+│       ├── stage0_raw.txt
+│       ├── stage1_chunks/
+│       ├── stage1_merged.txt
+│       ├── stage2_chunks/
+│       ├── stage2_merged.md
+│       ├── stage3_furigana.txt
+│       ├── stage4_refined.txt
+│       ├── stage5_chunks/
+│       ├── stage5_merged.md
+│       ├── stage6_output.html
+│       └── stage7_output.html
+```
+
+This directory is essential for resumability, debugging, and chunk-level retries.
+
+---
+
+## 12. End-to-End Workflow
+
+The seven product stages remain, but their implementation pattern changes.
+
+### 12.1 Stage 0: Input Ingestion and Job Setup
+
+Responsibilities:
+
+- accept pasted text or a file path
+- validate the input source
+- normalize line endings
+- create a job id
+- write the raw source text to a working artifact
+- initialize a manifest
+
+No LLM is needed for this stage.
+
+Example manifest skeleton:
+
+```json
+{
+  "job_id": "20260414-001",
+  "source_type": "file",
+  "source_path": "sample.txt",
+  "stages": {
+    "optimization": {"status": "pending"},
+    "paragraph": {"status": "pending"},
+    "furigana": {"status": "pending"},
+    "refinement": {"status": "pending"},
+    "glossary": {"status": "pending"},
+    "html": {"status": "pending"},
+    "beautify": {"status": "pending"}
+  }
 }
 ```
 
-#### 2.3 `tools/html_converter.py`
+### 12.2 Stage 1: Optimization
 
-Markdown-to-HTML conversion with Japanese-specific features.
+Pattern:
 
-**Functions to implement**:
+- token-aware chunking
+- per-chunk LLM map step
+- deterministic merge
+- deterministic validation
+- chunk-local repair if needed
 
-| Function | Purpose | Used By |
-|:---|:---|:---|
-| `convert_to_html(markdown_text: str) -> str` | Full Markdown → HTML conversion: headings, paragraphs, lists, bold, code. Plus: `漢字（かんじ）` → `<ruby>`, `*N` → `<a href>`, glossary section → `<section>` with backlinks, semantic HTML5 structure | Step 6 |
+Output:
 
-The converter uses regex patterns and a lightweight Markdown parser (not a full library) to:
-1. Extract and convert Markdown headings to `<h1>`–`<h6>`
-2. Convert paragraphs to `<p>`
-3. Convert furigana patterns to `<ruby>漢字<rt>かんじ</rt></ruby>`
-4. Convert `*N` markers to `<a href="#glossary-N" id="ref-N" class="footnote">*N</a>`
-5. Convert the glossary appendix to `<section>` with `<ol>` and backlinks
-6. Wrap in complete HTML5 document structure
+- cleaned transcript text
 
-#### 2.4 `tools/beautifier_tools.py`
+### 12.3 Stage 2: Paragraph Structuring
 
-CSS template handling.
+Pattern:
 
-**Functions to implement**:
+- chunk on topic-preserving boundaries
+- per-chunk LLM structuring pass
+- global reduce pass to reconcile headings and table of contents
+- deterministic validation
 
-| Function | Purpose | Used By |
-|:---|:---|:---|
-| `apply_design_template(html: str) -> str` | Loads `templates/default_style.css`, injects into `<style>` in html `<head>`. Adds Google Fonts link for Noto Sans JP. | Step 7 |
+Output:
 
-#### 2.5 `templates/default_style.css`
+- Markdown document with sections and TOC
 
-Pre-built CSS that achieves the `$frontend-design` goals:
+### 12.4 Stage 3: Furigana Annotation
 
-- **Typography**: Noto Sans JP (Google Fonts), readable sizing
-- **Layout**: Centered reading column, max-width 800px, generous padding
-- **Reading comfort**: line-height 1.8 for Japanese, clear heading hierarchy
-- **Ruby styling**: `rt` at 0.5em, positioned above kanji
-- **Glossary links**: Subtle interactive styling (underline, color change on hover)
-- **Navigation**: Sticky table-of-contents, smooth scroll to anchors
-- **Mobile responsive**: Adapts to phone widths
-- **Print optimized**: `@media print` rules for clean A4 output (no navigation, no background colors, adjusted font sizes)
-- **Dark/light mode**: `prefers-color-scheme` media query
+Pattern:
 
-**Deliverables**: All tool modules implemented and individually testable.
+- deterministic `fugashi` annotation over the full text or bounded chunks
+- optional targeted LLM review only for ambiguous readings
+- deterministic validation
 
----
+Output:
 
-### Phase 3 — Agent Implementation (Estimated: ~3 hours)
+- fully annotated text
 
-**Goal**: Define all 7 agent modules, condensed prompts, and wire the SequentialAgent.
+### 12.5 Stage 4: Furigana Refinement
 
-#### 3.1 Create condensed prompts in `prompts/`
+Pattern:
 
-For each Tier 1 step, condense the original SKILL.md into a prompt optimized for Gemma 4:
-- Remove explanatory prose and analogies
-- Keep core rules as numbered bullet points
-- Include exactly 1 input/output example
-- Keep the hard guardrails as imperative sentences
-- Target < 500 tokens per prompt
+- pure Python only
 
-Example condensation for `prompts/optimization.md`:
+Output:
 
-```markdown
-Clean this Japanese transcript. Apply these edits in order:
+- refined furigana text
 
-1. Remove timestamps like [00:15:30] and non-content tags.
-2. Fix unnatural spacing between characters.
-3. Remove fillers that add no meaning: あのー, えーっと, まあ, ええ.
-   Keep fillers that carry tone or hesitation.
-4. Fix obvious typos, particle errors, and broken grammar.
-5. Do NOT summarize, compress, rewrite, or add content.
-6. Preserve speaker labels, names, numbers, and meaning.
+### 12.6 Stage 5: Glossary Annotation
 
-Example:
-Input: [00:02:10] 鈴木さん: あのー、まあ、昨日の会議ですけどね、えーっと、配布したその資料が、なんか少し間違ってたんですよね。
-Output: 鈴木さん: 昨日の会議ですが、配布した資料がなんか少し間違っていました。
+Pattern:
 
-Return only the cleaned transcript.
-```
+- section-aware chunking using Stage 2 structure
+- per-chunk LLM glossary annotation
+- global reducer to normalize marker numbering and deduplicate glossary intent
+- deterministic validation and repair
 
-Also create `prompts/tool_caller.md`:
+Output:
 
-```markdown
-You must use the provided tool to process the text.
-Call the tool with the text from the previous step.
-Return the tool's output without changes.
-```
+- Markdown with inline markers and glossary appendix
 
-#### 3.2 Implement each agent module in `agents/`
+### 12.7 Stage 6: HTML Generation
 
-Each module exports the relevant agents (processor + validator if applicable).
+Pattern:
 
-**Template for Tier 1 agent modules** (e.g., `agents/optimization.py`):
+- pure Python conversion
+- HTML escaping and sanitization
+- semantic validation
 
-```python
-import pathlib
-from google.adk.agents import LlmAgent
-from google.adk.tools import exit_loop
-from ..tools.text_processing import process_text_chunks, validate_optimization
+Output:
 
-# Load condensed prompt
-_prompt_path = pathlib.Path(__file__).parent.parent / "prompts" / "optimization.md"
-_prompt = _prompt_path.read_text(encoding="utf-8")
+- complete HTML5 document
 
-def create_optimization_agents(model):
-    """Create processor + validator for Step 1."""
-    
-    processor = LlmAgent(
-        model=model,
-        name="optimization_processor",
-        instruction=(
-            f"{_prompt}\n\n"
-            "Process the transcript text. If the text is long, "
-            "use the process_optimization_chunks tool."
-        ),
-        tools=[process_text_chunks_optimization],
-        output_key="step1_output",
-    )
-    
-    validator = LlmAgent(
-        model=model,
-        name="optimization_validator",
-        instruction=(
-            "Use the validate_optimization tool to check the quality of step1_output. "
-            "If all checks pass, call exit_loop. "
-            "If any check fails, explain what needs to be fixed."
-        ),
-        tools=[validate_optimization, exit_loop],
-    )
-    
-    return processor, validator
-```
+### 12.8 Stage 7: Beautification and Save
 
-**Template for Tier 3 agent modules** (e.g., `agents/furigana_refinement.py`):
+Pattern:
 
-```python
-from google.adk.agents import LlmAgent
-from ..tools.furigana_tools import refine_furigana
+- pure Python template injection
+- final file save
+- no LLM
 
-def create_refinement_agent(model):
-    """Create Step 4 agent — pure tool call."""
-    
-    return LlmAgent(
-        model=model,
-        name="furigana_refinement",
-        instruction=(
-            "Use the refine_furigana tool on the text from step3_output: {step3_output}. "
-            "Return the tool result exactly as-is."
-        ),
-        tools=[refine_furigana],
-        output_key="step4_output",
-    )
-```
+Output:
 
-#### 3.3 Wire everything in `agent.py`
-
-```python
-from google.adk.agents import SequentialAgent, LoopAgent
-
-# Import agent factories
-from .agents.optimization import create_optimization_agents
-from .agents.paragraph import create_paragraph_agents
-from .agents.furigana import create_furigana_agents
-from .agents.furigana_refinement import create_refinement_agent
-from .agents.glossary import create_glossary_agents
-from .agents.html_generator import create_html_agent
-from .agents.beautifier import create_beautify_agent
-
-# Create all agents
-opt_proc, opt_val = create_optimization_agents(local_model)
-par_proc, par_val = create_paragraph_agents(local_model)
-fur_proc, fur_val = create_furigana_agents(local_model)
-glo_proc, glo_val = create_glossary_agents(local_model)
-ref_agent = create_refinement_agent(local_model)
-htm_agent = create_html_agent(local_model)
-bea_agent = create_beautify_agent(local_model)
-
-# Assemble pipeline
-root_agent = SequentialAgent(
-    name="jptranscript_pipeline",
-    description="Transforms raw Japanese transcripts into learner-friendly HTML",
-    sub_agents=[
-        LoopAgent(name="step1_optimization", sub_agents=[opt_proc, opt_val], max_iterations=3),
-        LoopAgent(name="step2_paragraph", sub_agents=[par_proc, par_val], max_iterations=3),
-        LoopAgent(name="step3_furigana", sub_agents=[fur_proc, fur_val], max_iterations=2),
-        ref_agent,
-        LoopAgent(name="step5_glossary", sub_agents=[glo_proc, glo_val], max_iterations=3),
-        htm_agent,
-        bea_agent,
-    ]
-)
-```
-
-**Deliverables**: All agents defined, prompts condensed, pipeline fully wired.
+- saved final HTML file in `Output/`
 
 ---
 
-### Phase 4 — Integration & Testing (Estimated: ~2 hours)
+## 13. Long-Content Processing Strategy
 
-**Goal**: End-to-end testing, debugging, and validation.
+This section is the core product requirement for robustness.
 
-#### 4.1 Unit tests
+### 13.1 Why Long Content Currently Fails
 
-Write tests for each tool module:
+Long inputs currently fail for two reasons:
 
-```bash
-python -m pytest jptranscript_app/tests/ -v
+1. the app sends too much text to the model before chunking can help
+2. the workflow repeatedly re-sends large intermediate documents through LLM-only agents
+
+The new design must solve both.
+
+### 13.2 Required Processing Pattern: Map -> Reduce -> Repair
+
+For all LLM-dependent long-text stages, use this structure:
+
+1. **Map**
+   Process bounded chunks independently.
+2. **Reduce**
+   Merge chunk outputs into one stage artifact with deterministic logic or a small reducer pass.
+3. **Repair**
+   Re-run only failed chunks or only the small global consistency pass if validation fails.
+
+### 13.3 Required Chunking Rules
+
+Chunking must be:
+
+- token-budget aware, not character-only
+- sentence-safe
+- speaker-aware where possible
+- stage-specific
+
+Required split preferences:
+
+1. explicit section headings
+2. speaker turns
+3. paragraph boundaries
+4. sentence boundaries
+5. emergency fallback boundaries
+
+The chunker must avoid splitting:
+
+- inside furigana annotations
+- inside glossary markers
+- inside Markdown headings
+- mid-sentence unless no safe option exists
+
+### 13.4 Required Overlap Behavior
+
+Overlap must be real, not just documented.
+
+Each chunk may carry a short overlap window for coherence, but that overlap must be:
+
+- marked as context-only
+- excluded from final merged output
+- excluded from duplicate marker numbering
+
+### 13.5 Chunk Manifest Requirement
+
+Each chunked stage must produce a manifest entry such as:
+
+```json
+{
+  "stage": "paragraph",
+  "chunk_id": "paragraph-003",
+  "source_start": 4120,
+  "source_end": 5988,
+  "overlap_prefix_chars": 180,
+  "status": "completed",
+  "retries": 1,
+  "output_file": "Work/20260414-001/stage2_chunks/paragraph-003.md",
+  "validation": {
+    "pass": true,
+    "heading_count": 2
+  }
+}
 ```
 
-| Test File | Key Tests |
-|:---|:---|
-| `test_text_processing.py` | Chunking at speaker turns, reassembly order, validation thresholds |
-| `test_furigana_tools.py` | `auto_add_furigana` on known words, `refine_furigana` common-word removal and first-appearance tracking |
-| `test_html_converter.py` | Ruby tag generation, glossary link/backlink pairs, complete HTML5 document structure |
+This is required for repair and resumability.
 
-#### 4.2 End-to-end test with sample transcript
+### 13.6 Stage-Specific Chunking Requirements
 
-Create a test script that:
-1. Reads a short sample transcript (~500 chars)
-2. Runs it through `adk run jptranscript_app`
-3. Verifies the output HTML file exists and is valid
+#### Optimization
 
-#### 4.3 ADK Web verification
+- chunk primarily by speaker blocks
+- reducer mostly concatenates cleaned output
 
-1. Launch `adk web`
-2. Select `jptranscript_app` from the dropdown
-3. Paste a test transcript
-4. Observe the event trace in the UI — verify all 7 steps execute
-5. Open the generated HTML file in a browser
+#### Paragraph Structuring
 
-#### 4.4 Edge case testing
+- chunk by coherent narrative or speaker segments
+- reducer reconciles headings and builds a global TOC
 
-| Case | Expected Behavior |
-|:---|:---|
-| Very short input (< 100 chars) | Complete pipeline runs. No chunking needed. |
-| Very long input (> 5000 chars) | Chunking activates. All chunks processed. |
-| No kanji in input | Furigana step produces unchanged output. |
-| No speaker labels | Paragraph step uses topic-shift detection only. |
-| File input (`.txt` file path) | `read_transcript_file` tool reads and processes it. |
+#### Furigana
 
-**Deliverables**: All tests passing, end-to-end pipeline working via ADK Web.
+- deterministic processing can operate on the whole text if memory allows
+- if chunked, chunks must preserve token boundaries and existing Markdown
 
----
+#### Glossary
 
-### Phase 5 — Refinement (Estimated: ~1-2 hours)
+- chunk by existing sections from Stage 2
+- reducer renumbers markers globally and merges glossary entries in first-appearance order
 
-**Goal**: Optimize for Gemma 4 behavior and polish the output.
+### 13.7 Concrete Example: 12,000-Character Transcript
 
-#### 5.1 Prompt tuning
+Example flow:
 
-Run the pipeline several times with different transcripts and adjust prompts:
-- If Gemma 4 over-edits in Step 1 → strengthen "do NOT rewrite" guardrails
-- If Step 2 creates too many/few sections → adjust "create new paragraph only when topic genuinely shifts"
-- If Step 5 over-annotates → add "annotate 10–20 items maximum per 2000 characters"
+1. raw transcript is written to `stage0_raw.txt`
+2. optimization splits into 8 chunks
+3. chunk 5 fails validation due to low character ratio
+4. only chunk 5 is retried with a smaller prompt budget
+5. merged Stage 1 output becomes `stage1_merged.txt`
+6. paragraph stage re-chunks the cleaned text into 6 structure-aware chunks
+7. reducer rebuilds a single TOC from all headings
+8. furigana runs deterministically
+9. glossary stage creates 5 section-based chunks and merges numbering into one appendix
+10. HTML stage renders one safe document
+11. beautifier saves the final HTML
 
-#### 5.2 Chunk size optimization
-
-Test with transcripts of varying lengths:
-- 500 chars → no chunking
-- 2000 chars → 1-2 chunks
-- 5000 chars → 3-4 chunks
-- 10000 chars → 7-8 chunks
-
-Adjust `max_chars` parameter based on observed quality.
-
-#### 5.3 CSS template polishing
-
-Refine `templates/default_style.css` based on rendered output:
-- Test with real transcript HTML in browser
-- Test print layout (Ctrl+P)
-- Test mobile responsiveness
-- Adjust spacing, colors, and typography
-
-#### 5.4 Performance measurement
-
-Measure and document:
-- Time per step on Apple M2 Max
-- Total pipeline time for a typical transcript (~3000 chars)
-- Memory usage during processing
-
-**Deliverables**: Tuned prompts, optimized chunk size, polished CSS, performance benchmarks.
+The user sees one job, not 11 manual sub-steps.
 
 ---
 
-## 10. Verification Plan
+## 14. Stage-by-Stage Product Requirements
 
-### Automated
+## 14.1 Optimization Requirements
 
-| Verification | Command | What It Checks |
-|:---|:---|:---|
-| Unit tests | `python -m pytest jptranscript_app/tests/ -v` | Tool correctness |
-| Lint check | `ruff check jptranscript_app/` | Code quality |
-| ADK discovery | `adk web` → check dropdown | Package structure is valid |
-| Model availability | `ollama list \| grep gemma4-agent` | Ollama model is ready |
+The optimization stage must:
 
-### Manual via ADK Web
+- remove timestamps and non-content tags
+- clean obvious transcript noise
+- preserve meaning
+- preserve speaker attribution
+- avoid summarization
 
-1. Launch `adk web`, select `jptranscript_app`
-2. Paste a known Japanese transcript
-3. Monitor event trace — verify 7 steps run in sequence
-4. For LoopAgent steps, verify validation pass/retry behavior
-5. Check the generated HTML file: correct furigana, glossary links, CSS styling
-6. Test print output from browser (File → Print → save as PDF)
+Validator must check:
 
-### Quality Comparison
+- non-empty output
+- safe length ratio
+- speaker preservation
+- no marker leakage like `[Processing chunk X of Y]`
 
-Process the same transcript through:
-- The existing cloud-LLM pipeline (original workflow)
-- The new local ADK pipeline
+### Example
 
-Compare:
-- Content completeness (no missing text)
-- Furigana accuracy (correct readings)
-- Glossary quality (appropriate difficulty level, correct marker alignment)
-- HTML structure (valid, semantic)
-- Visual appearance (CSS styling)
+Input:
 
-Document any quality gaps for future prompt tuning.
+```text
+[00:02:10] 鈴木さん: あのー、まあ、昨日の会議ですけどね、えーっと、配布したその資料が、なんか少し間違ってたんですよね。
+```
+
+Expected output:
+
+```text
+鈴木さん: 昨日の会議ですが、配布した資料がなんか少し間違っていました。
+```
+
+## 14.2 Paragraph Requirements
+
+The paragraph stage must:
+
+- preserve original wording
+- insert section headings
+- build a table of contents
+- keep closely related sentences together
+
+The reducer must prevent:
+
+- duplicate TOC blocks
+- contradictory heading names between chunks
+- missing sections caused by naive concatenation
+
+## 14.3 Furigana Requirements
+
+The furigana stage must:
+
+- use deterministic morphological analysis first
+- preserve original base text
+- avoid double annotation
+- support context-sensitive review where needed
+
+LLM review must not be mandatory for every token. It should only be used for:
+
+- ambiguous homographs
+- low-confidence reading cases
+- proper nouns that are suspicious in context
+
+## 14.4 Furigana Refinement Requirements
+
+This stage must be pure Python.
+
+It must:
+
+- correctly target only annotation spans
+- remove furigana for configured common words
+- preserve furigana on the first three appearances of other annotated items
+- never alter surrounding sentence text
+
+## 14.5 Glossary Requirements
+
+This stage must:
+
+- annotate difficult items conservatively
+- maintain sequential numbering
+- keep body text unchanged except for marker insertion
+- ensure every marker has one entry
+- ensure every entry has required fields
+
+The reducer must be responsible for:
+
+- global numbering
+- duplicate resolution
+- final glossary assembly
+
+## 14.6 HTML Requirements
+
+The converter must:
+
+- escape unsafe input
+- produce valid HTML5
+- generate working ruby
+- generate working glossary links and backlinks
+- render a valid TOC structure
+
+The converter must not:
+
+- allow raw `<script>` tags from the transcript to execute
+- emit broken nesting
+- silently drop glossary content
+
+## 14.7 Beautification Requirements
+
+Beautification must:
+
+- preserve document structure
+- keep output self-contained when possible
+- remain readable for Japanese text
+- support print output
+
+If full offline portability is required, avoid runtime dependency on Google Fonts.
+
+---
+
+## 15. Orchestration Requirements
+
+### 15.1 Required Orchestration Pattern
+
+The next implementation must use a **custom ADK agent** or equivalent explicit control flow for the main workflow.
+
+The orchestrator must:
+
+- read and write job manifests
+- call stage processors in order
+- checkpoint after each stage
+- retry failed chunks
+- stop cleanly with actionable errors
+
+### 15.2 Why Standard LlmAgent Chaining Is Not Enough
+
+Predefined workflow agents are useful for ordering, but they do not solve this product’s central problem:
+
+- long content needs artifact-aware routing
+- deterministic stages must bypass the model
+- retry needs chunk-local control
+- state must store references, not giant text bodies
+
+The orchestrator needs direct access to `ctx.session.state` and artifact paths.
+
+### 15.3 State Key Conventions
+
+Recommended state shape:
+
+```text
+job_id
+current_stage
+temp:active_chunk_id
+temp:last_validation_report
+final_output_path
+```
+
+Avoid:
+
+```text
+step1_output = <entire cleaned transcript>
+step2_output = <entire structured markdown>
+```
+
+Those large values belong in artifacts, not templated state.
+
+---
+
+## 16. LLM Invocation Requirements
+
+### 16.1 Required Call Discipline
+
+Every LLM invocation for long content must be explicit and bounded.
+
+Required inputs:
+
+- stage-specific prompt
+- chunk payload
+- optional small context summary
+- structured output expectation when useful
+
+Forbidden pattern:
+
+- full prior document pasted into the instruction field via state templating
+
+### 16.2 Required LLM Wrapper Features
+
+The LLM wrapper around Ollama or LiteLLM must support:
+
+- configurable model name
+- retries with backoff
+- timeout handling
+- structured output mode where possible
+- per-call metadata logging
+- `keep_alive` for chunk batches
+
+### 16.3 Required Runtime Benchmarking
+
+Context length must be benchmarked locally at:
+
+- `8192`
+- `16384`
+- `32768`
+- `64000`
+
+Choose the largest setting that remains stable and does not push substantial model execution onto CPU when observed through `ollama ps`.
+
+The product must not assume that the theoretical maximum context is the practical best setting.
+
+---
+
+## 17. Security and Safety Requirements
+
+### 17.1 File Safety
+
+`read_transcript_file()` must:
+
+- resolve paths safely
+- reject traversal outside the allowed app directory
+- raise structured errors, not return fake content strings
+
+### 17.2 HTML Safety
+
+All user-provided or transcript-derived text must be HTML-escaped before insertion except for explicitly generated safe markup.
+
+This includes:
+
+- headings
+- paragraph text
+- glossary content
+- title text
+
+### 17.3 Browser Safety
+
+The final output must not execute arbitrary transcript content as HTML or JavaScript.
+
+### 17.4 Data Safety
+
+If future LiteLLM versions are upgraded, dependency hygiene must follow current ADK security advisories before shipping.
+
+---
+
+## 18. Error Handling and Recovery Requirements
+
+The system must classify failures by scope.
+
+### 18.1 Chunk-Local Failures
+
+Examples:
+
+- model timeout
+- malformed chunk output
+- chunk validator failure
+
+Recovery:
+
+- retry same chunk
+- reduce chunk size
+- tighten structured response format
+- record retry count in manifest
+
+### 18.2 Stage-Level Failures
+
+Examples:
+
+- reducer cannot reconcile headings
+- glossary numbering cannot be normalized
+- HTML validation fails
+
+Recovery:
+
+- run repair pass
+- rebuild only the failing stage from stage artifacts
+
+### 18.3 Job-Level Failures
+
+Examples:
+
+- model unavailable
+- Python environment incompatible
+- output directory not writable
+
+Recovery:
+
+- stop cleanly
+- preserve all intermediate artifacts
+- report actionable recovery instructions
+
+### 18.4 Required Failure Messages
+
+User-visible errors must be concrete.
+
+Good:
+
+```text
+Stage 5 failed on glossary chunk 3 after 2 retries because marker numbering could not be normalized. Intermediate files were preserved in Work/20260414-001/.
+```
+
+Bad:
+
+```text
+Error occurred.
+```
+
+---
+
+## 19. Testing Requirements
+
+The current test suite is insufficient. The next implementation must add comprehensive tests.
+
+### 19.1 Unit Tests
+
+Required coverage:
+
+- chunk boundary selection
+- overlap exclusion during merge
+- furigana annotation correctness
+- furigana refinement span targeting
+- glossary validation strictness
+- HTML escaping
+- TOC structure validity
+- path traversal rejection
+
+### 19.2 Integration Tests
+
+Required coverage:
+
+- pasted text workflow
+- file input workflow
+- resumable chunk retry
+- stage checkpointing
+- final output file creation
+
+### 19.3 Long-Form Regression Tests
+
+Required fixtures:
+
+- short input under 500 characters
+- medium input around 2,000 characters
+- long input around 8,000 to 15,000 Japanese characters
+- input with many speaker turns
+- input with no headings
+- input with pre-existing furigana
+- malicious HTML-like transcript content
+
+### 19.4 Browser Output Validation
+
+At minimum, tests should verify:
+
+- valid HTML structure
+- no raw script injection
+- glossary anchors exist
+- backlinks exist
+- nav closes correctly
+
+---
+
+## 20. Acceptance Criteria
+
+The revised product may be accepted only when all of the following are true:
+
+1. Long transcripts are chunked before any large LLM payload is formed.
+2. No deterministic stage requires an `LlmAgent`.
+3. Large stage artifacts are stored outside `session.state`.
+4. `refine_furigana()` is corrected and covered by regression tests.
+5. HTML output escapes unsafe content.
+6. Glossary validation rejects missing required fields.
+7. File traversal is blocked.
+8. Integration tests exercise the real orchestration path.
+9. Python runtime is upgraded to a supported version.
+10. The final HTML is written to `jptranscript_app/Output/` unless product requirements explicitly change.
+
+---
+
+## 21. Delivery Roadmap
+
+## Phase 0: Platform Stabilization
+
+Goal:
+
+- upgrade runtime baseline
+- remove broken assumptions
+
+Tasks:
+
+- move project to Python `3.10+`
+- align docs on output path
+- replace broken scratch runner
+- add `Work/` artifact structure
+
+## Phase 1: Safety and Correctness Repairs
+
+Goal:
+
+- fix known correctness bugs before larger refactors
+
+Tasks:
+
+- fix `refine_furigana()`
+- fix HTML escaping
+- fix TOC closing behavior
+- harden glossary validator
+- harden file path handling
+- remove chunk marker leakage
+
+## Phase 2: Orchestration Rewrite
+
+Goal:
+
+- replace full-text `LlmAgent` chaining with artifact-aware control flow
+
+Tasks:
+
+- create ADK `App`
+- implement custom orchestrator
+- move large outputs to artifact files
+- store only references in session state
+
+## Phase 3: Long-Content Pipeline
+
+Goal:
+
+- make long transcript processing robust
+
+Tasks:
+
+- implement token-aware chunking
+- implement map/reduce/repair for Stages 1, 2, and 5
+- add chunk manifests and retries
+
+## Phase 4: Performance and Quality Tuning
+
+Goal:
+
+- optimize for the local machine
+
+Tasks:
+
+- benchmark context sizes
+- benchmark chunk sizes
+- tune prompts for chunk workers only
+- reduce unnecessary model passes
+
+## Phase 5: Final Product Hardening
+
+Goal:
+
+- make the app dependable as a local study tool
+
+Tasks:
+
+- add comprehensive regression coverage
+- add resumability
+- improve job status reporting
+- document supported workflows clearly
+
+---
+
+## 22. Open Questions
+
+These questions do not block the product direction, but should be resolved during implementation.
+
+1. Should the final HTML remain fully offline, including fonts?
+2. Should Stage 3 furigana review use a second, smaller local model for ambiguity checks?
+3. Should the glossary reducer deduplicate semantically similar entries across sections or preserve first occurrence only?
+4. Should the reducer for Stage 2 use deterministic heading synthesis rules before any LLM summary pass?
+5. Should long-job metadata also be exposed in the ADK UI as structured status events?
+
+Until answered, implementation should choose the simplest option that preserves robustness.
+
+---
+
+## 23. References
+
+Official references reviewed while preparing this PRD:
+
+- Google ADK state documentation
+- Google ADK workflow agent documentation
+- Google ADK custom agent documentation
+- Google ADK App documentation
+- Google ADK LiteLLM connector documentation
+- Ollama context length documentation
+- Ollama chat API documentation
+- Google DeepMind Gemma 4 product page
+- Ollama Gemma 4 library page
+
+These references inform the architectural direction but do not override local product requirements.
+
+---
+
+## 24. Final Directive
+
+Future development of `jptranscript_app` must optimize for **robust long-document local processing**, not for preserving the current prototype structure.
+
+The central implementation rule is:
+
+> **Chunk early, store artifacts, keep state small, and use the LLM only where genuine reasoning is required.**
+
+That rule should guide every future code change.

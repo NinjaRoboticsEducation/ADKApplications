@@ -85,7 +85,7 @@ You need the following before starting:
 | Requirement | Details |
 |:---|:---|
 | **Computer** | macOS with Apple Silicon (M1, M2, M3, M4) and at least 16 GB RAM. 32 GB recommended for the 26B model. |
-| **Python** | Version 3.9 or higher. Check with `python3 --version`. |
+| **Python** | Version 3.10 or higher. Check with `python3 --version`. |
 | **Terminal** | The built-in macOS Terminal app (or any terminal emulator). |
 | **Ollama** | We will install this in Step 1. |
 | **Basic comfort with the terminal** | You should know how to open it and type commands. This guide will tell you exactly what to type. |
@@ -186,11 +186,19 @@ source .venv/bin/activate
 
 > **Tip:** You will see `(.venv)` appear at the beginning of your terminal prompt. This confirms the environment is active.
 
+> **UV standalone Python note:** On this machine, UV-managed Python 3.12 needs an extra `PYTHONHOME` setting for virtualenv-based console tools like `adk`. The repo-local [.maintenance/rebuild_venv.sh](/Users/nilcreator/Desktop/0_Projects/Nilcreation/PersonalApplications/ADKApplications/.maintenance/rebuild_venv.sh) script rebuilds `.venv` with the required fix and patches the local activation/`adk` launcher automatically if you ever see `ModuleNotFoundError: No module named 'encodings'`.
+
 4. Install the required packages:
 
 ```bash
 pip install google-adk litellm
 ```
+
+> **For this repository:** `jptranscript_app` now ships with a `pyproject.toml` and a tested Python 3.12 virtual environment baseline. From the repo root, prefer:
+>
+> ```bash
+> pip install -e '.[dev]'
+> ```
 
 | Package | What It Does |
 |:---|:---|
@@ -518,7 +526,7 @@ my_agent_project/
 | `agent.py` | **Yes** | Defines `root_agent` — the main agent, its tools, skills, and system prompt. |
 | `.env` (agent) | Optional | Agent-specific environment variables (model name, API keys). |
 | `.env` (root) | Optional | Project-wide variables shared across all agents (e.g., `OLLAMA_API_BASE`). |
-| `.venv/` | Recommended | Isolated Python environment. Created by `python3 -m venv .venv`. |
+| `.venv/` | Recommended | Isolated Python environment. Created by `python3 -m venv .venv` using Python 3.10+. |
 | `tools.py` | Optional | Separate file for tool functions. Keeps `agent.py` clean as your tools grow. |
 | `skills/` | Optional | Directory-based Agent Skills. Each subdirectory contains a `SKILL.md` and optional reference files. |
 | `mcp_servers/` | Optional | Configuration files for connecting to MCP (Model Context Protocol) servers. |

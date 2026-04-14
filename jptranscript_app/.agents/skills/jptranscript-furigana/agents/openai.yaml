@@ -1,4 +1,0 @@
-interface:
-  display_name: "JP Transcript Furigana"
-  short_description: "Add hiragana readings to kanji text"
-  default_prompt: "Use $jptranscript-furigana to add hiragana furigana in full-width parentheses to every kanji word without changing the original text."

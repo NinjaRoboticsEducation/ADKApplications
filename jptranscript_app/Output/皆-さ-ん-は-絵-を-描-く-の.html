@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>皆 さ ん は 絵 を 描 く の</title>
+  <style>
+/* ================================================================
+   JP Transcript — Default Design Template
+   ================================================================
+   Readability-focused, print-optimized stylesheet for learner-facing
+   Japanese transcript HTML documents with furigana and glossary.
+   ================================================================ */
+
+/* --- Base Reset & Typography --- */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-bg: #fafaf9;
+  --color-surface: #ffffff;
+  --color-text: #1c1917;
+  --color-text-secondary: #57534e;
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+  --color-border: #e7e5e4;
+  --color-border-light: #f5f5f4;
+  --color-highlight: #fef3c7;
+  --color-glossary-bg: #f8fafc;
+
+  --font-body: "Noto Sans JP", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", "Fira Code", "Fira Mono", Menlo, monospace;
+
+  --max-width: 800px;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2.5rem;
+  --spacing-2xl: 4rem;
+}
+
+/* --- Dark Mode --- */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1c1917;
+    --color-surface: #292524;
+    --color-text: #e7e5e4;
+    --color-text-secondary: #a8a29e;
+    --color-accent: #60a5fa;
+    --color-accent-hover: #93bbfd;
+    --color-border: #44403c;
+    --color-border-light: #292524;
+    --color-highlight: #422006;
+    --color-glossary-bg: #1e293b;
+  }
+}
+
+/* --- Body & Layout --- */
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.9;
+  padding: var(--spacing-xl) var(--spacing-md);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+article {
+  margin-bottom: var(--spacing-2xl);
+}
+
+/* --- Headings --- */
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text);
+  font-weight: 700;
+  line-height: 1.3;
+  margin-top: var(--spacing-2xl);
+  margin-bottom: var(--spacing-md);
+}
+
+h1 {
+  font-size: 1.85em;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--color-border);
+  margin-top: 0;
+}
+
+h2 {
+  font-size: 1.5em;
+  color: var(--color-text);
+  padding-bottom: var(--spacing-xs);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+h3 {
+  font-size: 1.3em;
+}
+
+/* --- Paragraphs & Text --- */
+
+p {
+  font-size: 1.15em;
+  line-height: 1.9;
+  margin-bottom: var(--spacing-md);
+  text-align: justify;
+  text-justify: inter-character;
+}
+
+strong {
+  font-weight: 700;
+}
+
+/* --- Ruby (Furigana) --- */
+
+ruby {
+  ruby-align: center;
+  ruby-position: over;
+  white-space: nowrap;
+}
+
+rt {
+  font-size: 0.5em;
+  font-weight: 300;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.05em;
+}
+
+.timestamp {
+  color: var(--color-text-secondary);
+  font-size: 0.95em;
+  margin: var(--spacing-sm) 0;
+}
+
+.timestamp time {
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Table of Contents (Nav) --- */
+
+nav[aria-label="目次"] {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--spacing-lg);
+  margin: var(--spacing-xl) 0;
+}
+
+nav[aria-label="目次"] strong {
+  display: block;
+  font-size: 1.1em;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text);
+}
+
+nav[aria-label="目次"] ul {
+  list-style: none;
+  padding-left: var(--spacing-md);
+}
+
+nav[aria-label="目次"] li {
+  padding: var(--spacing-xs) 0;
+  font-size: 1em;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+nav[aria-label="目次"] li:last-child {
+  border-bottom: none;
+}
+
+nav[aria-label="目次"] a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+nav[aria-label="目次"] a:hover {
+  text-decoration: underline;
+}
+
+/* --- Lists --- */
+
+ul, ol {
+  padding-left: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+li {
+  margin-bottom: var(--spacing-xs);
+  line-height: 1.7;
+}
+
+/* --- Glossary Footnote Links --- */
+
+.footnote {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-size: 0.75em;
+  font-weight: 500;
+  vertical-align: super;
+  padding: 0 2px;
+  border-radius: 2px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.footnote:hover {
+  background-color: var(--color-highlight);
+  color: var(--color-accent-hover);
+}
+
+/* --- Glossary Section --- */
+
+section[aria-labelledby="glossary-title"] {
+  background: var(--color-glossary-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--spacing-xl);
+  margin-top: var(--spacing-2xl);
+}
+
+section[aria-labelledby="glossary-title"] h3 {
+  margin-top: 0;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--color-border);
+}
+
+section[aria-labelledby="glossary-title"] ol {
+  list-style-position: inside;
+  padding-left: 0;
+}
+
+section[aria-labelledby="glossary-title"] li {
+  padding: var(--spacing-lg) 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+section[aria-labelledby="glossary-title"] li:last-child {
+  border-bottom: none;
+}
+
+section[aria-labelledby="glossary-title"] .example {
+  padding-left: var(--spacing-lg);
+  border-left: 3px solid var(--color-border);
+  margin: var(--spacing-sm) 0;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.backlink {
+  color: var(--color-text-secondary);
+  font-size: 0.85em;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.backlink:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+/* --- Horizontal Rule (Glossary Separator) --- */
+
+hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--spacing-2xl) 0;
+}
+
+/* --- Code --- */
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--color-border-light);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* --- Scroll Behavior --- */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* --- Mobile Responsive --- */
+
+@media (max-width: 640px) {
+  body {
+    padding: var(--spacing-md) var(--spacing-sm);
+    font-size: 15px;
+  }
+
+  h1 { font-size: 1.5em; }
+  h2 { font-size: 1.3em; }
+  h3 { font-size: 1.15em; }
+  p { font-size: 1.05em; }
+
+  nav[aria-label="目次"] {
+    padding: var(--spacing-md);
+  }
+
+  section[aria-labelledby="glossary-title"] {
+    padding: var(--spacing-md);
+  }
+}
+
+/* --- Print Optimized (A4) --- */
+
+@media print {
+  :root {
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-text: #000000;
+    --color-text-secondary: #333333;
+    --color-accent: #000000;
+    --color-border: #cccccc;
+    --color-glossary-bg: #f5f5f5;
+  }
+
+  body {
+    background: white;
+    color: black;
+    font-size: 11pt;
+    line-height: 1.7;
+    padding: 0;
+    max-width: 100%;
+  }
+
+  main {
+    max-width: 100%;
+  }
+
+  h1 { font-size: 16pt; }
+  h2 { font-size: 14pt; page-break-after: avoid; }
+  h3 { font-size: 12pt; page-break-after: avoid; }
+  p { font-size: 11pt; orphans: 3; widows: 3; }
+
+  rt { font-size: 0.45em; color: #333; }
+
+  /* Hide interactive elements */
+  .footnote { color: black; }
+  .backlink { display: none; }
+  nav[aria-label="目次"] { display: none; }
+
+  /* Glossary section */
+  section[aria-labelledby="glossary-title"] {
+    page-break-before: always;
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+  }
+
+  /* Avoid page breaks inside glossary entries */
+  section[aria-labelledby="glossary-title"] li {
+    page-break-inside: avoid;
+  }
+
+  a { text-decoration: none; color: inherit; }
+}
+  </style>
+</head>
+<body>
+  <main>
+    <article>
+  <h1 id="heading-1">皆 さ ん は 絵 を 描 く の</h1>
+  <nav aria-label="目次">
+    <strong>目次</strong>
+    <ul>
+      <li><a href="#heading-1">皆 さ ん は 絵 を 描 く の</a></li>
+      <li><a href="#heading-3">そ こ か ら 素 晴 ら し い</a></li>
+      <li><a href="#heading-4">本当にありがとうございました</a></li>
+    </ul>
+  </nav>
+  <h2 id="heading-2">皆 さ ん は 絵 を 描 く の</h2>
+  <p class="timestamp"><time datetime="PT0M8S">0:08</time></p>
+  <p>皆 さ ん は 絵 を 描 く の が <ruby>好<rt>こう</rt></ruby> き で す か？ <ruby>日<rt>にち</rt></ruby> <ruby>本<rt>ほん</rt></ruby> の <ruby>季<rt>き</rt></ruby> <ruby>節<rt>せつ</rt></ruby> は そ れ ぞ れ。 <ruby>春<rt>はる</rt></ruby> も <ruby>夏<rt>なつ</rt></ruby> も <ruby>秋<rt>あき</rt></ruby> も <ruby>冬<rt>ふゆ</rt></ruby> も と て も <ruby>綺<rt>き</rt></ruby> <ruby>麗<rt>れい</rt></ruby> で、 <ruby>思<rt>し</rt></ruby> わ ず<a href="#glossary-1" id="ref-1-1" class="footnote">*1</a> 絵 を 描 い た り <ruby>写<rt>うつし</rt></ruby> <ruby>真<rt>しん</rt></ruby>を <ruby>撮<rt>つまみ</rt></ruby> っ た り<a href="#glossary-2" id="ref-2-1" class="footnote">*2</a> し た く な り ま す よ ね。 今 日 は <ruby>漢<rt>かん</rt></ruby> <ruby>字<rt>じ</rt></ruby> の 絵 を <ruby>使<rt>つこ</rt></ruby> っ た 日 <ruby>本<rt>ほん</rt></ruby> <ruby>語<rt>ご</rt></ruby> を い く つ か ご <ruby>紹<rt>しょう</rt></ruby> <ruby>介<rt>すけ</rt></ruby> し ま す。</p>
+  <p class="timestamp"><time datetime="PT0M28S">0:28</time></p>
+  <p>こ れ を <ruby>覚<rt>さとし</rt></ruby> え る と 上 手 に 人 を <ruby>褒<rt>ほう</rt></ruby> め ら れ る よ う に な り ま す よ。 こ ん に ち は。 今 日 は 1月20<ruby>日<rt>か</rt></ruby> で す。 日 <ruby>本<rt>ほん</rt></ruby> <ruby>語<rt>ご</rt></ruby> の <ruby>先<rt>なま</rt></ruby> <ruby>美<rt>び</rt></ruby> <ruby>和<rt>わ</rt></ruby> の 5分 で わ か る 日 本 <ruby>語<rt>ご</rt></ruby> ポ ッ ド キ ャ ス ト へ よ う こ そ。 こ の ポ ッ ド キ ャ ス ト で は、 jlpt N3 く ら い の 日 <ruby>本<rt>ご</rt></ruby> で、 <ruby>日<rt>にち</rt></ruby> <ruby>本<rt>ほん</rt></ruby> の <ruby>文<rt>ぶん</rt></ruby> <ruby>化<rt>か</rt></ruby> や <ruby>言<rt>げん</rt></ruby> <ruby>葉<rt>よう</rt></ruby> に つ い て <ruby>楽<rt>らく</rt></ruby> し く <ruby>学<rt>がく</rt></ruby> ん で い き ま す。</p>
+  <p class="timestamp"><time datetime="PT0M52S">0:52</time></p>
+  <p>ま ず 一つ<ruby>目<rt>め</rt></ruby> は 絵 <ruby>心<rt>しん</rt></ruby> が あ る で す。 こ れ は 絵 を 描 く の が 上 手 な 人 に 対 し て<a href="#glossary-3" id="ref-3-1" class="footnote">*3</a> <ruby>使<rt>つこ</rt></ruby> い ま す。 例 え ば、 <ruby>友<rt>とも</rt></ruby> <ruby>達<rt>たち</rt></ruby> が ノ ー ト に <ruby>素<rt>そ</rt></ruby> <ruby>敵<rt>てき</rt></ruby> な 絵 を 描 い た 時、 す ご い 絵 <ruby>心<rt>しん</rt></ruby> が あ る ね と <ruby>言<rt>げん</rt></ruby> っ て み て く だ さ い。</p>
+  <p class="timestamp"><time datetime="PT1M9S">1:09</time></p>
+  <p>き っ と、 と て も <ruby>喜<rt>き</rt></ruby> ば れ る は ず で す<a href="#glossary-4" id="ref-4-1" class="footnote">*4</a>。 絵 を 描 く <ruby>才<rt>さい</rt></ruby> <ruby>能<rt>のう</rt></ruby> が あ る と <ruby>褒<rt>ほう</rt></ruby> め て い ま す。 こ の <ruby>言<rt>げん</rt></ruby> <ruby>葉<rt>よう</rt></ruby> に は <ruby>心<rt>こころ</rt></ruby> と い う <ruby>漢<rt>かん</rt></ruby> <ruby>字<rt>じ</rt></ruby> が 入 っ て い ま す。 だ か ら、 た だ <ruby>技<rt>わざ</rt></ruby> <ruby>術<rt>じゅつ</rt></ruby> が あ る だ け で は な く<a href="#glossary-5" id="ref-5-1" class="footnote">*5</a>、 絵 を <ruby>愛<rt>あい</rt></ruby> す <ruby>気<rt>き</rt></ruby> <ruby>持<rt>もち</rt></ruby> ち や <ruby>優<rt>ゆう</rt></ruby> し い <ruby>心<rt>こころ</rt></ruby> も <ruby>一<rt>いち</rt></ruby> <ruby>緒<rt>ちょ</rt></ruby> に <ruby>持<rt>もち</rt></ruby> っ て い る と い う <ruby>温<rt>おん</rt></ruby> か い イ メ ー ジ が あ る 言 <ruby>葉<rt>よう</rt></ruby> で す。</p>
+  <p class="timestamp"><time datetime="PT1M32S">1:32</time></p>
+  <p>2つ<ruby>目<rt>め</rt></ruby> は 絵 に な る で ．．． こ れ は <ruby>景<rt>けい</rt></ruby> <ruby>色<rt>しょく</rt></ruby> や 人 が と て も <ruby>素<rt>そ</rt></ruby> <ruby>敵<rt>てき</rt></ruby> で、 今 す ぐ <ruby>写<rt>うつし</rt></ruby> <ruby>真<rt>しん</rt></ruby> を <ruby>撮<rt>つまみ</rt></ruby> り た い、 絵 に 描 い て <ruby>残<rt>ざん</rt></ruby> し た い と <ruby>思<rt>お</rt></ruby> う と き に <ruby>使<rt>つこ</rt></ruby> い ま す。 例 え ば、 <ruby>着<rt>き</rt></ruby> <ruby>物<rt>もの</rt></ruby> を <ruby>着<rt>き</rt></ruby> た 人 が <ruby>京<rt>きょう</rt></ruby> <ruby>都<rt>と</rt></ruby> の <ruby>街<rt>まち</rt></ruby> を <ruby>歩<rt>ふ</rt></ruby> い て い る の を 見 た ら、 絵 に な る な あ と <ruby>言<rt>い</rt></ruby> い ま す。</p>
+  <p class="timestamp"><time datetime="PT1M54S">1:54</time></p>
+  <p>そ の 人 と <ruby>場<rt>ば</rt></ruby> <ruby>所<rt>しょ</rt></ruby> が ぴ っ た り <ruby>合<rt>ごう</rt></ruby> っ て い て<a href="#glossary-6" id="ref-6-1" class="footnote">*6</a>、 ま る で <ruby>映<rt>えい</rt></ruby> <ruby>画<rt>が</rt></ruby> の よ う に<a href="#glossary-7" id="ref-7-1" class="footnote">*7</a> <ruby>美<rt>び</rt></ruby> し い と い う <ruby>意<rt>い</rt></ruby> <ruby>味<rt>み</rt></ruby> で す。 皆 さ ん も 絵 に な る <ruby>瞬<rt>しゅん</rt></ruby> <ruby>間<rt>かん</rt></ruby> を た く さ ん 見 つ け て、 <ruby>素<rt>そ</rt></ruby> <ruby>敵<rt>てき</rt></ruby> な <ruby>写<rt>うつし</rt></ruby> <ruby>真<rt>しん</rt></ruby> を <ruby>撮<rt>つま</rt></ruby> っ て く だ さ い ね。 3つ<ruby>目<rt>め</rt></ruby> は、 絵 に 描 い た <ruby>餅<rt>もち</rt></ruby><a href="#glossary-8" id="ref-8-1" class="footnote">*8</a> で す。</p>
+  <p class="timestamp"><time datetime="PT2M12S">2:12</time></p>
+  <p>皆 さ ん は お <ruby>餅<rt>もち</rt></ruby> が <ruby>好<rt>こう</rt></ruby> き で す か？ と て も <ruby>柔<rt>やわら</rt></ruby> ら か く て <ruby>伸<rt>しん</rt></ruby> び る <ruby>食<rt>しょく</rt></ruby> べ <ruby>物<rt>もの</rt></ruby> で す ね。 で も、 絵 に 描 い て あ る お <ruby>餅<rt>もち</rt></ruby> は、 ど ん な に <ruby>美<rt>び</rt></ruby> <ruby>味<rt>あじ</rt></ruby> し そ う で も <ruby>食<rt>しょく</rt></ruby> べ る こ と は で き ま せ ん。</p>
+  <h2 id="heading-3">そ こ か ら 素 晴 ら し い</h2>
+  <p>そ こ か ら <ruby>素<rt>す</rt></ruby> <ruby>晴<rt>はれ</rt></ruby> ら し い <ruby>計<rt>けい</rt></ruby> <ruby>画<rt>が</rt></ruby> や ア イ デ ア が あ っ て も、 実 <ruby>際<rt>さい</rt></ruby> に で き な け れ ば <ruby>意<rt>い</rt></ruby> <ruby>味<rt>み</rt></ruby> が な い と い う <ruby>意<rt>い</rt></ruby> <ruby>味<rt>み</rt></ruby> で す。</p>
+  <p class="timestamp"><time datetime="PT2M35S">2:35</time></p>
+  <p>例 え ば、 <ruby>新<rt>あらた</rt></ruby> し い ル ー ル が <ruby>作<rt>さく</rt></ruby> ら れ た の に、 <ruby>誰<rt>だれ</rt></ruby> も そ れ を <ruby>守<rt>まもる</rt></ruby> っ て い な け れ ば、 そ の ル ー ル は 絵 に 描 い た 餅<a href="#glossary-9" id="ref-9-1" class="footnote">*9</a> だ ね と <ruby>言<rt>い</rt></ruby> い ま す。 <ruby>最<rt>さい</rt></ruby> <ruby>後<rt>は</rt></ruby> は、 よ く <ruby>使<rt>し</rt></ruby> う 絵 の <ruby>言<rt>こと</rt></ruby> ば を <ruby>三<rt>みっ</rt></ruby> つ <ruby>続<rt>ぞく</rt></ruby> け て ご <ruby>紹<rt>しょう</rt></ruby> <ruby>介<rt>かい</rt></ruby> し ま す。</p>
+  <p class="timestamp"><time datetime="PT2M52S">2:52</time></p>
+  <p><ruby>一<rt>ひと</rt></ruby> つ <ruby>目<rt>め</rt></ruby> は 絵 <ruby>本<rt>えほん</rt></ruby> で す。 <ruby>絵<rt>え</rt></ruby> が た く さ ん あ る、 <ruby>小<rt>ちい</rt></ruby> さ い <ruby>子<rt>こ</rt></ruby> <ruby>供<rt>ども</rt></ruby> が <ruby>読<rt>どく</rt></ruby> む <ruby>本<rt>ほん</rt></ruby> で す。 で も、 <ruby>大<rt>お</rt></ruby> <ruby>人<rt>とな</rt></ruby> も <ruby>感<rt>かん</rt></ruby> <ruby>動<rt>どう</rt></ruby> す る よ う な 素 <ruby>敵<rt>すてき</rt></ruby> な 絵 <ruby>本<rt>えほん</rt></ruby> が た く さ ん あ り ま す。 2つ<ruby>目<rt>め</rt></ruby> は 絵 <ruby>日<rt>にち</rt></ruby> <ruby>記<rt>き</rt></ruby> で す。 そ の <ruby>日<rt>ひ</rt></ruby> の <ruby>出<rt>で</rt></ruby> <ruby>来<rt>き</rt></ruby> <ruby>事<rt>ごと</rt></ruby><a href="#glossary-10" id="ref-10-1" class="footnote">*10</a> を <ruby>絵<rt>え</rt></ruby> と <ruby>一<rt>いっ</rt></ruby> <ruby>緒<rt>しょ</rt></ruby> に <ruby>書<rt>か</rt></ruby> く <ruby>日<rt>にち</rt></ruby> <ruby>記<rt>き</rt></ruby> で す。</p>
+  <p class="timestamp"><time datetime="PT3M11S">3:11</time></p>
+  <p>日 <ruby>本<rt>ほん</rt></ruby> の <ruby>子<rt>こ</rt></ruby> ど も た ぎ は <ruby>夏<rt>なつ</rt></ruby> <ruby>休<rt>きゅう</rt></ruby> み に <ruby>毎<rt>まい</rt></ruby> <ruby>日<rt>にち</rt></ruby> <ruby>絵<rt>え</rt></ruby> <ruby>日<rt>にち</rt></ruby> <ruby>記<rt>き</rt></ruby> を <ruby>書<rt>か</rt></ruby> く こ と が <ruby>多<rt>おお</rt></ruby> い で す。 3つ<ruby>目<rt>め</rt></ruby> は <ruby>絵<rt>え</rt></ruby> <ruby>画<rt>が</rt></ruby> で す。 <ruby>漢<rt>かん</rt></ruby> <ruby>字<rt>じ</rt></ruby> は <ruby>絵<rt>え</rt></ruby> と <ruby>映<rt>えい</rt></ruby> <ruby>画<rt>が</rt></ruby> の <ruby>画<rt>が</rt></ruby> と <ruby>書<rt>か</rt></ruby> き ま す。</p>
+  <p class="timestamp"><time datetime="PT3M26S">3:26</time></p>
+  <p><ruby>美<rt>び</rt></ruby> <ruby>術<rt>じゅつ</rt></ruby> <ruby>館<rt>かん</rt></ruby> に あ る よ う な と て も <ruby>立<rt>りっ</rt></ruby> <ruby>派<rt>ぱ</rt></ruby><a href="#glossary-11" id="ref-11-1" class="footnote">*11</a> で 素 <ruby>晴<rt>すば</rt></ruby> ら し い <ruby>絵<rt>え</rt></ruby> の こ と は <ruby>絵<rt>え</rt></ruby> <ruby>画<rt>が</rt></ruby> と <ruby>言<rt>い</rt></ruby> い ま す。 <ruby>今<rt>きょ</rt></ruby> う は <ruby>絵<rt>え</rt></ruby> と い う <ruby>言<rt>こと</rt></ruby> ば を <ruby>使<rt>つか</rt></ruby> っ た い ろ い ろ な <ruby>表<rt>ひょう</rt></ruby> <ruby>現<rt>げ</rt></ruby> を ご <ruby>紹<rt>しょう</rt></ruby> <ruby>介<rt>かい</rt></ruby> し ま し た。 <ruby>皆<rt>みな</rt></ruby> さ ん が <ruby>今<rt>いま</rt></ruby> ま で に <ruby>日<rt>に</rt></ruby> <ruby>本<rt>ほん</rt></ruby> や <ruby>自<rt>じ</rt></ruby> <ruby>分<rt>ぶん</rt></ruby> の <ruby>国<rt>くに</rt></ruby> で <ruby>見<rt>み</rt></ruby> た <ruby>絵<rt>え</rt></ruby> に な る <ruby>景<rt>けい</rt></ruby> <ruby>色<rt>しょく</rt></ruby> は ど ん な <ruby>景<rt>けい</rt></ruby> <ruby>色<rt>しょく</rt></ruby> で し ょ う か？</p>
+  <p class="timestamp"><time datetime="PT3M48S">3:48</time></p>
+  <p>で は こ こ で <ruby>問<rt>もん</rt></ruby> <ruby>題<rt>だい</rt></ruby> で す。 <ruby>友<rt>とも</rt></ruby> <ruby>達<rt>だち</rt></ruby> が <ruby>描<rt>か</rt></ruby> い た <ruby>絵<rt>え</rt></ruby> が と て も <ruby>上<rt>じょう</rt></ruby> <ruby>手<rt>ず</rt></ruby> だ な と <ruby>思<rt>おも</rt></ruby> い ま し た。 こ の <ruby>時<rt>とき</rt></ruby>、 な ん と <ruby>言<rt>い</rt></ruby> っ て <ruby>褒<rt>ほ</rt></ruby> め ま す か？ <ruby>一<rt>いち</rt></ruby>、 <ruby>絵<rt>え</rt></ruby> <ruby>心<rt>ごころ</rt></ruby><a href="#glossary-12" id="ref-12-1" class="footnote">*12</a> が あ る ね <ruby>二<rt>に</rt></ruby> <ruby>絵<rt>え</rt></ruby> <ruby>画<rt>が</rt></ruby> だ ね <ruby>三<rt>さん</rt></ruby> <ruby>絵<rt>え</rt></ruby> に <ruby>描<rt>か</rt></ruby> い た <ruby>餅<rt>もち</rt></ruby> だ ね。</p>
+  <p class="timestamp"><time datetime="PT4M6S">4:06</time></p>
+  <p>も う <ruby>一<rt>いち</rt></ruby> <ruby>度<rt>ど</rt></ruby> <ruby>問<rt>もん</rt></ruby> <ruby>題<rt>だい</rt></ruby> を <ruby>言<rt>い</rt></ruby> い ま す。 <ruby>友<rt>とも</rt></ruby> <ruby>達<rt>だち</rt></ruby> が <ruby>描<rt>か</rt></ruby> い た <ruby>絵<rt>え</rt></ruby> が と て も <ruby>上<rt>じょう</rt></ruby> <ruby>手<rt>ず</rt></ruby> だ な と <ruby>思<rt>おも</rt></ruby> い ま し た。 こ の <ruby>時<rt>とき</rt></ruby>、 な ん と <ruby>言<rt>い</rt></ruby> っ て <ruby>褒<rt>ほ</rt></ruby> め ま す か？ 一、 <ruby>絵<rt>え</rt></ruby> <ruby>心<rt>ごころ</rt></ruby> が あ る ね <ruby>二<rt>に</rt></ruby> <ruby>絵<rt>え</rt></ruby> <ruby>画<rt>が</rt></ruby> だ ね <ruby>三<rt>さん</rt></ruby> <ruby>絵<rt>え</rt></ruby> に <ruby>描<rt>か</rt></ruby> い た <ruby>餅<rt>もち</rt></ruby> だ ね <ruby>答<rt>こた</rt></ruby> え は <ruby>一<rt>いち</rt></ruby> <ruby>絵<rt>え</rt></ruby> <ruby>心<rt>ごころ</rt></ruby> が あ る ね で す。</p>
+  <p class="timestamp"><time datetime="PT4M31S">4:31</time></p>
+  <p>さ て、 こ こ で <ruby>皆<rt>みな</rt></ruby> さ ん に <ruby>大<rt>だい</rt></ruby> <ruby>切<rt>せつ</rt></ruby> な お <ruby>知<rt>し</rt></ruby> ら せ が あ り ま す。 こ れ ま で <ruby>皆<rt>みな</rt></ruby> さ ん と <ruby>一<rt>いっ</rt></ruby> <ruby>緒<rt>しょ</rt></ruby> に <ruby>楽<rt>たの</rt></ruby> し く <ruby>日<rt>に</rt></ruby> <ruby>本<rt>ほん</rt></ruby> <ruby>語<rt>ご</rt></ruby> を <ruby>学<rt>まな</rt></ruby> ん で き た こ の ポ ッ ド キ ャ ス ト で す が、 1<ruby>月<rt>がつ</rt></ruby> 24<ruby>日<rt>にち</rt></ruby> で <ruby>終<rt>しゅう</rt></ruby> <ruby>了<rt>りょう</rt></ruby><a href="#glossary-13" id="ref-13-1" class="footnote">*13</a> す る こ と に な り<a href="#glossary-14" id="ref-14-1" class="footnote">*14</a> ま し た。 こ れ ま で た く さ ん の <ruby>皆<rt>みな</rt></ruby> さ ん に <ruby>聞<rt>き</rt></ruby> い て い た だ き<a href="#glossary-15" id="ref-15-1" class="footnote">*15</a>、 <ruby>応<rt>おう</rt></ruby> <ruby>援<rt>えん</rt></ruby> し て い た だ い た<a href="#glossary-15" id="ref-15-2" class="footnote">*15</a> こ と、 と て も <ruby>感<rt>かん</rt></ruby> <ruby>謝<rt>しゃ</rt></ruby> し て い ま す。</p>
+  <p class="timestamp"><time datetime="PT4M52S">4:52</time></p>
+  <h2 id="heading-4">本当にありがとうございました</h2>
+  <p>本当にありがとうございました。 <ruby>最後<rt>さいご</rt></ruby>の日まで聞いてくれたら嬉しい<a href="#glossary-16" id="ref-16-1" class="footnote">*16</a>です。 それでは<a href="#glossary-17" id="ref-17-1" class="footnote">*17</a>また<ruby>次回<rt>じかい</rt></ruby>もお会いしましょう<a href="#glossary-18" id="ref-18-1" class="footnote">*18</a>。 またね。</p>
+    </article>
+  <hr>
+  <section aria-labelledby="glossary-title">
+    <h3 id="glossary-title">言葉の解説 (Glossary)</h3>
+    <ol>
+      <li id="glossary-1">
+        <p><strong><ruby>思<rt>し</rt></ruby>わず</strong></p>
+        <p><strong>意味 (Meaning):</strong> 無意識に、あるいは、意識せずに自然に何かをしてしまう様子。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">美味しそうな匂いに、思わずお腹が鳴った。</p>
+        <p class="example">綺麗な景色を見て、思わずため息が出た。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「うっかり」との違い:</strong> 「うっかり」は不注意によるミス（error）のニュアンスが強いが、「思わず」は自然な反応や感情（natural reaction）を表す。</p>
+        <p><a href="#ref-1-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-2">
+        <p><strong>〜たり〜たりする</strong></p>
+        <p><strong>意味 (Meaning):</strong> いくつかの動作や状態を例として並べて言うときに使う。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">週末は映画を見たり、買い物に行ったりします。</p>
+        <p class="example">掃除をしたり、洗濯をしたりして、家事を済ませた。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜て、〜て」との違い:</strong> 「〜て」は動作の順番（sequence）を表すが、「〜たり」は動作の例示（listing examples）を表す。</p>
+        <p><a href="#ref-2-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-3">
+        <p><strong>〜に対して</strong></p>
+        <p><strong>意味 (Meaning):</strong> ある対象（人や物）に向かって、あるいは比較する対象を示す。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">先生に対して失礼な態度はとってはいけません。</p>
+        <p class="example">昨日は暑かったのに対して、今日はとても寒い。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜について」との違い:</strong> 「〜について」は内容（about/concerning）を表すが、「〜に対して」は向き合う対象（towards/against）を表す。</p>
+        <p><a href="#ref-3-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-4">
+        <p><strong>〜はずです</strong></p>
+        <p><strong>意味 (Meaning):</strong> 根拠や理由があり、当然そうなるだろうと強く推測・確信している。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">彼は毎日練習しているので、きっと勝つはずです。</p>
+        <p class="example">薬を飲んだから、もうすぐ熱が下がるはずです。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜でしょう」との違い:</strong> 「〜でしょう」は単なる予測だが、「〜はずです」は「当然そうなる」という強い根拠を伴う。</p>
+        <p><a href="#ref-4-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-5">
+        <p><strong>〜だけでなく</strong></p>
+        <p><strong>意味 (Meaning):</strong> ある事柄に加えて、他にもあることを示す。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">彼は日本語だけでなく、英語も話せます。</p>
+        <p class="example">この映画は子供だけでなく、大人も楽しめます。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜も」との違い:</strong> 「〜も」より「それ以外にも追加である」という強調のニュアンスが強い。</p>
+        <p><a href="#ref-5-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-6">
+        <p><strong>ぴったり合っている</strong></p>
+        <p><strong>意味 (Meaning):</strong> 隙間なく、あるいは状況や条件に非常に適している様子。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">この靴は私の足にぴったり合っています。</p>
+        <p class="example">この仕事は彼にぴったり合っている。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「似ている」との違い:</strong> 「似ている」は外見や性質が近いこと、「ぴったり」は適合度や一致度が完璧であることを表す。</p>
+        <p><a href="#ref-6-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-7">
+        <p><strong>まるで〜のように</strong></p>
+        <p><strong>意味 (Meaning):</strong> 実際はそうではないが、非常に似ている様子を例える。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">彼女はまるで天使のように優しい。</p>
+        <p class="example">彼はまるで、その場所にずっといたかのように詳しい。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜みたい」との違い:</strong> 意味はほぼ同じだが、「まるで〜のように」の方がより丁寧で、文章やスピーチなどのフォーマルな場面でよく使われる。</p>
+        <p><a href="#ref-7-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-8">
+        <p><strong>絵に描いた餅</strong></p>
+        <p><strong>意味 (Meaning):</strong> 計画や形はあるが、実際には役に立たないもの、あるいは実現不可能なもの。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">素晴らしい予算案だが、資金がないので絵に描いた餅だ。</p>
+        <p class="example">夢は大きいが、具体的な計画がなければ絵に描いた餅になってしまう。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「夢」との違い:</strong> 「夢」は実現したい目標だが、「絵に描いた餅」は「形だけで実態（価値）がない」という否定的なニュアンスを含む。</p>
+        <p><a href="#ref-8-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-9">
+        <p><strong>絵に描いた餅</strong></p>
+        <p><strong>意味 (Meaning):</strong> 計画やアイデアはあるが、実現する見込みや手段がなく、ただの想像にすぎないこと。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">予算が足りないので、この素晴らしい計画も絵に描いた餅になってしまった。</p>
+        <p class="example">夢は大きいが、具体的な方法がないと絵に描いた餅だ。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「空論（くうろん）」との違い:</strong> 「空論」は中身のない理屈に焦mu、 「絵に描いた餅」は形はあるが実現できない状態を強調する。</p>
+        <p><a href="#ref-9-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-10">
+        <p><strong>出来事</strong></p>
+        <p><strong>意味 (Meaning):</strong> 身の回りで起こったこと、事件や出来事、イベント。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">今日は、学校でとても楽しい出来事がありました。</p>
+        <p class="example">旅先での出来事を日記に書く。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「事件（じけん）」との違い:</strong> 「事件」は主に警察が動くような悪いことや重大な出来事を指すが、「出来事」は良いことも悪いことも含めた広い意味で使う。</p>
+        <p><a href="#ref-10-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-11">
+        <p><strong>立派な</strong></p>
+        <p><strong>意味 (Meaning):</strong> 素晴らしい、立派に完成されている、または態度や品格が堂々としている様子。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">彼は立派な大人になった。</p>
+        <p class="example">素晴らしい、立派な建物ですね。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「すごい」との違い:</strong> 「すごい」は感情的な驚きを表すカジュアルな言葉だが、「立派な」は質が高いことや、尊敬の気持ちを込めて客観的な素晴らしさを表す。</p>
+        <p><a href="#ref-11-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-12">
+        <p><strong>絵心がある</strong></p>
+        <p><strong>意味 (Meaning):</strong> 絵を描く才能や、センス、芸術的な感覚を持っていること。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">彼は絵心があるので、少し練習しただけで上手な絵が描ける。</p>
+        <p class="example">絵心がある人は、色の使い方がとても上手だ。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「センスがある」との違い:</strong> 「センスがある」はファッションや音楽など、あらゆる分野の感覚に使えるが、「絵心」は絵画の才能に特化した表現。</p>
+        <p><a href="#ref-12-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-13">
+        <p><strong>終了する</strong></p>
+        <p><strong>意味 (Meaning):</strong> 物事が終わり、完了すること。フォーマルな表現。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">会議は予定通り終了しました。</p>
+        <p class="example">授業は15時に終了します。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「終わる」との違い:</strong> 「終わる」は日常的な表現。「終了する」は、プログラム、イベント、契約など、決まった期限やプロセスが終わる際によく使われる硬い表現。</p>
+        <p><a href="#ref-13-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-14">
+        <p><strong>〜することになった</strong></p>
+        <p><strong>意味 (Meaning):</strong> 自分の意志ではなく、周囲の状況、決定、ルールなどによって、ある事態が決まったことを表す。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">来月から、日本へ出張することになりました。</p>
+        <p class="example">会社の方針で、リモートワークが増えることになった。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜することにした」との違い:</strong> 「〜することにした」は自分の意志で決めたこと（Decision）を表すが、「〜することになった」は決定事項や決定された状況（Result of decision）を表す。</p>
+        <p><a href="#ref-14-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-15">
+        <p><strong>〜ていただく</strong></p>
+        <p><strong>意味 (Meaning):</strong> 相手が自分に対して何かをしてくれることに対し、感謝の気持ちを込めて丁寧に言う表現。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">先生に日本語を教えていただきました。</p>
+        <p class="example">皆さんに聞いていただき、ありがとうございます。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜てもらう」との違い:</strong> 「〜てもらう」は日常的な表現。「〜ていただく」は、目上の人や、感謝を伝えたい相手に対して使う謙譲・丁寧な表現。</p>
+        <p><a href="#ref-15-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-16">
+        <p><strong>〜てくれたら嬉しい</strong></p>
+        <p><strong>意味 (Meaning):</strong> 相手に何かをしてほしいという願いを、直接的な依頼ではなく、自分の感情（嬉しい）を通して控えめに伝える表現。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">また感想を書いてくれたら嬉しいです。</p>
+        <p class="example">ぜひ、遊びに来てくれたら嬉しいです。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜てください」との違い:</strong> 「〜てください」は明確な依頼（Request）ですが、「〜てくれたら嬉しい」は「〜してほしい」という願望（Desire）を伝えることで、相手に強制しない柔らかいニュアンスになります。</p>
+        <p><a href="#ref-16-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-17">
+        <p><strong>それでは</strong></p>
+        <p><strong>意味 (Meaning):</strong> 話を切り替えたり、次の動作に移ったり、まとめたりする際に使われる接続詞。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">それでは、始めましょう。</p>
+        <p class="example">それでは、失礼いたします。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「じゃ」との違い:</strong> 「それでは」はフォーマルな場面や丁寧な会話で使われます。「じゃ」は「それでは」の非常にカジュアルな短縮形です。</p>
+        <p><a href="#ref-17-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-18">
+        <p><strong>お会いしましょう</strong></p>
+        <p><strong>意味 (Meaning):</strong> 「会う」の丁寧な表現。相手に対して敬意を表しながら、会うことを提案・勧誘する表現。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">また来週、お会いしましょう。</p>
+        <p class="example">次の機会にぜひお会いしましょう。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「会いましょう」との違い:</strong> 「会いましょう」は標準的な丁寧語ですが、「お会いしましょう」は「お（ご）〜する」という謙譲の形を用いた、よりフォーマルで相手を敬う響きを持つ表現です。</p>
+        <p><a href="#ref-18-1" class="backlink">本文へ戻る</a></p>
+      </li>
+    </ol>
+  </section>
+  </main>
+</body>
+</html>

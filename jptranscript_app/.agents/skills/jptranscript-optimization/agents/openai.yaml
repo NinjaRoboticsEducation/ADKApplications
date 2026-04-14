@@ -1,4 +1,0 @@
-interface:
-  display_name: "JP Transcript Optimization"
-  short_description: "Clean Japanese raw transcripts safely"
-  default_prompt: "Use $jptranscript-optimization to clean this Japanese transcript while preserving all meaning and content."

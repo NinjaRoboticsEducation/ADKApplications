@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ガラスのショーケース</title>
+  <style>
+/* ================================================================
+   JP Transcript — Default Design Template
+   ================================================================
+   Readability-focused, print-optimized stylesheet for learner-facing
+   Japanese transcript HTML documents with furigana and glossary.
+   ================================================================ */
+
+/* --- Base Reset & Typography --- */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-bg: #fafaf9;
+  --color-surface: #ffffff;
+  --color-text: #1c1917;
+  --color-text-secondary: #57534e;
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+  --color-border: #e7e5e4;
+  --color-border-light: #f5f5f4;
+  --color-highlight: #fef3c7;
+  --color-glossary-bg: #f8fafc;
+
+  --font-body: "Noto Sans JP", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", "Fira Code", "Fira Mono", Menlo, monospace;
+
+  --max-width: 800px;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2.5rem;
+  --spacing-2xl: 4rem;
+}
+
+/* --- Dark Mode --- */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1c1917;
+    --color-surface: #292524;
+    --color-text: #e7e5e4;
+    --color-text-secondary: #a8a29e;
+    --color-accent: #60a5fa;
+    --color-accent-hover: #93bbfd;
+    --color-border: #44403c;
+    --color-border-light: #292524;
+    --color-highlight: #422006;
+    --color-glossary-bg: #1e293b;
+  }
+}
+
+/* --- Body & Layout --- */
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.9;
+  padding: var(--spacing-xl) var(--spacing-md);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+article {
+  margin-bottom: var(--spacing-2xl);
+}
+
+/* --- Headings --- */
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text);
+  font-weight: 700;
+  line-height: 1.3;
+  margin-top: var(--spacing-2xl);
+  margin-bottom: var(--spacing-md);
+}
+
+h1 {
+  font-size: 1.85em;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--color-border);
+  margin-top: 0;
+}
+
+h2 {
+  font-size: 1.5em;
+  color: var(--color-text);
+  padding-bottom: var(--spacing-xs);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+h3 {
+  font-size: 1.3em;
+}
+
+/* --- Paragraphs & Text --- */
+
+p {
+  font-size: 1.15em;
+  line-height: 1.9;
+  margin-bottom: var(--spacing-md);
+  text-align: justify;
+  text-justify: inter-character;
+}
+
+strong {
+  font-weight: 700;
+}
+
+/* --- Ruby (Furigana) --- */
+
+ruby {
+  ruby-align: center;
+  ruby-position: over;
+  white-space: nowrap;
+}
+
+rt {
+  font-size: 0.5em;
+  font-weight: 300;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.05em;
+}
+
+.timestamp {
+  color: var(--color-text-secondary);
+  font-size: 0.95em;
+  margin: var(--spacing-sm) 0;
+}
+
+.timestamp time {
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Table of Contents (Nav) --- */
+
+nav[aria-label="目次"] {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--spacing-lg);
+  margin: var(--spacing-xl) 0;
+}
+
+nav[aria-label="目次"] strong {
+  display: block;
+  font-size: 1.1em;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text);
+}
+
+nav[aria-label="目次"] ul {
+  list-style: none;
+  padding-left: var(--spacing-md);
+}
+
+nav[aria-label="目次"] li {
+  padding: var(--spacing-xs) 0;
+  font-size: 1em;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+nav[aria-label="目次"] li:last-child {
+  border-bottom: none;
+}
+
+nav[aria-label="目次"] a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+nav[aria-label="目次"] a:hover {
+  text-decoration: underline;
+}
+
+/* --- Lists --- */
+
+ul, ol {
+  padding-left: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+li {
+  margin-bottom: var(--spacing-xs);
+  line-height: 1.7;
+}
+
+/* --- Glossary Footnote Links --- */
+
+.footnote {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-size: 0.75em;
+  font-weight: 500;
+  vertical-align: super;
+  padding: 0 2px;
+  border-radius: 2px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.footnote:hover {
+  background-color: var(--color-highlight);
+  color: var(--color-accent-hover);
+}
+
+/* --- Glossary Section --- */
+
+section[aria-labelledby="glossary-title"] {
+  background: var(--color-glossary-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--spacing-xl);
+  margin-top: var(--spacing-2xl);
+}
+
+section[aria-labelledby="glossary-title"] h3 {
+  margin-top: 0;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--color-border);
+}
+
+section[aria-labelledby="glossary-title"] ol {
+  list-style-position: inside;
+  padding-left: 0;
+}
+
+section[aria-labelledby="glossary-title"] li {
+  padding: var(--spacing-lg) 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+section[aria-labelledby="glossary-title"] li:last-child {
+  border-bottom: none;
+}
+
+section[aria-labelledby="glossary-title"] .example {
+  padding-left: var(--spacing-lg);
+  border-left: 3px solid var(--color-border);
+  margin: var(--spacing-sm) 0;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.backlink {
+  color: var(--color-text-secondary);
+  font-size: 0.85em;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.backlink:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+/* --- Horizontal Rule (Glossary Separator) --- */
+
+hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--spacing-2xl) 0;
+}
+
+/* --- Code --- */
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--color-border-light);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* --- Scroll Behavior --- */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* --- Mobile Responsive --- */
+
+@media (max-width: 640px) {
+  body {
+    padding: var(--spacing-md) var(--spacing-sm);
+    font-size: 15px;
+  }
+
+  h1 { font-size: 1.5em; }
+  h2 { font-size: 1.3em; }
+  h3 { font-size: 1.15em; }
+  p { font-size: 1.05em; }
+
+  nav[aria-label="目次"] {
+    padding: var(--spacing-md);
+  }
+
+  section[aria-labelledby="glossary-title"] {
+    padding: var(--spacing-md);
+  }
+}
+
+/* --- Print Optimized (A4) --- */
+
+@media print {
+  :root {
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-text: #000000;
+    --color-text-secondary: #333333;
+    --color-accent: #000000;
+    --color-border: #cccccc;
+    --color-glossary-bg: #f5f5f5;
+  }
+
+  body {
+    background: white;
+    color: black;
+    font-size: 11pt;
+    line-height: 1.7;
+    padding: 0;
+    max-width: 100%;
+  }
+
+  main {
+    max-width: 100%;
+  }
+
+  h1 { font-size: 16pt; }
+  h2 { font-size: 14pt; page-break-after: avoid; }
+  h3 { font-size: 12pt; page-break-after: avoid; }
+  p { font-size: 11pt; orphans: 3; widows: 3; }
+
+  rt { font-size: 0.45em; color: #333; }
+
+  /* Hide interactive elements */
+  .footnote { color: black; }
+  .backlink { display: none; }
+  nav[aria-label="目次"] { display: none; }
+
+  /* Glossary section */
+  section[aria-labelledby="glossary-title"] {
+    page-break-before: always;
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+  }
+
+  /* Avoid page breaks inside glossary entries */
+  section[aria-labelledby="glossary-title"] li {
+    page-break-inside: avoid;
+  }
+
+  a { text-decoration: none; color: inherit; }
+}
+  </style>
+</head>
+<body>
+  <main>
+    <article>
+  <h1 id="heading-1">ガラスのショーケース</h1>
+  <nav aria-label="目次">
+    <strong>目次</strong>
+    <ul>
+      <li><a href="#heading-2">日本語学習中の皆さんにいろいろなテーマとはこのガラスのショーケース</a></li>
+      <li><a href="#heading-3">さらにガラス板というのはもとも</a></li>
+      <li><a href="#heading-4">カウンター越しにお店の人、店員さんとまあ会うわけ</a></li>
+      <li><a href="#heading-5">ースあるいはショーウィンドウが入ってきたというこ</a></li>
+      <li><a href="#heading-6">こちらが選ぶ権利を得たということ自分で選ぶ権利が与えられたというこ</a></li>
+      <li><a href="#heading-7">出してきた答えの商品をそのまま買うということ楽をするこ</a></li>
+      <li><a href="#heading-8">ニュース</a></li>
+      <li><a href="#heading-9">交換と相手</a></li>
+    </ul>
+  </nav>
+  <h2 id="heading-2">日本語学習中の皆さんにいろいろなテーマとはこのガラスのショーケース</h2>
+  <p class="timestamp"><time datetime="PT0M5S">0:05</time></p>
+  <p>皆さんこんにちは。 日本（にプリ）<ruby>語<rt>ご</rt></ruby>聞き<ruby>始め<rt>はじめ</rt></ruby>です。 このプログラムでは、日本語<ruby>学習<rt>がくしゅう</rt></ruby><ruby>中<rt>ちゅう</rt></ruby>の皆さんにいろいろなテーマについて、<ruby>自然<rt>しぜん</rt></ruby>なスピードでほんの<ruby>少し<rt>すこし</rt></ruby>だけ<ruby>言葉<rt>ことば</rt></ruby>や<ruby>文法<rt>ぶんぽう</rt></ruby>を<ruby>簡単<rt>かんたん</rt></ruby>にして<a href="#glossary-1" id="ref-1-1" class="footnote">*1</a>。</p>
+  <p class="timestamp"><time datetime="PT0M18S">0:18</time></p>
+  <p>お話ししています。 皆さん、こんにちは。 <ruby>先週<rt>せんしゅう</rt></ruby>、東京の<ruby>渋谷<rt>しぶや</rt></ruby><ruby>区<rt>く</rt></ruby>のブランド<ruby>品<rt>ひん</rt></ruby>の買取<ruby>店<rt>かいてりてん</rt></ruby>で、まあ<ruby>店内<rt>てんない</rt></ruby>のショーケースが<ruby>叩き割ら<rt>たたきわら</rt></ruby>れて<a href="#glossary-2" id="ref-2-1" class="footnote">*2</a>、ブランドバッグの80<ruby>店<rt>てん</rt></ruby>、それから<ruby>時計<rt>とけい</rt></ruby>、アクセサリーなど<ruby>色々<rt>いろいろ</rt></ruby>な<ruby>貴<rt>き</rt></ruby><ruby>金属<rt>きんぞく</rt></ruby>が<ruby>盗ま<rt>ぬすま</rt></ruby>れたということでニュースになりました。</p>
+  <p class="timestamp"><time datetime="PT0M37S">0:37</time></p>
+  <p>その<ruby>盗ま<rt>ぬすま</rt></ruby>れた<ruby>被害<rt>ひがい</rt></ruby>は約1<ruby>億<rt>おく</rt></ruby><ruby>円<rt>えん</rt></ruby>を<ruby>超える<rt>こえる</rt></ruby>1<ruby>億<rt>おく</rt></ruby>2700<ruby>万<rt>まん</rt></ruby><ruby>円<rt>えん</rt></ruby><ruby>相当<rt>そうとう</rt></ruby>と言われていて、まあ大きな<ruby>被害<rt>ひがい</rt></ruby>があったわけですが<a href="#glossary-3" id="ref-3-1" class="footnote">*3</a>。 今日はこのガラスのショーケースについてちょっと考えてみたいと思います。 というのは、実は<ruby>売っ<rt>うっ</rt></ruby>ている<ruby>商品<rt>しょうひん</rt></ruby>を<ruby>透明<rt>とうめい</rt></ruby>なガラスケースに入れて、そしてお<ruby>客<rt>きゃく</rt></ruby>さんに見せるというのは、結構最近<ruby>始まっ<rt>はじまっ</rt></ruby>た<ruby>習慣<rt>しゅうかん</rt></ruby>なんですよね。</p>
+  <p class="timestamp"><time datetime="PT1M2S">1:02</time></p>
+  <p>人々は<ruby>昔<rt>むかし</rt></ruby>から<ruby>外<rt>そと</rt></ruby>からの<ruby>光<rt>ひかり</rt></ruby>を<ruby>室内<rt>しつにゅう</rt></ruby>に<ruby>取り込もう<rt>とりこもう</rt></ruby>という<a href="#glossary-4" id="ref-4-1" class="footnote">*4</a>。 まあ、その<ruby>努力<rt>どりょく</rt></ruby>は<ruby>昔<rt>むかし</rt></ruby>からずっとしてきたんですね。 で、マイカーと<ruby>呼ば<rt>よば</rt></ruby>れる<ruby>鉱物<rt>こうぶつ</rt></ruby>を使ってみたり<a href="#glossary-5" id="ref-5-1" class="footnote">*5</a>。 まあ、これは<ruby>透明<rt>とうめい</rt></ruby><ruby>性<rt>せい</rt></ruby>が<ruby>高い<rt>たかい</rt></ruby>ので、まあそうは言っても<ruby>完璧<rt>かんぺき</rt></ruby>な<ruby>透明<rt>とうめい</rt></ruby>じゃないんですけどね。</p>
+  <p class="timestamp"><time datetime="PT1M17S">1:17</time></p>
+  <p>あるいは<ruby>動物<rt>どうぶつ</rt></ruby>の<ruby>角<rt>つの</rt></ruby>を使ったり。 あるいは<ruby>油<rt>あぶら</rt></ruby>を<ruby>塗っ<rt>ぬっ</rt></ruby>た<ruby>紙<rt>かみ</rt></ruby>といった<a href="#glossary-6" id="ref-6-1" class="footnote">*6</a>。 まあ、<ruby>半<rt>はん</rt></ruby>透明の<ruby>素材<rt>そざい</rt></ruby>を使って、なんとか<ruby>外界<rt>がいかい</rt></ruby>の<ruby>光<rt>ひかり</rt></ruby>を<ruby>室内<rt>しつない</rt></ruby>に<ruby>取り込もう<rt>とりこもう</rt></ruby>としてきた<a href="#glossary-7" id="ref-7-1" class="footnote">*7</a>。 まあ、こういう<ruby>歴史<rt>れきし</rt></ruby>はずっとあるんですが、やはりそれが<ruby>可能<rt>かのう</rt></ruby>になったのはガラスの<ruby>発明<rt>はつめい</rt></ruby><ruby>以降<rt>いこう</rt></ruby>ですね。</p>
+  <p class="timestamp"><time datetime="PT1M34S">1:34</time></p>
+  <p>ただし、このガラスも今のような<ruby>完全<rt>かんぜん</rt></ruby>に透明な、<ruby>透き通っ<rt>すきとおっ</rt></ruby>てものが見えるようなガラスというのは<ruby>相当<rt>そうに</rt></ruby>最近できたんですね。</p>
+  <h2 id="heading-3">さらにガラス板というのはもとも</h2>
+  <p>まあ、ルネッサンスの頃に、まあガラス<ruby>製造<rt>せいぞう</rt></ruby><ruby>技術<rt>ぎじゅつ</rt></ruby>が<ruby>飛躍<rt>ひやく</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>発展<rt>はってん</rt></ruby>して、まあクリスタルガラスと<ruby>呼ば<rt>よば</rt></ruby>れるんですが。</p>
+  <p class="timestamp"><time datetime="PT1M51S">1:51</time></p>
+  <p>この<ruby>非常<rt>ひじょう</rt></ruby>に透明<ruby>度<rt>ど</rt></ruby>の<ruby>高い<rt>たかい</rt></ruby>ガラスができて、<ruby>初めて<rt>はじめて</rt></ruby>ショーケースというのができるようになったんですね。 それ<ruby>以前<rt>いぜん</rt></ruby>にもガラスというのはもちろんあったわけですが、まあ先ほど言ったように透明<ruby>性<rt>せい</rt></ruby>があまり<ruby>高く<rt>たかく</rt></ruby>ない、また透明<ruby>性<rt>せい</rt></ruby>が<ruby>高く<rt>たかく</rt></ruby>ないものであったとしても<a href="#glossary-8" id="ref-8-1" class="footnote">*8</a>、まあ<ruby>美しい<rt>うつくしてしまう</rt></ruby>ものですから、<ruby>特権<rt>とっけん</rt></ruby><ruby>階級<rt>かいきゅう</rt></ruby>の<ruby>位<rt>くらい</rt></ruby>の<ruby>高い<rt>たかい</rt></ruby>人、ステータスの高い人、お金持ちしか<ruby>基本<rt>きほん</rt></ruby><ruby>的<rt>てき</rt></ruby>には<ruby>持っ<rt>もっ</rt></ruby>ていなかったんですね。</p>
+  <p class="timestamp"><time datetime="PT2M16S">2:16</time></p>
+  <p>それがルネッサンスを<ruby>経<rt>へ</rt></ruby>て<a href="#glossary-9" id="ref-9-1" class="footnote">*9</a>、そして18<ruby>世紀<rt>せいき</rt></ruby><ruby>後半<rt>こうはん</rt></ruby>の<ruby>産業<rt>さんぎょう</rt></ruby><ruby>革命<rt>かくめい</rt></ruby>を<ruby>経<rt>へ</rt></ruby>て<a href="#glossary-9" id="ref-9-2" class="footnote">*9</a>。 どんどんガラスというものが<ruby>庶民<rt>しょみん</rt></ruby>にわたる<a href="#glossary-10" id="ref-10-1" class="footnote">*10</a>ようになってきて、そしてその透明<ruby>度<rt>ど</rt></ruby>も<ruby>飛躍<rt>ひやく</rt></ruby><ruby>的<rt>てき</rt></ruby>に上がったんですね。 さらにガラス<ruby>板<rt>いた</rt></ruby>というのはもともとは<ruby>割れ<rt>われ</rt></ruby>やすいものでしたけれども、その<ruby>強度<rt>きょうど</rt></ruby>、<ruby>強<rt>つよ</rt></ruby>さもどんどん<ruby>高く<rt>たかく</rt></ruby>なっていったんですね。</p>
+  <p class="timestamp"><time datetime="PT2M36S">2:36</time></p>
+  <p>さらに、それまでの<ruby>建物<rt>たてもの</rt></ruby>というのは、<ruby>壁<rt>かべ</rt></ruby><ruby>自体<rt>じたい</rt></ruby>が<ruby>柱<rt>はしら</rt></ruby>のような<ruby>役割<rt>やくわり</rt></ruby>をしていたので、例えば<ruby>石造り<rt>いしづくり</rt></ruby>の<ruby>家<rt>いえ</rt></ruby>ですね。 <ruby>石<rt>いし</rt></ruby>を<ruby>積み立て<rt>つみたて</rt></ruby>て作ったような<ruby>家<rt>いえ</rt></ruby>というのは。 まあ、その<ruby>壁<rt>かべ</rt></ruby><ruby>自体<rt>じたい</rt></ruby>が<ruby>屋根<rt>やぶ</rt></ruby>などの<ruby>重<rt>おも</rt></ruby>さを<ruby>支える<rt>ささえる</rt></ruby><ruby>柱<rt>はしら</rt></ruby>のような<ruby>役割<rt>やくわり</rt></ruby>をしていたんですね。</p>
+  <p class="timestamp"><time datetime="PT2M51S">2:51</time></p>
+  <p>ですので、ガラスもその<ruby>一部<rt>いちぶ</rt></ruby>、<ruby>窓<rt>まど</rt></ruby>ガラスもその<ruby>一部<rt>いちぶ</rt></ruby>だったので、そんなに大きな<ruby>窓<rt>まど</rt></ruby>ガラスというのは作れなかったわけですが、どんどん<ruby>柱<rt>はしら</rt></ruby>の<ruby>技術<rt>ぎじゅつ</rt></ruby>が上がっていって、柱がしっかりしていれば、<ruby>壁<rt>かべ</rt></ruby>が<ruby>薄く<rt>うすく</rt></ruby>ても<ruby>大丈夫<rt>だいじょうぶ</rt></ruby>。 それでも<ruby>重<rt>おも</rt></ruby>さを<ruby>耐え<rt>たえ</rt></ruby>られる<a href="#glossary-11" id="ref-11-1" class="footnote">*11</a>ような、そんな<ruby>形<rt>かたち</rt></ruby>になっていったので、今のような<ruby>巨大<rt>きょだい</rt></ruby>な、例えば壁<ruby>一面<rt>いちめん</rt></ruby>が<ruby>全部<rt>ぜんぶ</rt></ruby>ガラスとかね。</p>
+  <p class="timestamp"><time datetime="PT3M13S">3:13</time></p>
+  <p>まあ、そういった<ruby>建物<rt>たてもの</rt></ruby>もできるようになってきたわけです。</p>
+  <h2 id="heading-4">カウンター越しにお店の人、店員さんとまあ会うわけ</h2>
+  <p>この大きくて<ruby>巨大<rt>きょだい</rt></ruby>なガラスというのが、まあウィンドウショッピングというものを<ruby>可能<rt>かのう</rt></ruby>にしたんですが、これはそれまでになかった。 買わなくても買い物を<ruby>楽しむ<rt>たのしむ</rt></ruby>ということをまあ<ruby>可能<rt>かのう</rt></ruby>にしたんですけど、それ<ruby>以上<rt>いじょう</rt></ruby>に大きかったのは、<ruby>商品<rt>しょうひん</rt></ruby>を<ruby>選ぶ<rt>えらぶ</rt></ruby>のがお<ruby>店側<rt>みせがわ</rt></ruby>ではなくて買い手、<ruby>私<rt>わたくし</rt></ruby>たちになったということですね。</p>
+  <p class="timestamp"><time datetime="PT3M37S">3:37</time></p>
+  <p>まあ、これは<ruby>当たり前<rt>あたりまえ</rt></ruby>のように聞こえるかもしれませんが、<ruby>以前<rt>いぜん</rt></ruby>の<ruby>小売<rt>こうり</rt></ruby><ruby>業<rt>ぎょう</rt></ruby><a href="#glossary-12" id="ref-12-1" class="footnote">*12</a>というのは<ruby>基本<rt>きほん</rt></ruby>的に<ruby>簡単<rt>かんたん</rt></ruby>サービスという、まあ<ruby>販売<rt>はんばい</rt></ruby><ruby>形態<rt>けいたい</rt></ruby><ruby>販売<rt>はんばい</rt></ruby>。 スタイルだったわけですね。 どういうことかというと、お<ruby>客<rt>きゃく</rt></ruby>さんがお<ruby>店<rt>みせ</rt></ruby>の中に<ruby>入る<rt>はいる</rt></ruby>と、まずはカウンター<ruby>越し<rt>ごし</rt></ruby>にお店の人、<ruby>店員<rt>てんぎん</rt></ruby>さんとまあ会うわけですね。</p>
+  <p class="timestamp"><time datetime="PT3M55S">3:55</time></p>
+  <p>そしてそのお店の人に、例えばこんな商品が<ruby>欲しい<rt>ほしい</rt></ruby>、例えば<ruby>今度<rt>こんど</rt></ruby><ruby>結婚<rt>けっこん</rt></ruby><ruby>式<rt>しき</rt></ruby>があるから<ruby>新しい<rt>あたらしい</rt></ruby><ruby>着物<rt>きもの</rt></ruby>を作りたいんだとか、<ruby>今度<rt>こんど</rt></ruby>パーティーに出るから<ruby>指輪<rt>ゆびわ</rt></ruby>が<ruby>欲しい<rt>ほしい</rt></ruby>とかですね。 あるいは<ruby>食事<rt>しょくじ</rt></ruby><ruby>会<rt>かい</rt></ruby>をするから、いいお<ruby>肉<rt>にく</rt></ruby>が<ruby>欲しい<rt>ほしい</rt></ruby>。</p>
+  <p class="timestamp"><time datetime="PT4M10S">4:10</time></p>
+  <p>まあ、そういったことをお<ruby>客<rt>きゃく</rt></ruby>さんがお店の人に<ruby>伝え<rt>つたえ</rt></ruby>て、お店の人がじゃあこの人にはこんな<ruby>着物<rt>きもの</rt></ruby>の<ruby>布<rt>ぬの</rt></ruby>がいいんじゃないかとか、あるいはこの<ruby>指輪<rt>ゆびわ</rt></ruby>どうだろうかとか、このお<ruby>肉<rt>にく</rt></ruby>が<ruby>美味しい<rt>おいしい</rt></ruby>ですよとか。 そんな<ruby>形<rt>かたち</rt></ruby>でお店の<ruby>奥<rt>おく</rt></ruby>からそれを<ruby>持っ<rt>もっ</rt></ruby>てくるんですね。</p>
+  <p class="timestamp"><time datetime="PT4M27S">4:27</time></p>
+  <p>つまり、お客さんとお<ruby>店側<rt>みせがわ</rt></ruby>に<ruby>情報<rt>じょうほう</rt></ruby>の<ruby>格差<rt>かくさ</rt></ruby><a href="#glossary-13" id="ref-13-1" class="footnote">*13</a>があって、<ruby>情報<rt>じょうほう</rt></ruby>をたくさん<ruby>持っ<rt>もっ</rt></ruby>ているのはお店の<ruby>側<rt>がわ</rt></ruby>。 そのお店の<ruby>側<rt>がわ</rt></ruby>がお客さんのニーズに<ruby>合わせ<rt>あわせ</rt></ruby>て自分たちで<ruby>選ん<rt>えらん</rt></ruby>で、じゃあこれはどうですか、こっちはどうですかという<ruby>形<rt>かたち</rt></ruby>でおすすめをするという形だったんですね。</p>
+  <p class="timestamp"><time datetime="PT4M44S">4:44</time></p>
+  <p>お客さんは、そのお店がベストなものをおすすめしてくれているということを<ruby>信じる<rt>しんじる</rt></ruby>しかなかったし<a href="#glossary-14" id="ref-14-1" class="footnote">*14</a>。 あるいはその<ruby>目利き<rt>めきき</rt></ruby><a href="#glossary-15" id="ref-15-1" class="footnote">*15</a>の<ruby>能力<rt>のうりょく</rt></ruby>ですね。</p>
+  <h2 id="heading-5">ースあるいはショーウィンドウが入ってきたというこ</h2>
+  <p><ruby>目利き<rt>めきき</rt></ruby><a href="#glossary-16" id="ref-16-1" class="footnote">*16</a>というのは選ぶ<ruby>力<rt>ちから</rt></ruby>という<ruby>意味<rt>いみ</rt></ruby>ですが。 いい<ruby>着物<rt>きもの</rt></ruby>を作りたいけど、どんな<ruby>布<rt>ぬの</rt></ruby>がいいかということを聞いて、じゃあこういうシチュエーションだったらこの<ruby>布<rt>ぬの</rt></ruby>がいいですよというふうに持ってきてくれるわけですが、そのチョイス、その選ぶ<ruby>力<rt>ちから</rt></ruby>というのは、そのお店の人に<ruby>任せる<rt>まかせる</rt></ruby>しかなかったんですね<a href="#glossary-17" id="ref-17-1" class="footnote">*17</a>。</p>
+  <p class="timestamp"><time datetime="PT5M9S">5:09</time></p>
+  <p>ところが、透明なショーケースあるいはショーウィンドウが<ruby>入っ<rt>はいっ</rt></ruby>てきたということは、この<ruby>情報<rt>じょうほう</rt></ruby>の<ruby>非<rt>ひ</rt></ruby>対称性<a href="#glossary-18" id="ref-18-1" class="footnote">*18</a>アンバランスアシンメトリーを<ruby>劇的<rt>げきてき</rt></ruby>に<ruby>解消<rt>かいしょう</rt></ruby>したんですよね。 And <ruby>基本<rt>きほん</rt></ruby>的にはすべての商品がお店に<ruby>並ん<rt>ならん</rt></ruby>でガラスの<ruby>向こう側<rt>むこうがわ</rt></ruby>に<ruby>並ぶ<rt>ならぶ</rt></ruby>ということで、そこにプライスタグ<ruby>値札<rt>ねふだ</rt></ruby>ですね。</p>
+  <p class="timestamp"><time datetime="PT5M30S">5:30</time></p>
+  <p>それもきちんとつくようになりました。 ですので、情報がすべて<ruby>開示<rt>かいじ</rt></ruby>されて、<ruby>開か<rt>ひらか</rt></ruby>れて選ぶのは買う<ruby>側<rt>がわ</rt></ruby>になったわけですね。 <ruby>選択<rt>せんたく</rt></ruby><ruby>肢<rt>し</rt></ruby>が<ruby>非常<rt>ひじょう</rt></ruby>に大きくなったわけです。 これまではお店の人がいくつかピックアップしてきたものの中から選ぶしかなかったわけですが<a href="#glossary-17" id="ref-17-2" class="footnote">*17</a>。</p>
+  <p class="timestamp"><time datetime="PT5M49S">5:49</time></p>
+  <p>買う側がすべての商品を見て、自分たちで選ぶことができるようになったんですね。 その<ruby>意味<rt>いみ</rt></ruby>では、これまでお店の人と話をして<ruby>交渉<rt>こうすう</rt></ruby>するというのが買い物の基本だったわけですが、この<ruby>交渉<rt>こうしょう</rt></ruby>、ネゴシエーションが<ruby>必要<rt>ひつよう</rt></ruby>なくなったんですね。</p>
+  <p class="timestamp"><time datetime="PT6M5S">6:05</time></p>
+  <p>時々、<ruby>海外<rt>かいがい</rt></ruby>のマーケットなどに行くと、<ruby>未だ<rt>いまだ</rt></ruby>に<ruby>値段<rt>ねだん</rt></ruby>の<ruby>交渉<rt>こうしょう</rt></ruby>が<ruby>必要<rt>ひつよう</rt></ruby>な場所というのがよくありますけど、<ruby>私<rt>わたくし</rt></ruby>は<ruby>苦手<rt>にがて</rt></ruby>ですね。 どうして<ruby>値札<rt>ねふだ</rt></ruby>が<ruby>貼っ<rt>はっ</rt></ruby>てないんだと思ってしまうんですが。 ガイドブックなんかを見てもですね。 お店の人は<ruby>必ず<rt>かならず</rt></ruby>3<ruby>倍<rt>ばい</rt></ruby>、 4<ruby>倍<rt>ばい</rt></ruby>の<ruby>値段<rt>ねだん</rt></ruby>を言ってくるから、<ruby>少なく<rt>すくなく</rt></ruby>とも言ってきた<ruby>値段<rt>ねだん</rt></ruby>の<ruby>半分<rt>はんぶん</rt></ruby><ruby>以下<rt>いか</rt></ruby>には<ruby>下げ<rt>さげ</rt></ruby>て買いなさいとか<ruby>書い<rt>かい</rt></ruby>てあるんですけど、その手間が<ruby>面倒<rt>めんどう</rt></ruby>くさいですよね。</p>
+  <p class="timestamp"><time datetime="PT6M30S">6:30</time></p>
+  <h2 id="heading-6">こちらが選ぶ権利を得たということ自分で選ぶ権利が与えられたというこ</h2>
+  <p>タクシーなんかも行き先を<ruby>伝え<rt>つたえ</rt></ruby>て、そこまでいくらで行ってくれるかを交渉したりする国もありますけど、それもやっぱり<ruby>嫌<rt>いや</rt></ruby>ですね。 まあ、多くの人はやはりそれが<ruby>嫌<rt>いや</rt></ruby>だったり、<ruby>騙さ<rt>だまさ</rt></ruby>れたりする。 まあ、そういった<ruby>経験<rt>けいけん</rt></ruby>から、まあ、ウーバーとかね。 値段がきちんと<ruby>事前<rt>じぜん</rt></ruby>にわかるというサービスがまあ<ruby>流行る<rt>はやる</rt></ruby>んだと思うんですが、ガラスのショーケースというのは、この交渉の手間を<ruby>省い<rt>はぶい</rt></ruby>たということと、情報が対象でないお店の人の方がたくさん情報を持っているという<ruby>状態<rt>じょうかい</rt></ruby>から、お<ruby>互い<rt>たがい</rt></ruby>に対<ruby>等<rt>たいとう</rt></ruby>な情報を持っているということになったわけです。</p>
+  <p class="timestamp"><time datetime="PT7M4S">7:04</time></p>
+  <p>ただし、これは<ruby>逆<rt>ぎゃく</rt></ruby>に言えばですね、こちらが選ぶ権利を<ruby>得<rt>え</rt></ruby>たということは、<ruby>逆<rt>ぎゃく</rt></ruby>に選ぶ<ruby>能力<rt>のうりょく</rt></ruby>も<ruby>我々<rt>われわれ</rt></ruby>にないといけないということですね。 自分で選ぶ権利が<ruby>与え<rt>あたえ</rt></ruby>られたということは、<ruby>逆<rt>ぎゃく</rt></ruby>に選ぶ<ruby>義務<rt>ぎむ</rt></ruby>も<ruby>生じ<rt>しょうじ</rt></ruby>たということですね。</p>
+  <p class="timestamp"><time datetime="PT7M19S">7:19</time></p>
+  <p>自分の<ruby>力<rt>ちから</rt></ruby>で<ruby>選ば<rt>えらば</rt></ruby>なければいけないインターネットでの買い物などは、まだその<ruby>典型<rt>てんけい</rt></ruby>例ですよね。 基本的に商品の<ruby>必要<rt>ひつよう</rt></ruby>な情報はすべてインターネット<ruby>上<rt>じょう</rt></ruby>に<ruby>載っ<rt>のっ</rt></ruby>ていて、それを選ぶのは<ruby>我々<rt>われわれ</rt></ruby>なわけですね。 ですので、<ruby>以前<rt>いぜん</rt></ruby>だと、例えばカメラが欲しいと思ったら、いろんなカメラのサイトを見てですね。</p>
+  <p class="timestamp"><time datetime="PT7M39S">7:39</time></p>
+  <p>どのお店で一番いいものを<ruby>売っ<rt>うっ</rt></ruby>ているか、どのお店で一番<ruby>安く<rt>やすく</rt></ruby><ruby>売っ<rt>うっ</rt></ruby>ているかみたいなことを自分で<ruby>調べ<rt>しらべ</rt></ruby>ないといけなかったんですね。 で、その<ruby>比較<rt>ひかく</rt></ruby>の情報を<ruby>提供<rt>ていきょう</rt></ruby>する人ですね。 例えば、<ruby>私<rt>わたくし</rt></ruby>が<ruby>調べ<rt>しらべ</rt></ruby>てみました<ruby>比べ<rt>くらべ</rt></ruby>てみましたという形で、このカメラとこのカメラとこのカメラ、最近流行っ（はやっ）てますけど、このお店ではこんな<ruby>風<rt>ふう</rt></ruby>に売ってますよこのお店ではこんな値段で売ってますよみたいなことをまあ<ruby>提供<rt>ていきょう</rt></ruby>する。</p>
+  <p class="timestamp"><time datetime="PT8M3S">8:03</time></p>
+  <h2 id="heading-7">出してきた答えの商品をそのまま買うということ楽をするこ</h2>
+  <p>そんな情報を<ruby>提供<rt>ていきょう</rt></ruby>するサイトもあったんですよね。 ただ、最近はこれすらAIがやってくれますよね。 <ruby>複数<rt>ふくすう</rt></ruby>のサイトを自分で見に行かずにですね、 AIのチャットに入れればですね、こんな商品、これぐらいの値段で買いたいんだけど、<ruby>比較<rt>ひかく</rt></ruby>してくれる？</p>
+  <p class="timestamp"><time datetime="PT8M19S">8:19</time></p>
+  <p>というふうに<ruby>言う<rt>ゆう</rt></ruby>と、まあ、 AIが<ruby>勝手<rt>かって</rt></ruby>にいろんなサイトをブラウズしてくれて、で、そしてまあ、良さ（よさ）そうなものをピックアップして私たち見せてくれるんですよね。 ということで、インターネット<ruby>上<rt>じょう</rt></ruby>でのAIに<ruby>頼っ<rt>たよっ</rt></ruby>ての買い物というのは、これまでのショーケースですべてのものが<ruby>目<rt>め</rt></ruby>の前にオープンになるということ、それから。</p>
+  <p class="timestamp"><time datetime="PT8M40S">8:40</time></p>
+  <p>店員さんと話して、どの商品がいいかを選ぶということ、そのプロセスも必要なくなるんですね。 ただし、 AIに<ruby>頼り<rt>たより</rt></ruby>すぎると、<ruby>結局<rt>けっきょく</rt></ruby>AIがおすすめしたものを買うという形になってしまって、これって<ruby>逆戻り<rt>ぎゃくもどり</rt></ruby>をしてますよね。</p>
+  <p class="timestamp"><time datetime="PT8M56S">8:56</time></p>
+  <p>つまり、<ruby>昔<rt>むかし</rt></ruby>はこんな商品が欲しいんだけどって<ruby>言う<rt>ゆう</rt></ruby>と、お店の人が中から持ってきたものから<ruby>選ば<rt>えらば</rt></ruby>ざるを得なかったんですけども、<ruby>同じ<rt>おなじ</rt></ruby>ようにこんなものが欲しいんだけどとAIに<ruby>頼っ<rt>たよっ</rt></ruby>て、まあAIに聞いてですね。 そしてAIが。 <ruby>出し<rt>だし</rt></ruby>てきた<ruby>答え<rt>こたえ</rt></ruby>の商品をそのまま買うということは、実は<ruby>全く<rt>まったく</rt></ruby><ruby>同じ<rt>おなじ</rt></ruby>ことをしてるんですよね。</p>
+  <p class="timestamp"><time datetime="PT9M15S">9:15</time></p>
+  <p>このことは考えてみるとすごく<ruby>逆説<rt>ぎゃくせつ</rt></ruby>的ですよね。 いろいろなお店を見る、あるいはいろいろなサイトを見て<ruby>回る<rt>まわる</rt></ruby>手間とか、あるいは交渉する手間、選ぶ手間というもの。 まあ、そうしたプロセスをまあ<ruby>省く<rt>はぶく</rt></ruby>ことができる、<ruby>楽<rt>らく</rt></ruby>をすることはできるんですが、<ruby>結局<rt>けっきょく</rt></ruby>そうなると<ruby>相手<rt>あいて</rt></ruby>が<ruby>提示<rt>ていじ</rt></ruby>したオプションをそのまま<ruby>受け入れる<rt>うけいれる</rt></ruby>ことになりますので、<ruby>結局<rt>けっきょく</rt></ruby>情報じゃ。</p>
+  <p class="timestamp"><time datetime="PT9M39S">9:39</time></p>
+  <h2 id="heading-8">ニュース</h2>
+  <p>弱者（じゃく．ゃ）というのが<ruby>負ける<rt>まける</rt></ruby>ことになってしまうんですね<a href="#glossary-19" id="ref-19-1" class="footnote">*19</a>。 <ruby>負ける<rt>まける</rt></ruby>という言い方はよくないかもしれませんが、情報<ruby>弱者<rt>じゃくしゃ</rt></ruby><a href="#glossary-20" id="ref-20-1" class="footnote">*20</a>、あるいは情報を<ruby>判断<rt>はんだん</rt></ruby>する<ruby>能力<rt>のうりょく</rt></ruby>がない人というのは、基本的にはAIのあるいはお店の人の言いなりになってしまう<a href="#glossary-21" id="ref-21-1" class="footnote">*21</a>というのは、昔も今も<ruby>変わら<rt>かわら</rt></ruby>ないということですね。</p>
+  <p class="timestamp"><time datetime="PT9M58S">9:58</time></p>
+  <p>最近は自分で情報をまあ<ruby>処理<rt>しょり</rt></ruby>する。 まあ<ruby>処理<rt>しょり</rt></ruby>するというか<a href="#glossary-22" id="ref-22-1" class="footnote">*22</a><ruby>判断<rt>はんだん</rt></ruby>するんですね。 そのニュースがいいニュースなのか、<ruby>悪い<rt>わるい</rt></ruby>ニュースなのか、この商品がいいものなのか、そうでないのかみたいな<a href="#glossary-23" id="ref-23-1" class="footnote">*23</a>ことを<ruby>判断<rt>はんだん</rt></ruby>する能力、あるいは<ruby>機会<rt>きかい</rt></ruby>というのが<ruby>減っ<rt>へっ</rt></ruby>てきていますね。</p>
+  <p class="timestamp"><time datetime="PT10M13S">10:13</time></p>
+  <p>判断しようとする前に<ruby>他<rt>ほか</rt></ruby>の人の<ruby>意見<rt>いけん</rt></ruby>が入ってくるからです。 あるいはAIによるサジェスチョンがあるからですね。 例えばニュースなんかでも、ニュースを<ruby>全部<rt>ぜんぶ</rt></ruby><ruby>読む<rt>よむ</rt></ruby>前に、そのニュースについているコメントですね。 <ruby>一般<rt>いっぱん</rt></ruby>の方々、あるいはまあプロの方もいますけれども、いろいろなこうコメントがニュースにつくわけですよね。</p>
+  <p class="timestamp"><time datetime="PT10M32S">10:32</time></p>
+  <p>そのコメントを見て、例えばそこで<ruby>述べ<rt>のべ</rt></ruby>られていること、そのニュースの中で<ruby>述べ<rt>のべ</rt></ruby>られている<ruby>内容<rt>ないよう</rt></ruby>の<ruby>是非<rt>ぜひ</rt></ruby><a href="#glossary-24" id="ref-24-1" class="footnote">*24</a>を判断する。 <ruby>記事<rt>きじ</rt></ruby>の<ruby>内容<rt>ないよう</rt></ruby>そのものよりも<a href="#glossary-25" id="ref-25-1" class="footnote">*25</a>、そのニュースを見た人の<ruby>反応<rt>はんのう</rt></ruby>、コメントを見て、それで判断してしまう。 どんどん自分で何かを判断する、自分で何かを選ぶという<ruby>機会<rt>きかい</rt></ruby>が<ruby>減っ<rt>へっ</rt></ruby>てきてしまってますね<a href="#glossary-26" id="ref-26-1" class="footnote">*26</a>。</p>
+  <p class="timestamp"><time datetime="PT10M53S">10:53</time></p>
+  <p>ただ、私はあまりこういったことに<ruby>悲観<rt>ひかん</rt></ruby>的<a href="#glossary-27" id="ref-27-1" class="footnote">*27</a>でないのは、このポッドキャストでも何<ruby>度<rt>ど</rt></ruby>も言った通り<a href="#glossary-28" id="ref-28-1" class="footnote">*28</a>ですけれども、このように人々の何かのプロセスがどんどん楽になればなるほど<a href="#glossary-29" id="ref-29-1" class="footnote">*29</a>、また<ruby>新しく<rt>あたたらしく</rt></ruby><ruby>求め<rt>もとめ</rt></ruby>られることというのが<ruby>増え<rt>ふえ</rt></ruby>ていくんですよね。</p>
+  <h2 id="heading-9">交換と相手</h2>
+  <p>ですので、私は<ruby>新しい<rt>あたらしい</rt></ruby>テクノロジーが人をどんどん<ruby>怠け者<rt>なまけもの</rt></ruby>にしていくみたいな<ruby>論<rt>ろん</rt></ruby>というのはあまり<ruby>同意<rt>どうい</rt></ruby>できないんですけどね。</p>
+  <p class="timestamp"><time datetime="PT11M16S">11:16</time></p>
+  <p>ということで、今日は<ruby>先週<rt>せんしゅう</rt></ruby>あったガラスケースを<ruby>叩き割っ<rt>たたきわっ</rt></ruby>て<ruby>物<rt>もの</rt></ruby>を<ruby>盗ん<rt>ぬすん</rt></ruby>だというニュースから、まあショーケース透明なガラスというのが人々の買い物のあり方を<ruby>変え<rt>かえ</rt></ruby>たというお話だったんですが、これだけ買い物というか、<ruby>物<rt>もの</rt></ruby>の<ruby>比較<rt>ひかく</rt></ruby>というのが<ruby>簡単<rt>かんたん</rt></ruby>になってくると、<ruby>経済<rt>けいざい</rt></ruby>の形っていうのはまた大きく<ruby>変わる<rt>かわる</rt></ruby>ような<ruby>気<rt>き</rt></ruby>がしますね。</p>
+  <p class="timestamp"><time datetime="PT11M37S">11:37</time></p>
+  <p>というのは、まあ、今お金というのはどんどん<ruby>物理<rt>ぶつり</rt></ruby>的なお金から<ruby>電子<rt>でんし</rt></ruby>的なお金になっていますけれど。 お金というのは、もともとは<ruby>物々<rt>ぶつぶつ</rt></ruby><ruby>交換<rt>こうかん</rt></ruby>ですね。 例えば、りんごを持っている人と、例えばお<ruby>米<rt>こめ</rt></ruby>を持っている人がまあ私はお<ruby>米<rt>こめ</rt></ruby>が欲しいで、<ruby>別<rt>べつ</rt></ruby>の人はりんごが欲しいから、じゃあそれを交換しようという形だった。</p>
+  <p class="timestamp"><time datetime="PT11M57S">11:57</time></p>
+  <p>これが<ruby>物々<rt>ぶつぶつ</rt></ruby>交換ですが、<ruby>物々<rt>ぶつぶつ</rt></ruby>交換ではなかなか相手を見つけるのが<ruby>難しい<rt>むずかしい</rt></ruby>んですよね。 ちょうど私は<ruby>牛<rt>うし</rt></ruby>のお<ruby>肉<rt>にく</rt></ruby>が欲しいけれど、相手が。 りんごがうまくいかないわけですね。 そうは<ruby>限ら<rt>かぎら</rt></ruby>ないわけですね。 物々交換っていうのは、相手が欲しいものと私が欲しいものが<ruby>完全<rt>かんぜん</rt></ruby>に<ruby>一致<rt>いっち</rt></ruby>しないと、なかなか交換というのは<ruby>成立<rt>せいりつ</rt></ruby>しないわけですね。</p>
+  <p class="timestamp"><time datetime="PT12M19S">12:19</time></p>
+  <p>ですので、その間に<ruby>入る<rt>はいる</rt></ruby>ものということで、お<ruby>互い<rt>たがい</rt></ruby>が<ruby>価値<rt>かち</rt></ruby>を持っていると思うものなので、昔は<ruby>貝殻<rt>かいがら</rt></ruby>とかね、金とかそういったものを<ruby>媒介<rt>ばいかい</rt></ruby>させて<ruby>間<rt>ま</rt></ruby>に入ってもらって、それで物々交換を<ruby>成立<rt>せいりつ</rt></ruby>させていたんですね。</p>
+  <p class="timestamp"><time datetime="PT12M34S">12:34</time></p>
+  <p>でも、これだけインターネットが<ruby>発達<rt>はったつ</rt></ruby>して、 Aさんが欲しいものと、 Bさんが欲しいものとCさんが欲しいもの、<ruby>完璧<rt>かんぺき</rt></ruby>にマッチングできる。</p>
+  <p>例えば、私の<ruby>机<rt>つくえ</rt></ruby>の上には使わない<ruby>万<rt>まん</rt></ruby>年<ruby>筆<rt>ひつ</rt></ruby>が<ruby>一<rt>いち</rt></ruby><ruby>本<rt>ぽう</rt></ruby>ありますけれども、<ruby>一方<rt>いっぽう</rt></ruby>で私は<ruby>爪切り<rt>つめきり</rt></ruby>が欲しいと思っている。</p>
+  <p class="timestamp"><time datetime="PT12M51S">12:51</time></p>
+  <p><ruby>爪切り<rt>つめきり</rt></ruby>が余っ（あまっ）ている人と<ruby>万年<rt>まんねん</rt></ruby><ruby>筆<rt>ひつ</rt></ruby>が欲しい人をうまくマッチングさせるのは<ruby>難しい<rt>むずかしい</rt></ruby>わけですが、これだけインターネットが<ruby>発達<rt>はったつ</rt></ruby>すればですね、それも可能になるかもしれないですよね。 ですので。 <ruby>経済<rt>けいざい</rt></ruby>の<ruby>究極<rt>きゅうきょく</rt></ruby>の形っていうのは<ruby>完璧<rt>かんぺき</rt></ruby>な物々交換になるかもしれないですよね。</p>
+  <p class="timestamp"><time datetime="PT13M10S">13:10</time></p>
+  <p>まあ、こんなことをですね、この<ruby>強盗<rt>ごうとう</rt></ruby>のニュースを見てなんとなく考えたので、今日はそんなお話をしてみました。 また<ruby>来週<rt>らいしゅう</rt></ruby>も聞いてくれると<ruby>嬉しい<rt>うれしい</rt></ruby>です。</p>
+    </article>
+  <hr>
+  <section aria-labelledby="glossary-title">
+    <h3 id="glossary-title">言葉の解説 (Glossary)</h3>
+    <ol>
+      <li id="glossary-1">
+        <p><strong>〜にして</strong></p>
+        <p><strong>意味 (Meaning):</strong> 「〜にする」のテ形。ここでは「（言葉や文法を）簡単な状態に変えて」という、動作の結果や手段を表している。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">難しい言葉を分かりやすく言い換えて、説明してください。</p>
+        <p class="example">料理を美味しくするために、塩を少し足した。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜として」との違い:</strong> 「〜にして」は変化や手段に重点があり、「〜として」は役割や立場（例：先生として）を表す。</p>
+        <p><a href="#ref-1-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-2">
+        <p><strong><ruby>叩き割る<rt>たたきわる</rt></ruby></strong></p>
+        <p><strong>意味 (Meaning):</strong> 強い力で叩いて、バラバラに壊すこと。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">怒った彼は、目の前のコップを叩き割った。</p>
+        <p class="example">頑丈な窓ガラスをハンマーで叩き割る。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「壊す」との違い:</strong> 「壊す」は単に機能や形を失わせることだが、「叩き割る」は「叩く」という具体的な動作と「割れる」という結果が含まれる。</p>
+        <p><a href="#ref-2-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-3">
+        <p><strong>〜わけですが</strong></p>
+        <p><strong>意味 (Meaning):</strong> 「〜という状況なのですが」と、後に続く話への前提や、事実を認めた上での展開を示す。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">準備はできているわけですが、まだ少し不安です。</p>
+        <p class="example">彼は犯人であるわけですが、証拠がありません。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜ですが」との違い:</strong> 「〜わけですが」は、単なる逆接よりも「そういう事情・理由があるのだけれども」という、背景や理由を強調するニュアンスが強い。</p>
+        <p><a href="#ref-3-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-4">
+        <p><strong>〜ようとする</strong></p>
+        <p><strong>意味 (Meaning):</strong> ある状態にしようと試みる、あるいは動作を開始しようとする意図を表す。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">彼はやっと理解しようとしている。</p>
+        <p class="example">窓を開けようとしたとき、雨が降り出した。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜つもり」との違い:</strong> 「〜ようとする」は、今まさにその動作に向かっている、あるいは試行錯誤している「直前の動き」に焦点を当てる。</p>
+        <p><a href="#ref-4-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-5">
+        <p><strong>〜たり</strong></p>
+        <p><strong>意味 (Meaning):</strong> いくつかの例を挙げる際に使う。「〜したり、〜したりする」の形で、代表的な例をいくつか提示する。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">週末は映画を見たり、買い物に行ったりして過ごします。</p>
+        <p class="example">掃除をしたり、洗濯をしたりして、家事をこなした。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜て」との違い:</strong> 「〜て」は動作の順序（Aをして、次にBをする）を表すが、「〜たり」は順序は関係なく、例示として並べる。</p>
+        <p><a href="#ref-5-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-6">
+        <p><strong>〜といった</strong></p>
+        <p><strong>意味 (Meaning):</strong> 「〜のような」「〜などの」という意味で、例を挙げて具体化する。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">リンゴやバナナといった果物が好きです。</p>
+        <p class="example">東京や大阪といった大都市には人が多い。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜などの」との違い:</strong> 意味はほぼ同じだが、「〜といった」の方が、より具体例を強調して「〜のような種類のもの」というニュアンスが強まる。</p>
+        <p><a href="#ref-6-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-7">
+        <p><strong>〜ようとしてきた</strong></p>
+        <p><strong>意味 (Meaning):</strong> 過去から現在に至るまで、ある目的を達成しようと努力や試行を続けてきたプロセスを表す。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">人類は、新しいエネルギー源を見つけようとしてきた。</p>
+        <p class="example">科学者は、病気を克服しようとしてきた。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜ようとした」との違い:</strong> 「〜ようとした」は過去の一時点の試みを指すが、「〜ようとしてきた」は「（過去から）ずっと続けてきた」という継続的なニュアンスが含まれる。</p>
+        <p><a href="#ref-7-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-8">
+        <p><strong>〜であったとしても</strong></p>
+        <p><strong>意味 (Meaning):</strong> 「たとえ〜であっても」と同じ。ある条件が成立していても、その後の結果や状況は変わらないことを表す（譲歩）。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">どんなに忙しいのであっても、朝食は食べるようにしています。</p>
+        <p class="example">難しい問題であったとしても、最後まで諦めない。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜であっても」との違い:</strong> 「〜であったとしても」の方が、より仮定のニュールアンス（もし〜だとしても）が強く、文語的な響きがある。</p>
+        <p><a href="#ref-8-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-9">
+        <p><strong>〜を経て（をへて）</strong></p>
+        <p><strong>意味 (Meaning):</strong> ある期間、プロセス、または場所を通ること。ある段階を通過して次の状態へ進むことを示す。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">厳しい修行を経て、彼は一人前の料理人になった。</p>
+        <p class="example">多くの困難を経て、プロジェクトは成功した。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜を通って」との違い:</strong> 「〜を通って」は物理的な経路（道など）に使うことが多いが、「〜を経て」は時間的な経過や、プロセス・段階の通過によく使われる。</p>
+        <p><a href="#ref-9-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-10">
+        <p><strong>〜にわたる</strong></p>
+        <p><strong>意味 (Meaning):</strong> 範囲、期間、人数などが、ある広範囲に及んでいることを表す。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">この論文は、数千人にわたるアンケート結果に基づいている。</p>
+        <p class="example">授業は、1時間にわたって行われた。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜に及ぶ（およぶ）」との違い:</strong> 「〜にわたる」は範囲の広さを表す形容詞的な使い方が多いのに対し、「〜に及ぶ」は量や程度が極端に大きい（甚だしい）というニュアンスが含まれることがある。</p>
+        <p><a href="#ref-10-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-11">
+        <p><strong>〜に<ruby>耐える<rt>にたえる</rt></ruby></strong></p>
+        <p><strong>意味 (Meaning):</strong> 困難、圧力、重さ、苦痛などの厳しい状況に、屈せずに持ちこたえる。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">この橋は、大型トラックの重さに耐えられる設計になっている。</p>
+        <p class="example">厳しい寒さに耐えて、花が咲いた。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜に我慢する」との違い:</strong> 「我慢する」は主に人の感情や生理的な苦痛を抑えることに使うが、「耐える」は物理的な圧力や、より強固な力に対抗して持ちこたえるというニュアンスが強い。</p>
+        <p><a href="#ref-11-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-12">
+        <p><strong>小売<ruby>業<rt>こうりぎょう</rt></ruby></strong></p>
+        <p><strong>意味 (Meaning):</strong> 商品を消費者に直接販売するビジネス（リテール）。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">コンビニエンスストアは、代表的な小売業の一つです。</p>
+        <p class="example">彼は、衣料品の小売業に従事している。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「卸売業（おろしうりぎょう）」との違い:</strong> 小売業は消費者に売るのに対し、卸売業は業者同士の間で商品を売る。</p>
+        <p><a href="#ref-12-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-13">
+        <p><strong><ruby>格差<rt>かくさ</rt></ruby></strong></p>
+        <p><strong>意味 (Meaning):</strong> 状態やレベルの大きな開き、違い。特に、経済的な不平等や情報の有無による差を指すことが多い。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">都市部と地方の所得格差が問題になっている。</p>
+        <p class="example">知識の格差が、仕事の成果に影響を与える。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「違い（ちがい）」との違い:</strong> 「違い」は単なる差異を指すが、「格差」は不公平なニュアンスや、埋めるべき大きな差というニュアンスが含まれる。</p>
+        <p><a href="#ref-13-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-14">
+        <p><strong>〜するしかない</strong></p>
+        <p><strong>意味 (Meaning):</strong> 他に方法や選択肢がなく、その行動をとる以外に道がない。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">電車が止まってしまったので、歩いて帰るしかない。</p>
+        <p class="example">失敗した以上、やり直すしかない。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜せざるを得ない」との違い:</strong> 「〜するしかない」は日常的な表現。「〜せざるを得ない」はより硬い表現で、義務感や強い状況的強制力が強調される。</p>
+        <p><a href="#ref-14-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-15">
+        <p><strong><ruby>目利き<rt>めきき</rt></ruby></strong></p>
+        <p><strong>意味 (Meaning):</strong> 商品の良し悪しや価値を正しく判断できる能力、またはその人。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">彼は本物の美術品を見分ける目利きを持っている。</p>
+        <p class="example">良い食材を選ぶには、店主の目利きが重要だ。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「判断（はんだん）」との違い:</strong> 「判断」は論理的な決定を指すが、「目利き」は長年の経験や感覚に基づいた、価値を見抜く専門的な能力を指す。</p>
+        <p><a href="#ref-15-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-16">
+        <p><strong><ruby>目利き<rt>めきき</rt></ruby></strong></p>
+        <p><strong>意味 (Meaning):</strong> 物事の本質や価値を見分ける、優れた能力やその人。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">彼は本物の美術品を見分ける目利きを持っている。</p>
+        <p class="example">良い食材を選ぶには、店主の目利きが重要だ。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「鑑定士（かんていし）」との違い:</strong> 「目利き」は経験に基づいた直感や能力を指すことが多く、「鑑定士」は専門的な知識や道具を用いて客観的に価値を証明する職業人を指す。</p>
+        <p><a href="#ref-16-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-17">
+        <p><strong>〜するしかない</strong></p>
+        <p><strong>意味 (Meaning):</strong> 他に方法や選択肢がなく、その行動をとる以外に道がない。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">電車が止まってしまったので、歩いて帰るしかない。</p>
+        <p class="example">失敗した以上、やり直すしかない。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜せざるを得ない」との違い:</strong> 「〜するしかない」は日常的な表現。「〜せざるを得ない」はより硬い表現で、義務感や不本意な気持ち（したくないけれど、状況的にしなければならない）が強く含まれる。</p>
+        <p><a href="#ref-17-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-18">
+        <p><strong>非対称<ruby>性<rt>ひたいしょうせい</rt></ruby></strong></p>
+        <p><strong>意味 (Meaning):</strong> 左右やバランスが一致していないこと。情報の格差（一方が知り、もう一方が知らない状態）を指す際によく使われる。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">売り手と買い手の間には情報の非対称性が存在する。</p>
+        <p class="example">このデザインは、あえて非対称性を生み出すことで動きを出している。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「不均衡（ふきんこう）」との違い:</strong> 「非対称性」は形や構造のズレに重点がある。「不均衡」は量や力のバランスが取れていない（格差がある）状態に重点がある。</p>
+        <p><a href="#ref-18-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-19">
+        <p><strong>〜ことになってしまう</strong></p>
+        <p><strong>意味 (Meaning):</strong> 自分の意志やコントロールとは関係なく、ある結果（多くは望ましくない結果）になる。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">急な仕事が入って、旅行に行けなくなってしまった。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜ことになる」との違い:</strong> 「〜ことになる」は決定事項や予定を表すが、「〜てしまう」が加わることで「残念だ」「不本意だ」という話し手の感情が含まれる。</p>
+        <p><a href="#ref-19-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-20">
+        <p><strong>情報<ruby>弱者<rt>じょうほうじゃくしゃ</rt></ruby></strong></p>
+        <p><strong>意味 (Meaning):</strong> 情報を正しく扱ったり、活用したり、あるいは情報の真偽を見極めたりすることが難しい人。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">デジタル化が進む社会では、情報弱者が取り残されるリスクがある。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「情報強者」との違い:</strong> 情報を効率的に使いこなし、利益や利便性を得ている人を指す。</p>
+        <p><a href="#ref-20-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-21">
+        <p><strong>言いなりになる</strong></p>
+        <p><strong>意味 (Meaning):</strong> 自分の意見を持たず、相手の言うことにそのまま従うこと。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">彼はいつも上司の言いなりになっていて、自分の意見がない。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「従う」との違い:</strong> 「従う」はルールや指示に従うという中立的な表現だが、「言いなり」は主体性がなく、操られているというネガティブなニュアンスが強い。</p>
+        <p><a href="#ref-21-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-22">
+        <p><strong>〜というか</strong></p>
+        <p><strong>意味 (Meaning):</strong> 前に言った言葉を言い換えたり、より適切な表現を探したり、補足したりするときに使う。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">彼は優しいというか、少しおっとりしている。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「つまり」との違い:</strong> 「つまり」は要約や結論を出すときに使うが、「〜というか」はニュアンスを調整したり、言葉を濁したりするときに使う。</p>
+        <p><a href="#ref-22-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-23">
+        <p><strong>〜みたいな</strong></p>
+        <p><strong>意味 (Meaning):</strong> 例を挙げたり、似ている状態を表したりする。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">夢みたいな話を聞いた。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜のような」との違い:</strong> 「〜みたいな」は口語的（話し言葉）で、「〜のような」はよりフォーマルな書き言葉として使われる。</p>
+        <p><a href="#ref-23-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-24">
+        <p><strong><ruby>是非<rt>ぜひ</rt></ruby></strong></p>
+        <p><strong>意味 (Meaning):</strong> 物事の正しいか、正しくないか。良いか、悪いか。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">その新しい政策の是非を議論する。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「ぜひ」との違い:</strong> 副詞の「ぜひ」は「必ず（Please do）」という意味で使われることが多いが、名詞の「是非」は「正誤・善悪」を意味する。</p>
+        <p><a href="#ref-24-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-25">
+        <p><strong>〜よりも</strong></p>
+        <p><strong>意味 (Meaning):</strong> 比較の基準を示し、それと比べて差があることを表す。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">昨日に比べても、今日は暑い。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜に対して」との違い:</strong> 「〜に対して」は対照的な二つの事柄を並べる際に使い、「〜よりも」はどちらが優れているか、あるいは程度が高いかという比較に重点がある。</p>
+        <p><a href="#ref-25-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-26">
+        <p><strong>〜てしまっている</strong></p>
+        <p><strong>意味 (Meaning):</strong> ある動作が完了した状態、あるいは（残念なことに）そうなってしまった状態。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">宿題を忘れてしまっている。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜ている」との違い:</strong> 「〜ている」は単なる状態の継続を表すが、「〜てしまっている」は「忘れて困っている」といった後悔や困惑のニュアンスが含まれることが多い。</p>
+        <p><a href="#ref-26-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-27">
+        <p><strong>悲観<ruby>的<rt>ひかんてき</rt></ruby></strong></p>
+        <p><strong>意味 (Meaning):</strong> 物事を悪い方向へ、暗い方向へ捉えようとすること。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">彼は将来について非常に悲観的な見方をしている。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「楽観的」との違い:</strong> 「楽観的」は物事を良い方向へ、明るく捉えること。</p>
+        <p><a href="#ref-27-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-28">
+        <p><strong>〜た<ruby>通り<rt>とおり</rt></ruby></strong></p>
+        <p><strong>意味 (Meaning):</strong> 前に述べた内容や、指示された内容と全く同じであること。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">私が言った通りに、準備を進めてください。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜のように」との違い:</strong> 「〜のように」は比喩や例示として使われることが多いが、「〜た通り」は「内容の同一性」を強く強調する。</p>
+        <p><a href="#ref-28-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-29">
+        <p><strong>〜れば〜ほど</strong></p>
+        <p><strong>意味 (Meaning):</strong> ある条件の程度が変化すると、それに伴って別の事柄の程度も変化すること。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">この本は、読めば読むほど面白くなる。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜たら〜」との違い:</strong> 「〜たら」は単純な条件（If）を表すが、「〜れば〜ほど」は比例的な変化（The more... the more...）を表す。</p>
+        <p><a href="#ref-29-1" class="backlink">本文へ戻る</a></p>
+      </li>
+    </ol>
+  </section>
+  </main>
+</body>
+</html>

@@ -150,7 +150,8 @@ Use these exact project-local skills:
 - `$jptranscript-html`
 - `$frontend-design`
 
-Project-local skill folders are under `.agents/skills/`.
+The historical `.agents/skills/` reference folder has been removed from the repo.
+The active workflow now lives in `workflow.py`, `tools/`, and `prompts/`.
 
 ## Strictness Rule
 

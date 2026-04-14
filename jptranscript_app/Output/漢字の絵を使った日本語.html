@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>漢字の絵を使った日本語</title>
+  <style>
+/* ================================================================
+   JP Transcript — Default Design Template
+   ================================================================
+   Readability-focused, print-optimized stylesheet for learner-facing
+   Japanese transcript HTML documents with furigana and glossary.
+   ================================================================ */
+
+/* --- Base Reset & Typography --- */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-bg: #fafaf9;
+  --color-surface: #ffffff;
+  --color-text: #1c1917;
+  --color-text-secondary: #57534e;
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+  --color-border: #e7e5e4;
+  --color-border-light: #f5f5f4;
+  --color-highlight: #fef3c7;
+  --color-glossary-bg: #f8fafc;
+
+  --font-body: "Noto Sans JP", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", "Fira Code", "Fira Mono", Menlo, monospace;
+
+  --max-width: 800px;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2.5rem;
+  --spacing-2xl: 4rem;
+}
+
+/* --- Dark Mode --- */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1c1917;
+    --color-surface: #292524;
+    --color-text: #e7e5e4;
+    --color-text-secondary: #a8a29e;
+    --color-accent: #60a5fa;
+    --color-accent-hover: #93bbfd;
+    --color-border: #44403c;
+    --color-border-light: #292524;
+    --color-highlight: #422006;
+    --color-glossary-bg: #1e293b;
+  }
+}
+
+/* --- Body & Layout --- */
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.9;
+  padding: var(--spacing-xl) var(--spacing-md);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+article {
+  margin-bottom: var(--spacing-2xl);
+}
+
+/* --- Headings --- */
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text);
+  font-weight: 700;
+  line-height: 1.3;
+  margin-top: var(--spacing-2xl);
+  margin-bottom: var(--spacing-md);
+}
+
+h1 {
+  font-size: 1.85em;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--color-border);
+  margin-top: 0;
+}
+
+h2 {
+  font-size: 1.5em;
+  color: var(--color-text);
+  padding-bottom: var(--spacing-xs);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+h3 {
+  font-size: 1.3em;
+}
+
+/* --- Paragraphs & Text --- */
+
+p {
+  font-size: 1.15em;
+  line-height: 1.9;
+  margin-bottom: var(--spacing-md);
+  text-align: justify;
+  text-justify: inter-character;
+}
+
+strong {
+  font-weight: 700;
+}
+
+/* --- Ruby (Furigana) --- */
+
+ruby {
+  ruby-align: center;
+  ruby-position: over;
+  white-space: nowrap;
+}
+
+rt {
+  font-size: 0.5em;
+  font-weight: 300;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.05em;
+}
+
+.timestamp {
+  color: var(--color-text-secondary);
+  font-size: 0.95em;
+  margin: var(--spacing-sm) 0;
+}
+
+.timestamp time {
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Table of Contents (Nav) --- */
+
+nav[aria-label="目次"] {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--spacing-lg);
+  margin: var(--spacing-xl) 0;
+}
+
+nav[aria-label="目次"] strong {
+  display: block;
+  font-size: 1.1em;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text);
+}
+
+nav[aria-label="目次"] ul {
+  list-style: none;
+  padding-left: var(--spacing-md);
+}
+
+nav[aria-label="目次"] li {
+  padding: var(--spacing-xs) 0;
+  font-size: 1em;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+nav[aria-label="目次"] li:last-child {
+  border-bottom: none;
+}
+
+nav[aria-label="目次"] a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+nav[aria-label="目次"] a:hover {
+  text-decoration: underline;
+}
+
+/* --- Lists --- */
+
+ul, ol {
+  padding-left: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+li {
+  margin-bottom: var(--spacing-xs);
+  line-height: 1.7;
+}
+
+/* --- Glossary Footnote Links --- */
+
+.footnote {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-size: 0.75em;
+  font-weight: 500;
+  vertical-align: super;
+  padding: 0 2px;
+  border-radius: 2px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.footnote:hover {
+  background-color: var(--color-highlight);
+  color: var(--color-accent-hover);
+}
+
+/* --- Glossary Section --- */
+
+section[aria-labelledby="glossary-title"] {
+  background: var(--color-glossary-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--spacing-xl);
+  margin-top: var(--spacing-2xl);
+}
+
+section[aria-labelledby="glossary-title"] h3 {
+  margin-top: 0;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--color-border);
+}
+
+section[aria-labelledby="glossary-title"] ol {
+  list-style-position: inside;
+  padding-left: 0;
+}
+
+section[aria-labelledby="glossary-title"] li {
+  padding: var(--spacing-lg) 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+section[aria-labelledby="glossary-title"] li:last-child {
+  border-bottom: none;
+}
+
+section[aria-labelledby="glossary-title"] .example {
+  padding-left: var(--spacing-lg);
+  border-left: 3px solid var(--color-border);
+  margin: var(--spacing-sm) 0;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.backlink {
+  color: var(--color-text-secondary);
+  font-size: 0.85em;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.backlink:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+/* --- Horizontal Rule (Glossary Separator) --- */
+
+hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--spacing-2xl) 0;
+}
+
+/* --- Code --- */
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--color-border-light);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* --- Scroll Behavior --- */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* --- Mobile Responsive --- */
+
+@media (max-width: 640px) {
+  body {
+    padding: var(--spacing-md) var(--spacing-sm);
+    font-size: 15px;
+  }
+
+  h1 { font-size: 1.5em; }
+  h2 { font-size: 1.3em; }
+  h3 { font-size: 1.15em; }
+  p { font-size: 1.05em; }
+
+  nav[aria-label="目次"] {
+    padding: var(--spacing-md);
+  }
+
+  section[aria-labelledby="glossary-title"] {
+    padding: var(--spacing-md);
+  }
+}
+
+/* --- Print Optimized (A4) --- */
+
+@media print {
+  :root {
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-text: #000000;
+    --color-text-secondary: #333333;
+    --color-accent: #000000;
+    --color-border: #cccccc;
+    --color-glossary-bg: #f5f5f5;
+  }
+
+  body {
+    background: white;
+    color: black;
+    font-size: 11pt;
+    line-height: 1.7;
+    padding: 0;
+    max-width: 100%;
+  }
+
+  main {
+    max-width: 100%;
+  }
+
+  h1 { font-size: 16pt; }
+  h2 { font-size: 14pt; page-break-after: avoid; }
+  h3 { font-size: 12pt; page-break-after: avoid; }
+  p { font-size: 11pt; orphans: 3; widows: 3; }
+
+  rt { font-size: 0.45em; color: #333; }
+
+  /* Hide interactive elements */
+  .footnote { color: black; }
+  .backlink { display: none; }
+  nav[aria-label="目次"] { display: none; }
+
+  /* Glossary section */
+  section[aria-labelledby="glossary-title"] {
+    page-break-before: always;
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+  }
+
+  /* Avoid page breaks inside glossary entries */
+  section[aria-labelledby="glossary-title"] li {
+    page-break-inside: avoid;
+  }
+
+  a { text-decoration: none; color: inherit; }
+}
+  </style>
+</head>
+<body>
+  <main>
+    <article>
+  <h1 id="heading-1">漢字の絵を使った日本語</h1>
+  <nav aria-label="目次">
+    <strong>目次</strong>
+    <ul>
+      <li><a href="#heading-2">イントロダクション</a></li>
+    </ul>
+  </nav>
+  <h2 id="heading-2">イントロダクション</h2>
+  <p class="timestamp"><time datetime="PT0M8S">0:08</time></p>
+  <p>皆さんは<ruby>絵<rt>え</rt></ruby>を<ruby>描く<rt>えがく</rt></ruby>のが<ruby>好き<rt>すき</rt></ruby>ですか？ 今日は<ruby>漢字<rt>かんじ</rt></ruby>の<ruby>絵<rt>え</rt></ruby>を使った<ruby>日本<rt>にっぽん</rt></ruby><ruby>語<rt>ご</rt></ruby>をいくつかご<ruby>紹介<rt>しょうかい</rt></ruby>します。</p>
+  <p class="timestamp"><time datetime="PT0M52S">0:52</time></p>
+  <p>まず一つ<ruby>目<rt>め</rt></ruby>は絵心（えご．ごころ）があります<a href="#glossary-1" id="ref-1-1" class="footnote">*1</a>。 これは絵を<ruby>描く<rt>えがく</rt></ruby>のが<ruby>上手<rt>じょうず</rt></ruby>な人に対して<a href="#glossary-2" id="ref-2-1" class="footnote">*2</a>使います。</p>
+  <p class="timestamp"><time datetime="PT1M32S">1:32</time></p>
+  <p><ruby>二<rt>ふた</rt></ruby>つ<ruby>目<rt>め</rt></ruby>は絵になります<a href="#glossary-3" id="ref-3-1" class="footnote">*3</a>。 これは<ruby>景色<rt>けしき</rt></ruby>や人がとても<ruby>素敵<rt>すてき</rt></ruby>で、<ruby>写真<rt>しゃしん</rt></ruby>を<ruby>撮り<rt>とり</rt></ruby>たいと思う時に使います。</p>
+  <p class="timestamp"><time datetime="PT2M12S">2:12</time></p>
+  <p><ruby>三<rt>みっ</rt></ruby>つ<ruby>目<rt>め</rt></ruby>は絵に<ruby>描い<rt>えがい</rt></ruby>た<ruby>餅<rt>もち</rt></ruby>です<a href="#glossary-4" id="ref-4-1" class="footnote">*4</a>。 <ruby>立派<rt>りっぱ</rt></ruby>な<ruby>計画<rt>けいかく</rt></ruby>でも<ruby>実際<rt>じっさい</rt></ruby>にできなければ<ruby>意味<rt>いみ</rt></ruby>がないという<ruby>意味<rt>いみ</rt></ruby>です。</p>
+    </article>
+  <hr>
+  <section aria-labelledby="glossary-title">
+    <h3 id="glossary-title">言葉の解説 (Glossary)</h3>
+    <ol>
+      <li id="glossary-1">
+        <p><strong><ruby>絵心<rt>えごころ</rt></ruby>があります</strong></p>
+        <p><strong>意味 (Meaning):</strong> 絵を描くための才能や、センス（感覚）を持っていること。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">彼は絵心があるので、素敵なポスターを自作した。</p>
+        <p class="example">絵心がある人なら、きっといいデザインができるはずだ。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「絵が上手」との違い:</strong> 「絵が上手」は技術的なスキル（skill）に焦点を当てますが、「絵心がある」は才能やセンス（sense/talent）に焦点を当てた表現です。</p>
+        <p><a href="#ref-1-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-2">
+        <p><strong>〜に対して（にたいして）</strong></p>
+        <p><strong>意味 (Meaning):</strong> ある対象や、ある状態を指し示す。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">先生に対して失礼な態度はとってはいけません。</p>
+        <p class="example">質問に対して、分かりやすく答える。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「〜について」との違い:</strong> 「〜について」は内容（about）を指しますが、「〜に対して」は向き合う対象（towards/in response to）を指すニュアンスが強いです。</p>
+        <p><a href="#ref-2-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-3">
+        <p><strong>絵になります</strong></p>
+        <p><strong>意味 (Meaning):</strong> 景色や様子が美しく、まるで絵画のように素晴らしいこと。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">この庭園は、秋になるととても絵になります。</p>
+        <p class="example">彼女のドレスは、パーティーの会場でとても絵になります。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「美しい」との違い:</strong> 「美しい」は単に綺麗であることを表しますが、「絵になる」は構図や雰囲気が素晴らしく、写真や絵に収めたくなるような様子を指します。</p>
+        <p><a href="#ref-3-1" class="backlink">本文へ戻る</a></p>
+      </li>
+      <li id="glossary-4">
+        <p><strong>絵に描いた<ruby>餅<rt>えにかいたもち</rt></ruby></strong></p>
+        <p><strong>意味 (Meaning):</strong> 計画や理想は素晴らしいが、実現する可能性がほとんどないこと。</p>
+        <p><strong>例文 (Examples):</strong> </p>
+        <p class="example">素晴らしい予算案だが、資金がなければ絵に描いた餅だ。</p>
+        <p class="example">夢のような計画も、実行できなければ絵に描いた餅になってしまう。</p>
+        <p><strong>比較 (Comparison):</strong> </p>
+        <p><strong>「夢物語（ゆめものがたり）」との違い:</strong> 「夢物語」は現実離れした話そのものを指しますが、「絵に描いた餅」は「計画はあるが、実行手段やリソースがなくて実現できない」という、具体性はあるものの形にならない状態を強調します。</p>
+        <p><a href="#ref-4-1" class="backlink">本文へ戻る</a></p>
+      </li>
+    </ol>
+  </section>
+  </main>
+</body>
+</html>

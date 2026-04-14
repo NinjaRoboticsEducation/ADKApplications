@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>自転車と歩道</title>
+  <style>
+:root {
+  color-scheme: light;
+  --ui: "Avenir Next", "Hiragino Sans", "Yu Gothic", "BIZ UDPGothic", sans-serif;
+  --serif: "BIZ UDPMincho", "Hiragino Mincho ProN", "Yu Mincho", "Iowan Old Style", serif;
+  --bg: #f5efe5;
+  --bg-deep: #ece3d7;
+  --paper: rgba(255, 252, 247, 0.94);
+  --paper-soft: rgba(238, 229, 217, 0.78);
+  --text: #1f1916;
+  --muted: #6a5d55;
+  --line: rgba(96, 69, 52, 0.14);
+  --accent: #8f4d2d;
+  --accent-deep: #5f301f;
+  --accent-soft: rgba(143, 77, 45, 0.12);
+  --shadow: 0 20px 52px rgba(39, 27, 20, 0.09);
+  --max: 1140px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 10% 0%, rgba(173, 116, 84, 0.14), transparent 28%),
+    radial-gradient(circle at 100% 12%, rgba(102, 59, 36, 0.10), transparent 24%),
+    linear-gradient(180deg, var(--bg-deep) 0%, var(--bg) 44%, #f8f4ee 100%);
+  font-family: var(--serif);
+  line-height: 1.6;
+  min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.22;
+  background-image:
+    linear-gradient(rgba(112, 82, 64, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(112, 82, 64, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 80%);
+}
+
+main {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 34px 18px 72px;
+  position: relative;
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 30px 32px 28px;
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(249, 243, 236, 0.94)),
+    linear-gradient(180deg, rgba(143, 77, 45, 0.06), transparent 62%);
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 7px;
+  background: linear-gradient(180deg, rgba(143, 77, 45, 0.95), rgba(95, 48, 31, 0.45));
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  right: -54px;
+  top: -74px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(143, 77, 45, 0.15), transparent 68%);
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--accent);
+  font-family: var(--ui);
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(2.15rem, 5vw, 3.5rem);
+  line-height: 1.08;
+  letter-spacing: 0.01em;
+  max-width: 12ch;
+}
+
+.lede {
+  margin: 14px 0 0;
+  max-width: 62ch;
+  color: var(--muted);
+  font-size: 1.04rem;
+  line-height: 1.88;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+  font-family: var(--ui);
+}
+
+.chip {
+  padding: 0.52rem 0.82rem;
+  border-radius: 999px;
+  background: var(--paper-soft);
+  border: 1px solid rgba(143, 77, 45, 0.1);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 292px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.toc {
+  position: sticky;
+  top: 18px;
+  padding: 22px 20px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: rgba(255, 252, 248, 0.88);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+
+.toc-title {
+  margin: 0 0 12px;
+  color: var(--accent);
+  font-family: var(--ui);
+  font-size: 0.92rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.toc nav {
+  display: block;
+}
+
+.toc ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.toc a {
+  display: block;
+  padding: 0.74rem 0.84rem;
+  border-radius: 14px;
+  color: var(--text);
+  text-decoration: none;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.52);
+  font-family: var(--ui);
+  line-height: 1.42;
+  transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
+}
+
+.toc a:hover {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(143, 77, 45, 0.22);
+  transform: translateX(2px);
+}
+
+article {
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(251, 247, 241, 0.96));
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.content-section {
+  padding: 28px 34px;
+  scroll-margin-top: 22px;
+}
+
+.content-section + .content-section {
+  border-top: 1px solid var(--line);
+}
+
+.content-section > :last-child {
+  margin-bottom: 0;
+}
+
+h2 {
+  margin: 0 0 18px;
+  display: inline-block;
+  font-family: var(--serif);
+  font-size: 1.66rem;
+  line-height: 1.28;
+  padding-bottom: 0.42rem;
+  border-bottom: 1px solid rgba(143, 77, 45, 0.2);
+}
+
+h3 {
+  margin: 0 0 18px;
+  font-family: var(--serif);
+  font-size: 1.5rem;
+}
+
+h4 {
+  margin: 0;
+  font-family: var(--ui);
+  font-size: 1.08rem;
+}
+
+p {
+  margin: 0 0 1em;
+  font-family: var(--serif);
+  font-size: 1.16rem;
+  line-height: 1.96;
+  text-wrap: pretty;
+}
+
+ul {
+  margin: 0.6rem 0 1.1rem;
+  padding-left: 1.2rem;
+}
+
+li {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.dialogue {
+  display: grid;
+  grid-template-columns: minmax(88px, 118px) 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.speaker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.34rem 0.68rem;
+  border-radius: 999px;
+  border: 1px solid rgba(143, 77, 45, 0.14);
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  font-family: var(--ui);
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.speaker::after {
+  content: "：";
+}
+
+.dialogue-text {
+  min-width: 0;
+}
+
+ruby {
+  ruby-position: over;
+  ruby-align: center;
+  white-space: nowrap;
+}
+
+rt {
+  font-size: 0.48em;
+  color: rgba(88, 73, 64, 0.82);
+  letter-spacing: 0.01em;
+}
+
+.timestamp {
+  color: var(--muted);
+  font-family: var(--ui);
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+}
+
+.timestamp time {
+  font-variant-numeric: tabular-nums;
+}
+
+.footnote {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.55em;
+  padding: 0 0.36em;
+  margin-left: 0.18em;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  color: #fff;
+  text-decoration: none;
+  font-family: var(--ui);
+  font-size: 0.72em;
+  line-height: 1.6;
+  vertical-align: super;
+  box-shadow: 0 8px 18px rgba(95, 48, 31, 0.2);
+}
+
+.glossary-section {
+  background: linear-gradient(180deg, rgba(242, 234, 225, 0.58), rgba(255, 252, 248, 0.96));
+}
+
+.glossary-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 18px;
+}
+
+.glossary-entry {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 12px 24px rgba(39, 27, 20, 0.05);
+}
+
+.glossary-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.glossary-number {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ui);
+  font-weight: 700;
+}
+
+.glossary-entry p,
+.glossary-entry li {
+  font-family: var(--ui);
+  font-size: 1rem;
+  line-height: 1.76;
+}
+
+.glossary-entry p {
+  margin-bottom: 0.7rem;
+}
+
+.glossary-entry ul {
+  margin: 8px 0 0;
+  padding-left: 1.2rem;
+  color: var(--muted);
+}
+
+.glossary-block + .glossary-block {
+  margin-top: 0.85rem;
+}
+
+.backlink {
+  color: var(--accent-deep);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(95, 48, 31, 0.28);
+}
+
+.backlink:hover {
+  border-color: currentColor;
+}
+
+code {
+  font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, monospace;
+  font-size: 0.9em;
+  background: rgba(255, 255, 255, 0.65);
+  padding: 0.12rem 0.38rem;
+  border-radius: 0.35rem;
+}
+
+@media (max-width: 920px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .toc {
+    position: static;
+  }
+}
+
+@media (max-width: 680px) {
+  main {
+    padding: 16px 12px 40px;
+  }
+
+  .hero,
+  .content-section {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.36rem;
+  }
+
+  p {
+    font-size: 1.05rem;
+    line-height: 1.88;
+  }
+
+  .dialogue {
+    grid-template-columns: 1fr;
+    gap: 0.28rem;
+  }
+}
+  </style>
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <p class="eyebrow">Japanese Podcast Transcript</p>
+      <h1>自転車と歩道</h1>
+      <p class="lede">こんにちは、ニルです。 今日は4月から自転車に交通（こうつ：）販促（はんそく：）通告（つうこく：）制度が適用されるよっていうお話をします。 聞いたことありますか？ テレビとかね。</p>
+      <div class="meta">
+        <span class="chip">2 Sections</span>
+        <span class="chip">Ruby Support</span>
+        <span class="chip">Glossary Linked</span>
+        <span class="chip">Timestamps Included</span>
+      </div>
+    </header>
+    <div class="layout">
+      <aside class="toc">
+        <p class="toc-title"><ruby>目次<rt>もくじ</rt></ruby></p>
+        <nav aria-label="目次">
+          <ul>
+            <li><a href="#section-1">自転車と歩道</a></li>
+            <li><a href="#section-2">自転車と車道</a></li>
+          </ul>
+        </nav>
+      </aside>
+      <article>
+        <section id="section-1" class="content-section">
+          <h2>自転車と歩道</h2>
+          <p class="timestamp"><time datetime="PT0M3S">0:03</time></p>
+          <p>こんにちは、ニルです。 今日は4月から自転車に交通（こうつ：<a href="#glossary-1" id="ref-1-1" class="footnote">*1</a>）販促（はんそく：<a href="#glossary-2" id="ref-2-1" class="footnote">*2</a>）通告（つうこく：<a href="#glossary-3" id="ref-3-1" class="footnote">*3</a>）<ruby>制度<rt>せいど</rt></ruby>が<ruby>適用<rt>てきよう</rt></ruby>されるよっていうお話をします。 聞いたことありますか？ テレビとかね。 SNSなどでは<ruby>交通<rt>こうつう</rt></ruby><ruby>販促<rt>はんそく</rt></ruby><ruby>通告<rt>つうこく</rt></ruby><ruby>制度<rt>せいど</rt></ruby>という<ruby>長い<rt>ながい</rt></ruby>言い方ではなくて、<ruby>青<rt>あお</rt></ruby><ruby>切符<rt>きっぷ</rt></ruby>とよく言われます。</p>
+          <p class="timestamp"><time datetime="PT0M28S">0:28</time></p>
+          <p>あの、今までがね、自転車がやりたい<ruby>放題<rt>ほうだい</rt></ruby><a href="#glossary-4" id="ref-4-1" class="footnote">*4</a>だったっていうのはよくわかります。 はい、あの自転車のね、<ruby>危険<rt>きけん</rt></ruby><ruby>運転<rt>うんてん</rt></ruby>っていっぱいあって、<ruby>信号<rt>しんごう</rt></ruby><ruby>無視<rt>むし</rt></ruby>はね、もちろん<ruby>逆走<rt>ぎゃくそう</rt></ruby>してきたりね。</p>
+          <p class="timestamp"><time datetime="PT0M43S">0:43</time></p>
+          <p>あの自転車は<ruby>車両<rt>しゃりょう</rt></ruby><ruby>扱い<rt>あつかい</rt></ruby><a href="#glossary-5" id="ref-5-1" class="footnote">*5</a>ですから、<ruby>車<rt>くるま</rt></ruby>と<ruby>同じ<rt>おなじ</rt></ruby>ようにね、<ruby>左側<rt>ひだりがわ</rt></ruby>を<ruby>走ら<rt>はしら</rt></ruby>ないといけないんですよ。 だけどね、こう<ruby>右<rt>みぎ</rt></ruby>からこう、わーっと<ruby>向かっ<rt>むかっ</rt></ruby>てくるとか。 あとは<ruby>並走<rt>へいそう</rt></ruby><a href="#glossary-6" id="ref-6-1" class="footnote">*6</a>と言ってね。</p>
+          <p class="timestamp"><time datetime="PT0M58S">0:58</time></p>
+          <p><ruby>並ん<rt>ならん</rt></ruby>で<ruby>走る<rt>はしる</rt></ruby>2人まあね、<ruby>私<rt>わたくし</rt></ruby>も<ruby>学生<rt>がくせい</rt></ruby>の頃やってましたけど、 2人とかね、 3人でこう<ruby>並ん<rt>ならん</rt></ruby>で自転車を<ruby>走る<rt>はしる</rt></ruby>とかね、スピードをね、すごく<ruby>出し<rt>だし</rt></ruby>て<ruby>走る<rt>はしる</rt></ruby>とかね。 あとは2人<ruby>乗り<rt>の</rt></ruby>とか。</p>
+          <p class="timestamp"><time datetime="PT1M14S">1:14</time></p>
+          <p>自転車の<ruby>危険<rt>きけん</rt></ruby><ruby>運転<rt>うんてん</rt></ruby>ってすごくいっぱいあって、それによる<ruby>交通<rt>こうつう</rt></ruby><ruby>事故<rt>じこ</rt></ruby>もたくさんあるので、こういったね、<ruby>取り組み<rt>とりくみ</rt></ruby>はすごくいいことではあると思うんですが。 でもね、一つだけ、本当にこれどうにかしてほしいなっていうのが、歩道を<ruby>走っ<rt>はしっ</rt></ruby>たら6000<ruby>円<rt>えん</rt></ruby>というやつですね。</p>
+          <p class="timestamp"><time datetime="PT1M34S">1:34</time></p>
+          <p>例えばね、さっき言ったように<ruby>逆走<rt>ぎゃくそう</rt></ruby>してくる<ruby>反対<rt>はんたい</rt></ruby><ruby>側<rt>がわ</rt></ruby>からね、思いっきり<ruby>走っ<rt>はしっ</rt></ruby>てくるとか、あとは<ruby>並ん<rt>ならん</rt></ruby>でね、<ruby>並走<rt>へいそう</rt></ruby>するとか、そういうのはね、あの歩道でもね、バンバン<ruby>注意<rt>ちゅうい</rt></ruby>していいと思うんですね。 すごく<ruby>危ない<rt>あぶない</rt></ruby>ですし、<ruby>怖い<rt>こわい</rt></ruby>ですし。</p>
+          <p class="timestamp"><time datetime="PT1M51S">1:51</time></p>
+          <p>だけどね、歩道に<ruby>入っ<rt>はいっ</rt></ruby>たら6000<ruby>円<rt>えん</rt></ruby>っていうのは本当に<ruby>厳しい<rt>きびしい</rt></ruby>なと思います。 なんかね。 でも<ruby>危険<rt>きけん</rt></ruby>な道路（どう．ろ）だったら<ruby>道路<rt>どうろ</rt></ruby>じゃない歩道に<ruby>入っ<rt>はいっ</rt></ruby>て、<ruby>歩行<rt>ほこう</rt></ruby><ruby>者<rt>しゃ</rt></ruby><ruby>優先<rt>ゆうせん</rt></ruby>で<ruby>徐行<rt>じょこう</rt></ruby><a href="#glossary-7" id="ref-7-1" class="footnote">*7</a>する。 これはできるらしいんですよ。</p>
+        </section>
+        <section id="section-2" class="content-section">
+          <h2>自転車と車道</h2>
+          <p class="timestamp"><time datetime="PT2M8S">2:08</time></p>
+          <p>ただ、警察（けい＊1）のね、<ruby>裁量<rt>さいりょう</rt></ruby>によって決まるらしいんですね。 <ruby>裁量<rt>さいりょう</rt></ruby>というのは、あの自分の考えで<ruby>判断<rt>はんだん</rt></ruby>して<ruby>処理<rt>しょり</rt></ruby>をするっていう<ruby>意味<rt>いみ</rt></ruby>です。 なので<ruby>警察<rt>けいさつ</rt></ruby>がね、歩道を<ruby>走っ<rt>はしっ</rt></ruby>ている自転車を見て、いやいや、ここ<ruby>全然<rt>ぜんぜん</rt></ruby><ruby>危なく<rt>あぶなく</rt></ruby>ないでしょう。</p>
+          <p class="timestamp"><time datetime="PT2M26S">2:26</time></p>
+          <p><ruby>車道<rt>しゃどう</rt></ruby><ruby>走り<rt>はしり</rt></ruby>なさいってなったら、もう6000<ruby>円<rt>えん</rt></ruby>ですし、まあ、しょうがないよねと思えば、あの、見逃してくれるっていう感じで。 うん、なんかね、良くも<ruby>悪く<rt>わるく</rt></ruby>も<a href="#glossary-8" id="ref-8-1" class="footnote">*8</a>。 うん、<ruby>難しい<rt>むずかしい</rt></ruby>なっていうところですよね。</p>
+          <p class="timestamp"><time datetime="PT2M44S">2:44</time></p>
+          <p>なので<ruby>私<rt>わたくし</rt></ruby>はもう歩道に<ruby>入る<rt>はいる</rt></ruby>んだったら、自転車を<ruby>降り<rt>おり</rt></ruby>て。 <ruby>歩こう<rt>あるこう</rt></ruby>と決めています。 はい、ものすごく<ruby>怖い<rt>こわい</rt></ruby>ですね。 <ruby>日本<rt>にっぽん</rt></ruby>の車道って結構<ruby>狭い<rt>せまい</rt></ruby>ですよね。 バス<ruby>通り<rt>とおり</rt></ruby>とかトラックがね<ruby>通る<rt>とおる</rt></ruby>ような大きい<ruby>道路<rt>どうろ</rt></ruby>でも結構<ruby>狭く<rt>せまく</rt></ruby>て。</p>
+          <p class="timestamp"><time datetime="PT3M4S">3:04</time></p>
+          <p>で、そこで車道を<ruby>一緒<rt>いっしょ</rt></ruby>に自転車を<ruby>走り<rt>はしり</rt></ruby>なさいということなんですが、自転車の<ruby>専用<rt>せんよう</rt></ruby>道路があるわけでもないんですね。 ちょっとこう、上に<ruby>盛り上がっ<rt>もりあがっ</rt></ruby>ているとか、例えばガードレールのようなものがあるとか、そういうわけではなくて。</p>
+          <p class="timestamp"><time datetime="PT3M23S">3:23</time></p>
+          <p>ただね、その車道の<ruby>端<rt>はし</rt></ruby>にペイントされているだけなんですよ。 自転車って<ruby>書い<rt>かい</rt></ruby>てあったり、自転車乗っ（のっ）てる<ruby>絵<rt>え</rt></ruby>が<ruby>書い<rt>かい</rt></ruby>てあったり、たったのそれだけなんですね。 で、さらに。</p>
+          <p class="timestamp"><time datetime="PT3M38S">3:38</time></p>
+          <p><ruby>路駐<rt>ろちゅう</rt></ruby>で、その自転車レーンというかね、自転車走るところが<ruby>塞が<rt>ふさが</rt></ruby>れていたりするんですよ。 <ruby>路駐<rt>ろちゅう</rt></ruby>というのは<ruby>路上<rt>ろじょう</rt></ruby><ruby>駐車<rt>ちゅうしゃ</rt></ruby>ですね。 そこをね、<ruby>一緒<rt>いっしょ</rt></ruby>に<ruby>走れ<rt>はしれ</rt></ruby>というのは<ruby>無理<rt>むり</rt></ruby>があるのではないかと思うんですが、もうね、決まってしまったのでしょうがないんですが、なので<ruby>私<rt>わたくは</rt></ruby>はね、大きい道路の<ruby>場合<rt>ばあい</rt></ruby>はもう自転車を<ruby>降り<rt>おり</rt></ruby>て歩道をね。</p>
+          <p class="timestamp"><time datetime="PT4M6S">4:06</time></p>
+          <p><ruby>歩こう<rt>あるこう</rt></ruby>と思います。</p>
+          <p>それで、あの、まあ、ここだったら走っても<ruby>大丈夫<rt>だいじょうぶ</rt></ruby>かなっていう道路だったらゆっくりね、車道を<ruby>走ろう<rt>はしろう</rt></ruby>かと思っています。 皆さんどう思いますか？ <ruby>怖い<rt>こわい</rt></ruby>ので、自分を<ruby>守る<rt>まもる</rt></ruby>ためにドライブレコーダーを買いました。</p>
+          <p class="timestamp"><time datetime="PT4M26S">4:26</time></p>
+          <p>自転車<ruby>用<rt>よう</rt></ruby>なんでしょうか？ ヘルメットにつけられてで、<ruby>前後<rt>ぜんご</rt></ruby><ruby>同時<rt>どうじ</rt></ruby>にね、<ruby>録画<rt>ろくが</rt></ruby>してくれるというものです。 あの車道を<ruby>走ら<rt>はしら</rt></ruby>ないといけないので、<ruby>後ろ<rt>うしろ</rt></ruby>から<ruby>車<rt>くるま</rt></ruby>が来るじゃないですか。 で、<ruby>後ろ<rt>うしろ</rt></ruby>から<ruby>車<rt>くるま</rt></ruby>来る時、ものすごく怖いんですよ。</p>
+          <p class="timestamp"><time datetime="PT4M44S">4:44</time></p>
+          <p>で、やっぱりドライブレコーダーあった方がいいなと思ってね、買いました。 これはね、<ruby>多分<rt>たぶん</rt></ruby>自分をね、<ruby>守っ<rt>まもっ</rt></ruby>てくれるものになると思います。 はい。 例えばあの<ruby>信号<rt>しんぎょう</rt></ruby><ruby>無視<rt>むし</rt></ruby>してないのにね、おまわりさんにあ、<ruby>信号<rt>しんごう</rt></ruby><ruby>無視<rt>むし</rt></ruby>したよって言われた時もね、あの、ちゃんと<ruby>証拠<rt>しょうこ</rt></ruby>を<ruby>出せる<rt>だせる</rt></ruby>ので。</p>
+          <p class="timestamp"><time datetime="PT5M2S">5:02</time></p>
+          <p>これはね、もう車<ruby>運転<rt>うんてん</rt></ruby>してる人はね、ドライブレコーダーも<ruby>必須<rt>ひっす</rt></ruby>だと思うんですが、自転車もね、これ<ruby>絶対<rt>ぜったい</rt></ruby><ruby>今後<rt>こんご</rt></ruby><ruby>必要<rt>ひつよう</rt></ruby>になるんじゃないかなと思って買いました。 <ruby>前後<rt>ぜんご</rt></ruby>ね、<ruby>映る<rt>うつる</rt></ruby>やつです、はい。 ということで、今日は4月から自転車にも<ruby>青<rt>あお</rt></ruby><ruby>切符<rt>きっぷ</rt></ruby>交通<ruby>違反<rt>はんい</rt></ruby><ruby>通告<rt>つうこく</rt></ruby><ruby>制度<rt>せいど</rt></ruby>が<ruby>適用<rt>てきよう</rt></ruby>されるよっていうお話でした。</p>
+          <p class="timestamp"><time datetime="PT5M26S">5:26</time></p>
+          <p>皆さん交通<ruby>安全<rt>あんぜん</rt></ruby>でいきましょう。 じゃあバイバイ。</p>
+        </section>
+        <section id="glossary" class="content-section glossary-section">
+          <h3>言葉の解説 (Glossary)</h3>
+          <ol class="glossary-list">
+            <li id="glossary-1" class="glossary-entry">
+              <div class="glossary-head">
+                <span class="glossary-number">1</span>
+                <h4>交通販促通告制度*1</h4>
+              </div>
+              <p><strong>意味 (Meaning):</strong> 交通<ruby>違反<rt>こうつういはん</rt></ruby>に対して、反則<ruby>金<rt>はんそくきん</rt></ruby>を支払うことで、<ruby>裁判<rt>さいばん</rt></ruby>なしで<ruby>解決<rt>かいけつ</rt></ruby>する制度のこと。</p>
+              <div class="glossary-block">
+                <p><strong>例文 (Examples):</strong></p>
+                <ul>
+                  <li>交通販促通告制度の適用により、<ruby>罰金<rt>ばっきん</rt></ruby>の支払いが義務付けられた。</li>
+                </ul>
+              </div>
+              <div class="glossary-block">
+                <p><strong>比較 (Comparison):</strong></p>
+                <ul>
+                  <li>一般的には「青<ruby>切符<rt>あおきっぷ</rt></ruby>」と呼ばれる。</li>
+                </ul>
+              </div>
+              <p><a href="#ref-1-1" class="backlink">本文へ戻る</a></p>
+            </li>
+            <li id="glossary-2" class="glossary-entry">
+              <div class="glossary-head">
+                <span class="glossary-number">2</span>
+                <h4>やりたい放題*4</h4>
+              </div>
+              <p><strong>意味 (Meaning):</strong> 自分の好きなように、<ruby>勝手<rt>かって</rt></ruby>に、何の<ruby>制限<rt>せいげん</rt></ruby>もなく振る舞うこと。</p>
+              <div class="glossary-block">
+                <p><strong>例文 (Examples):</strong></p>
+                <ul>
+                  <li>彼は休みの日、やりたい放題に過ごしている。</li>
+                  <li>子供たちが公園でやりたい放題に遊んでいる。</li>
+                </ul>
+              </div>
+              <div class="glossary-block">
+                <p><strong>比較 (Comparison):</strong></p>
+              </div>
+              <p><strong>「自由（じゆう）に」との違い:</strong> 「やりたい放題」には、<ruby>周囲<rt>しゅうい</rt></ruby>の<ruby>迷惑<rt>めいわく</rt></ruby>や、ルールを守っていないという否定的なニュアンスが含まれることが多い。</p>
+              <p><a href="#ref-2-1" class="backlink">本文へ戻る</a></p>
+            </li>
+            <li id="glossary-3" class="glossary-entry">
+              <div class="glossary-head">
+                <span class="glossary-number">3</span>
+                <h4>〜<ruby>扱い<rt>あつかい</rt></ruby>*5</h4>
+              </div>
+              <p><strong>意味 (Meaning):</strong> あるものとして、<ruby>特定<rt>とくてい</rt></ruby>のルールや方法で扱うこと。</p>
+              <div class="glossary-block">
+                <p><strong>例文 (Examples):</strong></p>
+                <ul>
+                  <li>この<ruby>荷物<rt>にもつ</rt></ruby>は、貴重<ruby>品<rt>きちょうひん</rt></ruby>扱いとして<ruby>保管<rt>ほかん</rt></ruby>してください。</li>
+                  <li>彼は、まるで子供扱いされていると感じた。</li>
+                </ul>
+              </div>
+              <div class="glossary-block">
+                <p><strong>比較 (Comparison):</strong></p>
+              </div>
+              <p><strong>「〜として」との違い:</strong> 「〜扱い」は、その<ruby>対象<rt>たいしょう</rt></ruby>をどういう<ruby>性質<rt>せいしつ</rt></ruby>のものとして<ruby>処理<rt>しょり</rt></ruby>するかという「扱い方」に<ruby>重点<rt>じゅうてん</rt></ruby>がある。</p>
+              <p><a href="#ref-3-1" class="backlink">本文へ戻る</a></p>
+            </li>
+            <li id="glossary-4" class="glossary-entry">
+              <div class="glossary-head">
+                <span class="glossary-number">4</span>
+                <h4><ruby>並走<rt>へいそう</rt></ruby>*6</h4>
+              </div>
+              <p><strong>意味 (Meaning):</strong> 二つ以上のものが、同じ<ruby>方向<rt>ほうこう</rt></ruby>へ、<ruby>横<rt>よこ</rt></ruby>に並んで走ること。</p>
+              <div class="glossary-block">
+                <p><strong>例文 (Examples):</strong></p>
+                <ul>
+                  <li>前の車と並走して、スピードを合わせた。</li>
+                  <li>自転車がトラックと並走するのは危険だ。</li>
+                </ul>
+              </div>
+              <div class="glossary-block">
+                <p><strong>比較 (Comparison):</strong></p>
+              </div>
+              <p><strong>「追走（ついそう）」との違い:</strong> 「並走」は横に並ぶこと、「追走」は後ろから追いかけることを指す。</p>
+              <p><a href="#ref-4-1" class="backlink">本文へ戻る</a></p>
+            </li>
+            <li id="glossary-5" class="glossary-entry">
+              <div class="glossary-head">
+                <span class="glossary-number">5</span>
+                <h4><ruby>徐行<rt>じょこう</rt></ruby>*7</h4>
+              </div>
+              <p><strong>意味 (Meaning):</strong> 車や自転車が、すぐに止まれるような、非常にゆっくりとした速度で進むこと。</p>
+              <div class="glossary-block">
+                <p><strong>例文 (Examples):</strong></p>
+                <ul>
+                  <li>交差<ruby>点<rt>こうさてん</rt></ruby>では、徐行しなければならない。</li>
+                  <li><ruby>混雑<rt>こんざつ</rt></ruby>しているときは、徐行してください。</li>
+                </ul>
+              </div>
+              <div class="glossary-block">
+                <p><strong>比較 (Comparison):</strong></p>
+              </div>
+              <p><strong>「低速（ていそく）」との違い:</strong> 「低速」は単に速度が低い状態を指すが、「徐行」は「すぐに止まれる状態」という安全のための具体的な運転動作を指す。</p>
+              <p><a href="#ref-5-1" class="backlink">本文へ戻る</a></p>
+            </li>
+            <li id="glossary-8" class="glossary-entry">
+              <div class="glossary-head">
+                <span class="glossary-number">8</span>
+                <h4>良くも悪くも</h4>
+              </div>
+              <p><strong>意味 (Meaning):</strong> 良い面も悪い面も両方含んでいること。結果がどうであれ、影響があること。</p>
+              <div class="glossary-block">
+                <p><strong>例文 (Examples):</strong></p>
+                <ul>
+                  <li>彼は良くも悪くも、正直すぎる性格だ。</li>
+                  <li>そのニュースは、良くも悪くも社会に大きな影響を与えた。</li>
+                </ul>
+              </div>
+              <div class="glossary-block">
+                <p><strong>比較 (Comparison):</strong></p>
+              </div>
+              <p><strong>「良い面も悪い面も」との違い:</strong> 「良くも悪くも」は、文全体を修飾して「結果がどちらに転んでも（あるいは、どちらにせよ）」というニュアンスを添える副詞的な使い方。</p>
+              <p><a href="#ref-8-1" class="backlink">本文へ戻る</a></p>
+            </li>
+          </ol>
+        </section>
+      </article>
+    </div>
+  </main>
+</body>
+</html>

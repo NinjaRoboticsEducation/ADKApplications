@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jptranscript-app"
+version = "0.1.0"
+description = "Local ADK workflow for long Japanese transcript processing."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "google-adk==1.18.0",
+  "requests==2.32.5",
+  "fugashi==1.5.2",
+  "unidic-lite==1.0.8",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest==8.4.2",
+  "ruff==0.15.10",
+]
+
+[tool.setuptools.packages.find]
+include = ["jptranscript_app*"]
+
+[tool.setuptools.package-data]
+jptranscript_app = [
+  "prompts/*.md",
+  "templates/*.css",
+  "sample.txt",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["jptranscript_app/tests"]
+
+[tool.ruff]
+target-version = "py310"

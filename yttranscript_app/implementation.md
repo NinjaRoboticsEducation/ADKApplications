@@ -69,6 +69,65 @@ It does not currently contain:
 - There is no ADK-native web app integration yet.
 - There is no robust strategy for handling very long Japanese transcripts without overloading the model context.
 
+### 2.4 Reference Output Contract From `ai-agent-design-patterns.html`
+
+The file `yttranscript_app/Output/ai-agent-design-patterns.html` should be treated as the reference output contract for the new app.
+
+The final generated HTML does not need to be byte-identical, but it should be structurally equivalent in the areas that matter for the user experience:
+
+- a single self-contained HTML file
+- a hero/header area with title and source metadata
+- a sticky player/control panel beside the transcript on desktop
+- a `runtime-warning` area for file-mode and embed failures
+- a `takeaways` block
+- one or more `transcript-section` blocks
+- per-cue clickable transcript rows using `.cue`
+- per-cue timing data stored in `data-start` and `data-end`
+- transcript text rendered inside `<ruby>` with timestamp text in `<rt>`
+- active cue highlighting
+- dictionary popup UI and `.dict-word` spans
+- responsive layout that collapses cleanly on smaller screens
+
+This reference output should be used to drive:
+
+- DOM contract tests
+- CSS selector stability
+- accessibility checks
+- final snapshot review during QA
+
+### 2.5 Vulnerability And Robustness Findings
+
+Reviewing the current helper scripts and the existing plan surfaces several concrete risks that the refined build must address:
+
+1. **Unbounded external process runtime**
+   The transcript generator uses `subprocess.run(...)` without a timeout. `yt-dlp` and Whisper can hang indefinitely on bad inputs, network stalls, or extractor changes.
+
+2. **Unbounded network reads**
+   Subtitle track downloads currently use `urllib.request.urlopen(...)` without an explicit timeout or maximum response size guard.
+
+3. **Input host expansion risk**
+   The current plan says “validate the URL,” but it does not yet require a strict allowlist for YouTube hosts. The app objective is explicitly YouTube-link driven, so the safest design is YouTube-only input canonicalization.
+
+4. **Prompt injection through transcript content**
+   Transcript text is untrusted content. If fed into Gemma 4 loosely, a transcript containing instruction-like text can distort the structuring stage.
+
+5. **HTML / DOM injection risk in the current shadowing HTML helper**
+   The existing optimizer script uses `innerHTML` in several places. Most transcript content is escaped on the Python side, but third-party dictionary payloads are still rendered as HTML strings in the browser, which is a real XSS-shaped risk.
+
+6. **Third-party runtime fragility**
+   Final pages depend on:
+   - YouTube iframe runtime
+   - dictionaryapi.dev
+   - local browser referrer behavior
+
+   These dependencies must degrade gracefully without breaking the transcript page itself.
+
+7. **Missing explicit supply-chain and dependency checks**
+   The current plan mentions tests and linting, but not dependency auditing, version pinning checks, or security scanning for new packages and CLI tools.
+
+8. **Insufficient output-contract testing**
+   The current plan validates transcript integrity and shadowing HTML features, but it does not yet explicitly compare generated output against the provided example HTML contract.
+
 ## 3. Recommended Agentic Design Pattern
 
 ## Recommendation
@@ -109,6 +168,11 @@ yttranscript_app/
 ├── __init__.py
 ├── agent.py
 ├── workflow.py
+├── fixtures/
+│   ├── html_reference/
+│   │   └── ai-agent-design-patterns.html
+│   ├── transcript_samples/
+│   └── metadata_samples/
 ├── prompts/
 │   ├── structure_transcript.md
 │   └── refine_takeaways.md
@@ -203,6 +267,10 @@ Input:
 Responsibilities:
 
 - validate the URL
+- enforce a strict YouTube host allowlist (`youtube.com`, `www.youtube.com`, `m.youtube.com`, `youtu.be`)
+- canonicalize the user input down to a single normalized video id plus canonical source URL
+- reject unsupported URL shapes early instead of letting downstream tools guess
+- keep output filenames app-controlled; do not accept arbitrary file output paths from chat input
 - create a job id
 - create `Work/<job-id>/`
 - initialize manifest
@@ -224,6 +292,15 @@ Responsibilities:
 - reject incomplete coverage
 - optionally fall back to full-audio ASR
 - emit a normalized transcript artifact
+- enforce subprocess timeouts and clear retry budgets
+- enforce download timeouts and maximum caption payload size
+- preflight required tools (`yt-dlp`, `ffmpeg`, Whisper when needed) before long work starts
+- store transcript source diagnostics in the manifest, including:
+  - extractor used
+  - language
+  - duration
+  - coverage report
+  - whether ASR fallback was triggered
 
 Primary output:
 
@@ -250,6 +327,12 @@ Responsibilities:
 - group transcript into topic-based sections
 - add short section subtitles
 - produce a separate `Key Takeaways` section
+- treat transcript content as data, not instructions
+- wrap transcript chunks in explicit delimiters and state that content inside those delimiters must never be interpreted as instructions
+- use structured output where possible so the model returns a schema-backed representation of:
+  - section title
+  - section body
+  - optional takeaway bullets
 
 Primary output:
 
@@ -261,6 +344,8 @@ Validation:
 - timestamps remain preserved
 - at least one section heading exists
 - takeaways remain separate from the transcript body
+- schema validation passes before reducer merge
+- prompt-injection regression fixtures pass
 
 This is the main LLM-dependent stage.
 
@@ -279,6 +364,9 @@ Responsibilities:
   - `.cue-time`
   - `.cue-text`
 - include title, source link, section blocks, transcript cues, and takeaways
+- mirror the reference output contract from `ai-agent-design-patterns.html`
+- HTML-escape all transcript-derived text and attribute values
+- generate predictable DOM ids and class names so the optimizer and validator do not depend on brittle inference
 
 Primary output:
 
@@ -301,6 +389,10 @@ Responsibilities:
 - add dictionary lookup with graceful fallback
 - add `file://` preview warning
 - add `origin` and `widget_referrer` handling for HTTP(S) preview
+- add explicit `referrer` and CSP strategy suitable for a self-contained page
+- render third-party dictionary responses with DOM-safe text node insertion instead of concatenated HTML strings
+- fail closed for untrusted HTML rather than rendering raw response content
+- preserve a usable transcript-only experience when external services fail
 
 Primary output:
 
@@ -310,6 +402,8 @@ Validation:
 
 - run `validate_shadowing_html.py`
 - manually preview via localhost when possible
+- run DOM contract checks against the reference HTML
+- verify CSP / referrer behavior does not break the YouTube embed under localhost
 
 ## Stage 5. Final save and report
 
@@ -323,6 +417,7 @@ Responsibilities:
 - avoid silent overwrites
 - write manifest completion state
 - report final output and any warnings
+- save a final QA summary alongside the manifest, including validator pass/fail data and any degraded-mode warnings
 
 Primary output:
 
@@ -371,12 +466,15 @@ Primary output:
    Retry only failing chunks or the failing stage, never the whole job by default.
 
 10. Add automated tests.
-    Include transcript completeness checks, transcript integrity checks, HTML validation checks, and at least one long-form fixture regression.
+    Include transcript completeness checks, transcript integrity checks, HTML validation checks, DOM contract checks against the provided example HTML, and at least one long-form fixture regression.
 
 11. Add ADK web integration and documentation.
     Make sure the app is discoverable by `adk web`, explain the local Ollama dependency, and document localhost preview for the final HTML.
 
-12. Remove the old workflow dependency once parity is reached.
+12. Add security hardening before declaring parity.
+    Add host allowlists, path-rooting, timeouts, safe DOM rendering, dependency auditing, and prompt-injection regression tests.
+
+13. Remove the old workflow dependency once parity is reached.
     After the new app reproduces the required behavior, archive the legacy prompt-only workflow and keep only the reusable scripts and reference docs.
 
 ## 8. Long Japanese Text Strategy for Gemma 4
@@ -436,6 +534,12 @@ Start conservatively and benchmark locally:
 - reduce chunk size automatically on validation failure or timeout
 
 Use the actual local machine behavior, not the model’s theoretical maximum context window, as the real tuning source.
+
+For very long transcripts:
+
+- checkpoint after each successful chunk batch
+- cap the number of retry rounds per chunk
+- split multi-hour transcripts into higher-level passes if manifest size or reducer complexity becomes unstable
 
 ## 8.5 Context management rules
 
@@ -556,6 +660,25 @@ Recovery:
 - file-mode guard exists
 - `origin` and `widget_referrer` handling exists
 
+### Security hardening
+
+- input URL host allowlist passes
+- canonical video id extraction passes
+- output path remains inside app-controlled directories
+- subprocess timeouts are configured
+- network timeouts are configured
+- dictionary popup rendering avoids unsanitized `innerHTML` from third-party data
+- transcript-derived content is escaped before HTML insertion
+- CSP/referrer meta strategy is present and tested
+
+### Output contract against the provided example HTML
+
+- hero/header region exists
+- sticky player panel exists on desktop widths
+- `.takeaways`, `.transcript-section`, `.cue`, `.dictionary-popup`, and `.runtime-warning` are present
+- cues expose `data-start` and `data-end`
+- generated page preserves the same core user interaction model as the sample output
+
 ## 10. ADK Web Integration Plan
 
 ## 10.1 Required runtime setup
@@ -582,6 +705,8 @@ Implementation should mirror the discoverability rules already documented in the
 - the root agent streams progress while `workflow.py` runs in the background
 - `App(..., resumability_config=ResumabilityConfig(is_resumable=True))` should be enabled
 
+`adk web` should be treated as the local development interface for this project, not as a production deployment target.
+
 ## 10.3 Recommended developer workflow
 
 From the repository root:
@@ -604,6 +729,7 @@ Recommended optional commands:
 ```bash
 adk run yttranscript_app
 python yttranscript_app/tools/serve_shadowing_html.py "<final-html>"
+adk eval yttranscript_app tests/evals/structuring.evalset.json
 ```
 
 ## 10.4 User-facing progress model
@@ -660,7 +786,45 @@ Reason:
 - repair loops are valuable, but only at bounded failure points
 - a top-level loop would add complexity without product benefit
 
+### Decision 6. Treat the provided sample HTML as a contract, not just inspiration
+
+Reason:
+
+- the user objective is a specific shadowing-material experience, not merely “some valid HTML”
+- contract-driven DOM tests are more reliable than vague aesthetic checks
+- this reduces drift when deterministic renderers and validators evolve
+
+### Decision 7. Prefer security-by-default over permissive convenience
+
+Reason:
+
+- the app combines untrusted transcript text, third-party downloads, local subprocesses, and browser-executed HTML
+- the safest design is to narrow accepted inputs, root all outputs, use explicit timeouts, and avoid unsafe DOM insertion patterns
+
 ## 12. Implementation Roadmap
+
+## 12.1 Shared quality gate for every phase
+
+Every phase should pass these baseline checks before moving forward:
+
+```bash
+ruff check yttranscript_app
+python -m compileall yttranscript_app
+pytest -q
+```
+
+Recommended additions to the dev toolchain:
+
+```bash
+bandit -r yttranscript_app
+pip-audit
+```
+
+If Phase 3 or later changes the ADK package boundary, also run:
+
+```bash
+python -c "from yttranscript_app.agent import app, root_agent; print(app.name, root_agent.name)"
+```
 
 ## Phase 1. Scaffold the ADK app
 
@@ -669,28 +833,75 @@ Reason:
 - add manifest helpers
 - verify `adk web .` discovers `yttranscript_app`
 
+Build gate:
+
+- `ruff check yttranscript_app`
+- `python -m compileall yttranscript_app`
+- import smoke test for `root_agent` and `app`
+- manual `adk web .` discovery check
+- manifest schema test with `pytest`
+
 ## Phase 2. Port deterministic transcript generation
 
 - wrap `generate_transcript.py`
 - emit manifest metadata
 - expose completeness failures clearly
+- add YouTube host allowlist and canonicalization
+- add subprocess and network timeouts
+- add tool preflight checks
+
+Build gate:
+
+- unit tests for URL allowlist and canonical video-id extraction
+- unit tests for filename sanitization and rooted output paths
+- mocked timeout/error tests for `yt-dlp`, `urllib`, and Whisper fallback
+- transcript coverage validator tests with saved metadata/caption fixtures
+- `bandit -r yttranscript_app`
 
 ## Phase 3. Build Gemma-backed transcript structuring
 
 - add prompt files
 - add chunking and reducer logic
 - wire in integrity validation
+- add structured-output schema for section results
+- add prompt-injection regression fixtures
+
+Build gate:
+
+- transcript integrity validator passes on golden fixtures
+- chunk reducer tests pass
+- schema validation tests pass
+- `adk eval` runs on a small structuring eval set
+- retry/fallback behavior is covered by `pytest`
 
 ## Phase 4. Replace `frontend-design` with deterministic HTML rendering
 
 - build stable transcript-to-HTML conversion
 - preserve cue markers for the optimizer
+- align DOM structure with `Output/ai-agent-design-patterns.html`
+
+Build gate:
+
+- HTML renderer unit tests pass
+- DOM contract tests pass against the reference output
+- transcript text remains escaped in rendered HTML
+- snapshot-style checks confirm required classes and regions exist
 
 ## Phase 5. Port shadowing enhancement and validation
 
 - wrap the optimizer
 - wrap HTML validator
 - preserve localhost preview helper
+- remove unsafe third-party `innerHTML` rendering patterns
+- add referrer/CSP strategy and localhost playback smoke checks
+
+Build gate:
+
+- `validate_shadowing_html.py` passes
+- dictionary popup tests verify DOM-safe rendering
+- file-mode guidance tests pass
+- localhost preview smoke check passes
+- manual browser QA confirms sticky panel, active cue highlighting, and click-to-seek behavior
 
 ## Phase 6. Harden, test, and archive legacy flow
 
@@ -699,7 +910,40 @@ Reason:
 - document local setup and debugging flow
 - archive prompt-only legacy runtime instructions
 
-## 13. Final Recommendation
+Build gate:
+
+- end-to-end fixture run produces a valid final HTML page
+- final DOM contract check passes against the sample output
+- dependency audit passes
+- QA summary is written into the manifest
+- user flow smoke test passes: ADK web chat -> URL input -> final HTML output
+
+## 13. Research Resources
+
+These primary resources should be treated as implementation references while building and hardening the app:
+
+- Google ADK Python quickstart and runtime conventions:
+  [https://adk.dev/get-started/python/](https://adk.dev/get-started/python/)
+- Google ADK workflow agent concepts and evaluation tooling:
+  [https://google.github.io/adk-docs/](https://google.github.io/adk-docs/)
+- Ollama context-length guidance for agent workloads:
+  [https://docs.ollama.com/context-length](https://docs.ollama.com/context-length)
+- Ollama structured outputs for schema-backed responses:
+  [https://docs.ollama.com/capabilities/structured-outputs](https://docs.ollama.com/capabilities/structured-outputs)
+- YouTube embedded player parameters, including `origin` and `widget_referrer`:
+  [https://developers.google.com/youtube/player_parameters](https://developers.google.com/youtube/player_parameters)
+- OWASP CSP guidance for static or semi-static HTML pages:
+  [https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html](https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html)
+
+These resources support several specific changes in this plan:
+
+- using `adk web` strictly as a development/debugging surface
+- using schema-backed outputs for the Gemma structuring stage
+- tuning Ollama context size pragmatically instead of relying on theoretical maximums
+- hardening YouTube embed identity parameters
+- adding CSP and safer browser-side rendering behavior
+
+## 14. Final Recommendation
 
 The best transformation path is:
 

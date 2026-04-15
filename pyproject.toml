@@ -11,18 +11,22 @@ requires-python = ">=3.10"
 dependencies = [
   "google-adk==1.18.0",
   "requests==2.32.5",
+  "yt-dlp",
   "fugashi==1.5.2",
   "unidic-lite==1.0.8",
 ]
 
 [project.optional-dependencies]
+asr = [
+  "openai-whisper",
+]
 dev = [
   "pytest==8.4.2",
   "ruff==0.15.10",
 ]
 
 [tool.setuptools.packages.find]
-include = ["jptranscript_app*"]
+include = ["jptranscript_app*", "yttranscript_app*"]
 
 [tool.setuptools.package-data]
 jptranscript_app = [
@@ -30,9 +34,13 @@ jptranscript_app = [
   "templates/*.css",
   "sample.txt",
 ]
+yttranscript_app = [
+  "prompts/*.md",
+  "fixtures/html_reference/*.html",
+]
 
 [tool.pytest.ini_options]
-testpaths = ["jptranscript_app/tests"]
+testpaths = ["jptranscript_app/tests", "yttranscript_app/tests"]
 
 [tool.ruff]
 target-version = "py310"
